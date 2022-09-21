@@ -1,6 +1,6 @@
 @import java.time.format.DateTimeFormatter
 
-@import repository.Order
+@import view.home.Order
 
 @(orders: Seq[Order] = Seq())
 
@@ -24,8 +24,8 @@
             <td>@order.id</td>
             <td>@order.status</td>
             <td>@order.customer_id</td>
-            <td>@order.created_at.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))</td>
-            <td>@order.updated_at.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))</td>
+            <td>@order.created_at</td>
+            <td>@order.updated_at</td>
           </tr>
         }
       </tbody>
