@@ -1,7 +1,8 @@
-@(headerName: String = "Goldfitch")
+@import repository.Order
+
+@(headerName: String = "Goldfitch", orders: Seq[Order] = Seq())
 
 @main("Goldfitch") {
   @navigation(headerName)
-
-  @content()
+  @content(orders)
 }
