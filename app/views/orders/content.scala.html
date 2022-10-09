@@ -1,0 +1,29 @@
+@import view.home.Order
+@(orders: Seq[Order] = Seq())
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">Status</th>
+            <th scope="col">Customer ID</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for((order, idx) <- orders.zipWithIndex) {
+            <tr>
+                <td>@{
+                    idx + 1
+                }</td>
+                <td>@order.id</td>
+                <td>@order.status</td>
+                <td>@order.customer_id</td>
+                <td>@order.created_at</td>
+                <td>@order.updated_at</td>
+            </tr>
+        }
+    </tbody>
+</table>
