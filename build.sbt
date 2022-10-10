@@ -11,15 +11,15 @@ libraryDependencies ++= Seq(
   guice,
   filters,
   "com.adrianhurt" %% "play-bootstrap" % "1.6.1-P28-B4",
-  "org.webjars" % "bootstrap" % "4.3.1" exclude ("org.webjars", "jquery"),
+  "org.webjars" % "bootstrap" % "4.3.1" exclude("org.webjars", "jquery"),
   "org.webjars" % "jquery" % "3.3.1-2",
   "org.webjars" % "font-awesome" % "4.7.0",
-  "org.webjars" % "bootstrap-datepicker" % "1.4.0" exclude ("org.webjars", "bootstrap"),
+  "org.webjars" % "bootstrap-datepicker" % "1.4.0" exclude("org.webjars", "bootstrap"),
   "org.scalatest" %% "scalatest" % "3.2.12" % Test withSources(),
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test withSources(),
-  "com.typesafe.play" %% "play-slick" % "5.0.2" withSources(),
-  "com.typesafe.play" %% "play-slick-evolutions" % "5.0.2" withSources(),
-  "org.postgresql" % "postgresql" % "42.5.0" withSources()
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
+  "com.typesafe.play" %% "play-slick" % "5.1.0",
+  "com.typesafe.play" %% "play-slick-evolutions" % "5.1.0",
+  "org.postgresql" % "postgresql" % "42.5.0"
 )
 
 // Adds additional packages into Twirl
