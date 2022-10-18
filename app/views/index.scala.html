@@ -1,8 +1,8 @@
-@import view.home.Order
+@import view.{Order, Product}
 
-@(headerName: String = "Goldfinch", orders: Seq[Order] = Seq())(implicit request: Request[AnyContent])
+@(headerName: String = "Goldfinch", orders: Seq[Order] = Seq(), products: Seq[Product] = Seq())(implicit request: Request[AnyContent])
 
-    @main("Goldfinch") {
-        @navigation(headerName)
-        @content(orders)
-    }
+@main("Goldfinch") {
+    @navigation(headerName)
+    @content(orders, products)
+}

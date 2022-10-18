@@ -1,5 +1,6 @@
-@import view.home.Order
-@(orders: Seq[Order] = Seq())
+@import view.Order
+
+@(data: Seq[Order] = Seq())
 
 <table class="table table-striped">
     <thead>
@@ -13,7 +14,7 @@
         </tr>
     </thead>
     <tbody>
-        @for((order, idx) <- orders.zipWithIndex) {
+        @for((order, idx) <- data.zipWithIndex) {
             <tr>
                 <td>@{
                     idx + 1

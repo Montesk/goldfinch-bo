@@ -1,8 +1,8 @@
-package view.home
+package view
 
 import java.time.format.DateTimeFormatter
 
-import repository.{Order => DBOrder}
+import repository.orders.{Order => DBOrder}
 
 object Order {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
@@ -17,9 +17,9 @@ object Order {
     )
   }
 
-    def listFromDB(orders: Seq[DBOrder]): Seq[Order] = {
-      orders.map(fromDB)
-    }
+  def listFromDB(orders: Seq[DBOrder]): Seq[Order] = {
+    orders.map(fromDB)
+  }
 }
 
 final case class Order(id: Int, status: String, customer_id: Int, created_at: String, updated_at: String) {}

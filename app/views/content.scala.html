@@ -1,11 +1,14 @@
-@import view.home.Order
-@(data: Seq[Order] = Seq())(implicit request: Request[AnyContent])
+@import view.{Order, Product}
+
+@(ordersData: Seq[Order] = Seq(), productsData: Seq[Product] = Seq())(implicit request: Request[AnyContent])
 
 <div class="container">
     <div class="row">
         @{
             if(request.path == routes.OrdersController.index.path) {
-                orders.content(orders = data)
+                orders.content(data = ordersData)
+            } else if(request.path == routes.ProductsController.index.path) {
+                products.content(data = productsData)
             } else {
                 dashboard.content()
             }

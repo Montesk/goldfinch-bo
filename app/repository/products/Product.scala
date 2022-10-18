@@ -1,8 +1,8 @@
-package repository.product
-
-import play.api.libs.json._
+package repository.products
 
 import java.time.LocalDateTime
+
+import play.api.libs.json._
 
 case class Product(
                     id: Long,

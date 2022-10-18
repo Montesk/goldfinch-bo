@@ -1,20 +1,20 @@
-package repository.product
-
-import play.api.db.slick.DatabaseConfigProvider
-import slick.jdbc.JdbcProfile
+package repository.products
 
 import java.time._
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+import slick.jdbc.JdbcProfile
+import play.api.db.slick.DatabaseConfigProvider
+
 @Singleton
-class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
   import profile.api._
 
-  private class OrderTable(tag: Tag) extends Table[Product](tag, "products") {
+  private class ProductsTable(tag: Tag) extends Table[Product](tag, "products") {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
@@ -32,6 +32,6 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impl
   }
 
   def list(): Future[Seq[Product]] = db.run {
-    TableQuery[OrderTable].result
+    TableQuery[ProductsTable].result
   }
 }
