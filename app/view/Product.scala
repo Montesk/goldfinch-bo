@@ -10,6 +10,12 @@ object Product {
   def fromDB(order: DBProduct): Product = {
     Product(
       id = order.id.toInt,
+      price = order.price.toString,
+      name = order.name,
+      stock = order.stock.toInt,
+      uuid = order.uuid.toString,
+      description = order.description,
+      disabled = order.disabled,
       created_at = order.created_at.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = order.updated_at.format(DateTimeFormatter.ofPattern(TimeFormat))
     )
@@ -20,4 +26,14 @@ object Product {
   }
 }
 
-final case class Product(id: Int, created_at: String, updated_at: String) {}
+final case class Product(
+                          id: Int,
+                          price: String,
+                          name: String,
+                          stock: Int,
+                          uuid: String,
+                          description: Option[String],
+                          disabled: Boolean,
+                          created_at: String,
+                          updated_at: String,
+                        ) {}
