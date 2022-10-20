@@ -53,6 +53,16 @@ aria-hidden="true"
                     <input type="hidden" id="product-id" name="id" />
                     @CSRF.formField
                 </form>
+                <form class="mt-5" method="POST" action="@routes.ProductsController.upload" enctype="multipart/form-data">
+                    @CSRF.formField
+                <div class="custom-file form-group">
+                    <input type="file" class="custom-file-input form-control-file" id="product-image" name="image">
+                    <label class="custom-file-label" for="product-image">Choose file</label>
+                </div>
+                <div class="form-group mt-2">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+                </form>
             </div>
         </div>
     </div>

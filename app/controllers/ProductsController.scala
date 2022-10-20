@@ -1,6 +1,7 @@
 package controllers
 
 import javax.inject._
+import java.nio.file.Paths
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -8,9 +9,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.Files
 
 import repository.products.{ProductsRepository, productEditData, Product => DBProduct}
 import view.Product
+
 
 @Singleton
 class ProductsController @Inject()(
@@ -32,6 +35,21 @@ class ProductsController @Inject()(
     )
 
     Redirect(routes.ProductsController.index())
+  }
+
+  def upload(): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request =>
+    request.body
+      .file("image")
+      .map { picture =>
+
+        val filename = Paths.get(picture.filename).getFileName
+        val fileSize = picture.fileSize
+        val contentType = picture.contentType
+
+        picture.ref.copyTo(Paths.get(s"./public/images/upload/$filename"), replace = true)
+
+        Ok("File uploaded")
+      }.getOrElse(throw new Exception("Invalid data"))
   }
 
   private def productsList(): Seq[DBProduct] = {
