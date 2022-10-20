@@ -9,6 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import play.api.db.slick.DatabaseConfigProvider
 
+case class productEditData(id: Long, name: String, description: String, price: Int)
+
 @Singleton
 class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -40,6 +42,13 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
   }
 
   def list(): Future[Seq[Product]] = db.run {
-    TableQuery[ProductsTable].result
+    TableQuery[ProductsTable].sortBy(_.id.asc).result
+  }
+
+  def update(id: Long, data: productEditData): Future[Int] = db.run {
+    val products = TableQuery[ProductsTable]
+    val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
+
+    query.update(data.name, data.price, Option[String](data.description))
   }
 }

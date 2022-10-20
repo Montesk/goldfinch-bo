@@ -9,7 +9,7 @@ object Product {
 
   def fromDB(order: DBProduct): Product = {
     Product(
-      id = order.id.toInt,
+      id = order.id,
       price = order.price.toString,
       name = order.name,
       stock = order.stock.toInt,
@@ -27,7 +27,7 @@ object Product {
 }
 
 final case class Product(
-                          id: Int,
+                          id: Long,
                           price: String,
                           name: String,
                           stock: Int,

@@ -1,12 +1,15 @@
 package controllers
 
 import javax.inject._
+
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 import play.api.mvc._
+import play.api.data._
+import play.api.data.Forms._
 
-import repository.products.{ProductsRepository, Product => DBProduct}
+import repository.products.{ProductsRepository, productEditData, Product => DBProduct}
 import view.Product
 
 @Singleton
@@ -18,7 +21,29 @@ class ProductsController @Inject()(
     Ok(views.html.index(products = Product.listFromDB(productsList())))
   }
 
+  def edit(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    productEditForm.bindFromRequest.fold(
+      formWithErrors => {
+        throw new Exception("Invalid data")
+      },
+      productData => {
+        Await.result(productsRepo.update(id = productData.id, data = productData), Duration(10, SECONDS))
+      }
+    )
+
+    Redirect(routes.ProductsController.index())
+  }
+
   private def productsList(): Seq[DBProduct] = {
     Await.result(productsRepo.list(), Duration(10, SECONDS))
   }
+
+  private val productEditForm: Form[productEditData] = Form(
+    mapping(
+      "id" -> longNumber,
+      "name" -> text,
+      "description" -> text,
+      "price" -> number
+    )(productEditData.apply)(productEditData.unapply)
+  )
 }
