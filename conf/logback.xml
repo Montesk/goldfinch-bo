@@ -33,7 +33,8 @@
 
     <logger name="play" level="INFO"/>
     <logger name="application" level="DEBUG"/>
-    <logger name="slick.jdbc.JdbcBackend.statement" level="DEBUG"/>
+    <logger name="slick.jdbc.JdbcBackend.statementAndParameter" level="DEBUG"/>
+    <logger name="slick.jdbc.JdbcBackend.benchmark" level="DEBUG"/>
     <logger name="org.jdbcdslog.ConnectionLogger" level="DEBUG"/>
     <logger name="org.jdbcdslog.StatementLogger" level="DEBUG"/>
     <logger name="org.jdbcdslog.ResultSetLogger" level="DEBUG"/>
