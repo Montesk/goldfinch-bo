@@ -1,0 +1,6 @@
+@import view.Product
+
+@(data: Seq[Product] = Seq(), product: Product)(implicit request: RequestHeader)
+
+    @products.content(data)
+    @components.modal.edit(title = "Редактировать товар: ", modalId = "edit-product", static = false, product)

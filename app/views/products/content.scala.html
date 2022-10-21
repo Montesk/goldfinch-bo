@@ -13,18 +13,13 @@
                         <p class="card-text">Описание: @product.description</p>
                     }
                     <p class="card-text font-weight-bold">Цена: @product.price</p>
-                    <button
-                    type="button"
+                    <a
                     class="btn btn-primary"
-                    data-toggle="modal"
-                    data-target="#edit-product"
-                    data-id="@product.id"
-                    data-title="@product.name"
-                    data-description="@product.description"
-                    data-price="@product.price"
+                    href="@routes.ProductsController.edit(product.id.toInt).url"
+                    role="button"
                     >
                         Редактировать
-                    </button>
+                    </a>
                 </div>
                 <div class="card-header text-muted text-monospace small bo-tech-text-60-pct">
                 @product.uuid
@@ -33,5 +28,3 @@
         </div>
     }
 </div>
-
-@components.modal(title = "Редактировать товар: ", modalId = "edit-product", static = false)

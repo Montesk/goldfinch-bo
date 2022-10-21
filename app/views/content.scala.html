@@ -1,6 +1,10 @@
 @import view.{Order, Product}
 
-@(ordersData: Seq[Order] = Seq(), productsData: Seq[Product] = Seq())(implicit request: Request[AnyContent])
+@(
+        ordersData: Seq[Order] = Seq(),
+        productsData: Seq[Product] = Seq(),
+        product: Option[Product] = None
+)(implicit request: Request[AnyContent])
 
 <div class="container">
     <div class="row">
@@ -8,7 +12,9 @@
             if(request.path == routes.OrdersController.index.path) {
                 orders.content(data = ordersData)
             } else if(request.path == routes.ProductsController.index.path) {
-                products.content(data = productsData)
+                products.content(data = productsData) // products list
+            } else if(request.path.contains("product/edit")) {
+                products.edit(data = productsData, product.get) // products edit
             } else {
                 dashboard.content()
             }

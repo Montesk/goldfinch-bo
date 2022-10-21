@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import play.api.db.slick.DatabaseConfigProvider
 
-case class productEditData(id: Long, name: String, description: String, price: Int)
+case class productEditData(name: String, description: String, price: Int)
 
 @Singleton
 class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
@@ -39,6 +39,10 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
     def updated_at = column[LocalDateTime]("updated_at")
 
     def * = (id, price, name, stock, uuid, description, disabled, created_at, updated_at) <> ((Product.apply _).tupled, Product.unapply)
+  }
+
+  def find(id: Long): Future[Product] = db.run {
+    TableQuery[ProductsTable].filter(_.id === id).result.head
   }
 
   def list(): Future[Seq[Product]] = db.run {

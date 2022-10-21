@@ -21,17 +21,28 @@ class ProductsController @Inject()(
     Ok(views.html.index(products = Product.listFromDB(productsList())))
   }
 
-  def edit(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+  def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(
+      products = Product.listFromDB(productsList()),
+      product = Option[Product](Product.fromDB(product(id)))
+    ))
+  }
+
+  def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
         throw new Exception("Invalid data")
       },
       productData => {
-        Await.result(productsRepo.update(id = productData.id, data = productData), Duration(10, SECONDS))
+        Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
       }
     )
 
     Redirect(routes.ProductsController.index())
+  }
+
+  private def product(id: Long): DBProduct = {
+    Await.result(productsRepo.find(id), Duration(10, SECONDS))
   }
 
   private def productsList(): Seq[DBProduct] = {
@@ -40,7 +51,6 @@ class ProductsController @Inject()(
 
   private val productEditForm: Form[productEditData] = Form(
     mapping(
-      "id" -> longNumber,
       "name" -> text,
       "description" -> text,
       "price" -> number
