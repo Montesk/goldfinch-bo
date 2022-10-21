@@ -24,6 +24,20 @@ object Product {
   def listFromDB(orders: Seq[DBProduct]): Seq[Product] = {
     orders.map(fromDB)
   }
+
+  def create(): Product = {
+    Product(
+      id = 0,
+      price = 0,
+      name = "",
+      stock = 0,
+      uuid = "",
+      description = None,
+      disabled = false,
+      created_at = "",
+      updated_at = "",
+    )
+  }
 }
 
 final case class Product(

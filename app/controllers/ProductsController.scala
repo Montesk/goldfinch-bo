@@ -21,6 +21,17 @@ class ProductsController @Inject()(
     Ok(views.html.index(products = Product.listFromDB(productsList())))
   }
 
+  def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(
+      products = Product.listFromDB(productsList()),
+      product = Option[Product](Product.create())
+    ))
+  }
+
+  def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    ???
+  }
+
   def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(
       products = Product.listFromDB(productsList()),
