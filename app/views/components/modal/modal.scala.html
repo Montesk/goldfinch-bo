@@ -1,14 +1,10 @@
-@import view.Product
-
-@import helper._
-
 @(
         title: String,
         modalId: String,
         static: Boolean = true,
-        product: Product,
         showOnLoad: Boolean = false,
         redirectUrlOnClose: Option[String] = None,
+        bodyContent: Html,
 )(implicit request: RequestHeader)
 
 <div
@@ -30,32 +26,13 @@ aria-hidden="true"
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-title"><span class="font-weight-normal">@title </span> @product.name</h5>
+                <h5 class="modal-title" id="modal-title">@title</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="@routes.ProductsController.edit(product.id).url">
-                    <div class="form-group">
-                        <label for="product-name">Имя</label>
-                        <input type="text" class="form-control" id="product-name" name="name" value="@product.name">
-                    </div>
-                    <div class="form-group">
-                        <label for="product-description">Описание</label>
-                        <textarea class="form-control" id="product-description" name="description" rows="3">@product.description</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-price">Цена</label>
-                        <input type="text" class="form-control" id="product-price" name="price" value="@product.price">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                    </div>
-                    @CSRF.formField
-                </form>
+            @bodyContent
             </div>
         </div>
     </div>

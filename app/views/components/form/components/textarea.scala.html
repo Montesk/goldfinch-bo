@@ -1,0 +1,23 @@
+@import java.util.UUID
+
+@(
+        name: String,
+        id: String = UUID.randomUUID().toString,
+        value: String = "",
+        label: String = "",
+        cssClass: String = "form-control",
+        rows: Int = 3,
+)
+
+@if(label) {
+    <label for="@id">@label</label>
+}
+
+<textarea
+class="@cssClass"
+name="@name"
+id="@id"
+rows="@rows"
+>
+@value
+</textarea>

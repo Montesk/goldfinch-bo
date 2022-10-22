@@ -1,0 +1,22 @@
+@import java.util.UUID
+
+@(
+        name: String,
+        inputType: String = "text",
+        id: String = UUID.randomUUID().toString,
+        value: String = "",
+        label: String = "",
+        cssClass: String = "form-control",
+)
+
+@if(label) {
+    <label for="@id">@label</label>
+}
+
+<input
+type="@inputType"
+class="@cssClass"
+name="@name"
+id="@id"
+value="@value"
+>
