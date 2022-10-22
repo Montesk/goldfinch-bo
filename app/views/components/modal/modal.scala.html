@@ -6,7 +6,9 @@
         title: String,
         modalId: String,
         static: Boolean = true,
-        product: Product
+        product: Product,
+        showOnLoad: Boolean = false,
+        redirectUrlOnClose: Option[String] = None,
 )(implicit request: RequestHeader)
 
 <div
@@ -59,8 +61,22 @@ aria-hidden="true"
     </div>
 </div>
 
-<script>
-        document.addEventListener('DOMContentLoaded', function () {
-            $('#@modalId').modal({show: true})
-        })
-</script>
+@if(showOnLoad) {
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(function () {
+                    $('#@modalId').modal({show: true})
+                }, 150)
+            })
+    </script>
+}
+
+@if(redirectUrlOnClose.isDefined) {
+    <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                $('#@modalId').on('hide.bs.modal', function () {
+                    history.pushState({}, '', "@redirectUrlOnClose.get")
+                })
+            })
+    </script>
+}

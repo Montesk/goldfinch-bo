@@ -2,5 +2,13 @@
 
 @(data: Seq[Product] = Seq(), product: Product)(implicit request: RequestHeader)
 
-    @products.content(data)
-    @components.modal.edit(title = "Редактировать товар: ", modalId = "edit-product", static = false, product)
+@products.content(data)
+
+@components.modal.modal(
+    title = "Редактировать товар: ",
+    modalId = "edit-product",
+    static = false,
+    product,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](routes.ProductsController.index.url)
+)
