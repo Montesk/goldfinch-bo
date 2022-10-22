@@ -13,11 +13,11 @@ object Product {
       price = order.price.toInt,
       name = order.name,
       stock = order.stock.toInt,
-      uuid = order.uuid.toString,
+      uuid = order.uuid.get.toString,
       description = order.description,
       disabled = order.disabled,
-      created_at = order.created_at.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at = order.updated_at.format(DateTimeFormatter.ofPattern(TimeFormat))
+      created_at = order.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at = order.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat))
     )
   }
 

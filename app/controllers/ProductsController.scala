@@ -29,7 +29,16 @@ class ProductsController @Inject()(
   }
 
   def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    ???
+    productEditForm.bindFromRequest.fold(
+      formWithErrors => {
+        throw new Exception("Invalid data")
+      },
+      productData => {
+        Await.result(productsRepo.create(data = productData), Duration(10, SECONDS))
+      }
+    )
+
+    Redirect(routes.ProductsController.index())
   }
 
   def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>

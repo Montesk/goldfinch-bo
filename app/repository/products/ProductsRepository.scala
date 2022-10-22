@@ -28,15 +28,15 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
 
     def stock = column[Long]("stock", O.Default(0))
 
-    def uuid = column[UUID]("uuid")
+    def uuid = column[Option[UUID]]("uuid")
 
     def description = column[Option[String]]("description")
 
     def disabled = column[Boolean]("disabled", O.Default(false))
 
-    def created_at = column[LocalDateTime]("created_at")
+    def created_at = column[Option[LocalDateTime]]("created_at")
 
-    def updated_at = column[LocalDateTime]("updated_at")
+    def updated_at = column[Option[LocalDateTime]]("updated_at")
 
     def * = (id, price, name, stock, uuid, description, disabled, created_at, updated_at) <> ((Product.apply _).tupled, Product.unapply)
   }
@@ -46,7 +46,15 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
   }
 
   def list(): Future[Seq[Product]] = db.run {
-    TableQuery[ProductsTable].sortBy(_.id.asc).result
+    TableQuery[ProductsTable].sortBy(_.id.desc).result
+  }
+
+  def create(data: productEditData): Future[Any] = db.run {
+    val products = TableQuery[ProductsTable]
+
+    DBIO.seq(
+      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
+    )
   }
 
   def update(id: Long, data: productEditData): Future[Int] = db.run {

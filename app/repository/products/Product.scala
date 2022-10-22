@@ -7,15 +7,15 @@ import play.api.libs.json._
 
 
 case class Product(
-                    id: Long,
+                    id: Long = 0,
                     price: Double,
                     name: String,
-                    stock: Long,
-                    uuid: UUID,
+                    stock: Long = 0,
+                    uuid: Option[UUID] = None,
                     description: Option[String],
-                    disabled: Boolean,
-                    created_at: LocalDateTime,
-                    updated_at: LocalDateTime,
+                    disabled: Boolean = false,
+                    created_at: Option[LocalDateTime] = None,
+                    updated_at: Option[LocalDateTime] = None,
                   )
 
 object Product {

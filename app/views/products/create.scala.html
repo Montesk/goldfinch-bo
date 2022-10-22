@@ -1,0 +1,16 @@
+@import view.Product
+
+@import views.html.products.createform
+
+@(data: Seq[Product] = Seq(), product: Product)(implicit request: RequestHeader)
+
+@products.content(data)
+
+@components.modal.modal(
+    bodyContent = createform(product),
+    title = "Добавить новый товар",
+    modalId = "create-product",
+    static = false,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](routes.ProductsController.index.url)
+)

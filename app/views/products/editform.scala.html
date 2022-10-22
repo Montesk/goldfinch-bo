@@ -6,13 +6,13 @@
 
 <form method="POST" action="@routes.ProductsController.edit(product.id).url">
     <div class="form-group">
-    @components.form.components.input(name = "name", value = product.name, label = "Имя")
+    @components.form.components.input(name = "name", value = product.name, label = "Имя", required = true)
     </div>
     <div class="form-group">
     @components.form.components.textarea(name = "description", value = product.description.getOrElse(""), label = "Описание")
     </div>
     <div class="form-group">
-    @components.form.components.input(name = "price", value = product.price.toString, label = "Цена")
+    @components.form.components.input(name = "price", value = product.price.toString, label = "Цена", required = true)
     </div>
     <div class="form-group d-flex justify-content-between">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

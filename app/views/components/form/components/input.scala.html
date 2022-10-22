@@ -7,16 +7,28 @@
         value: String = "",
         label: String = "",
         cssClass: String = "form-control",
+        required: Boolean = false,
 )
 
-@if(label) {
-    <label for="@id">@label</label>
-}
+    @if(label) {
+        <label for="@id">@label</label>
+    }
 
-<input
-type="@inputType"
-class="@cssClass"
-name="@name"
-id="@id"
-value="@value"
->
+    @if(required) {
+        <input
+        type="@inputType"
+        class="@cssClass"
+        name="@name"
+        id="@id"
+        value="@value"
+        required
+        >
+    } else {
+        <input
+        type="@inputType"
+        class="@cssClass"
+        name="@name"
+        id="@id"
+        value="@value"
+        >
+    }
