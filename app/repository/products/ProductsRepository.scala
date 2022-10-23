@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import play.api.db.slick.DatabaseConfigProvider
 
-case class productEditData(name: String, description: String, price: Int)
+case class productData(name: String, description: String, price: Int)
 
 @Singleton
 class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
@@ -58,7 +58,7 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
       .result
   }
 
-  def create(data: productEditData): Future[Any] = db.run {
+  def create(data: productData): Future[Any] = db.run {
     val products = TableQuery[ProductsTable]
 
     DBIO.seq(
@@ -66,7 +66,7 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
     )
   }
 
-  def update(id: Long, data: productEditData): Future[Int] = db.run {
+  def update(id: Long, data: productData): Future[Int] = db.run {
     val products = TableQuery[ProductsTable]
     val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
 

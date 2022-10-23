@@ -9,7 +9,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 
-import repository.products.{ProductsRepository, productEditData, Product => DBProduct}
+import repository.products.{ProductsRepository, productData, Product => DBProduct}
 import view.Product
 
 @Singleton
@@ -62,7 +62,7 @@ class ProductsController @Inject()(
   }
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Await.result(productsRepo.delete(id = id, soft = false), Duration(10, SECONDS))
+    Await.result(productsRepo.delete(id = id, soft = true), Duration(10, SECONDS))
     Redirect(routes.ProductsController.index())
   }
 
@@ -74,11 +74,11 @@ class ProductsController @Inject()(
     Await.result(productsRepo.list(), Duration(10, SECONDS))
   }
 
-  private val productEditForm: Form[productEditData] = Form(
+  private val productEditForm: Form[productData] = Form(
     mapping(
       "name" -> text,
       "description" -> text,
       "price" -> number
-    )(productEditData.apply)(productEditData.unapply)
+    )(productData.apply)(productData.unapply)
   )
 }
