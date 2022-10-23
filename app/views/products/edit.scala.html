@@ -1,0 +1,16 @@
+@import view.Product
+
+@import views.html.products.editform
+
+@(data: Seq[Product] = Seq(), product: Product)(implicit request: RequestHeader)
+
+    @products.content(data)
+
+    @components.modal.modal(
+        bodyContent = editform(product),
+        title = "Редактировать товар: " + product.name,
+        modalId = "edit-product",
+        static = false,
+        showOnLoad = true,
+        redirectUrlOnClose = Option[String](routes.ProductsController.index.url)
+    )

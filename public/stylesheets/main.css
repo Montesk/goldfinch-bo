@@ -13,3 +13,16 @@
 .bo-tech-text-60-pct {
     font-size: 60% !important;
 }
+
+.bo-add {
+    font-size: 4rem;
+}
+
+.bo-success-hover {
+    transition: background-color .15s ease-in-out;
+
+}
+
+.bo-success-hover:hover {
+    background-color: rgb(40 167 69 / 25%);
+}

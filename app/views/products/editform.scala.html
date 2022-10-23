@@ -1,0 +1,55 @@
+@import helper._
+
+@import view.Product
+
+@(product: Product)(implicit request: RequestHeader)
+
+<form method="POST" action="@routes.ProductsController.edit(product.id).url">
+    <div class="form-group">
+    @components.form.components.input(name = "name", value = product.name, label = "Имя", required = true)
+    </div>
+    <div class="form-group">
+    @components.form.components.textarea(name = "description", value = product.description.getOrElse(""), label = "Описание")
+    </div>
+    <div class="form-group">
+    @components.form.components.input(name = "price", value = product.price.toString, label = "Цена", required = true)
+    </div>
+    <div class="form-group d-flex justify-content-between">
+        <div class="d-flex">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            <a href="javascript:;" onclick="deleteProduct();" class="btn btn-danger ml-2">Удалить</a>
+        </div>
+        <div class="d-flex">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </div>
+    @CSRF.formField
+</form>
+
+<form class="mt-5" method="POST" action="@routes.ProductsController.upload" enctype="multipart/form-data">
+    @CSRF.formField
+<div class="custom-file form-group">
+    <input type="file" class="custom-file-input form-control-file" id="product-image" name="image">
+    <label class="custom-file-label" for="product-image">Выберите файл</label>
+</div>
+<div class="form-group mt-2">
+    <button type="submit" class="btn btn-primary">Загрузить</button>
+</div>
+</form>
+
+<script>
+    function deleteProduct() {
+        if (confirm("Вы действительно хотите удалить @product.name ?")) {
+            $.ajax({
+                url: "@routes.ProductsController.delete(product.id)",
+                method: "POST",
+                data: {
+                    "@CSRF.getToken.name": "@CSRF.getToken.value"
+                },
+            }).done(function (response) {
+                console.warn(response)
+                window.location.href = "@routes.ProductsController.index()"
+            })
+        }
+    }
+</script>
