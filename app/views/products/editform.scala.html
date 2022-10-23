@@ -26,16 +26,30 @@
     @CSRF.formField
 </form>
 
-<form class="mt-5" method="POST" action="@routes.ProductsController.upload" enctype="multipart/form-data">
-    @CSRF.formField
-<div class="custom-file form-group">
-    <input type="file" class="custom-file-input form-control-file" id="product-image" name="image">
-    <label class="custom-file-label" for="product-image">Выберите файл</label>
-</div>
-<div class="form-group mt-2">
-    <button type="submit" class="btn btn-primary">Загрузить</button>
-</div>
-</form>
+<div id="filepond" multiple></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $(function () {
+            const pond = FilePond.create(
+                    document.getElementById('filepond'),
+                    // https://pqina.nl/filepond/docs/api/server/
+                    {}
+            )
+
+            // https://pqina.nl/filepond/docs/api/instance/events/
+            pond.on('addfile', (error, file) => {
+                if (error) {
+                    console.log('Oh no');
+                    return;
+                }
+
+                console.log('File added', file);
+            });
+        });
+    })
+
+</script>
 
 <script>
     function deleteProduct() {
