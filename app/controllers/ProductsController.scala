@@ -61,6 +61,11 @@ class ProductsController @Inject()(
     Redirect(routes.ProductsController.index())
   }
 
+  def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Await.result(productsRepo.delete(id = id, soft = false), Duration(10, SECONDS))
+    Redirect(routes.ProductsController.index())
+  }
+
   private def product(id: Long): DBProduct = {
     Await.result(productsRepo.find(id), Duration(10, SECONDS))
   }

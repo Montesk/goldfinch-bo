@@ -34,19 +34,28 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
 
     def disabled = column[Boolean]("disabled", O.Default(false))
 
+    def deleted = column[Boolean]("deleted", O.Default(false))
+
     def created_at = column[Option[LocalDateTime]]("created_at")
 
     def updated_at = column[Option[LocalDateTime]]("updated_at")
 
-    def * = (id, price, name, stock, uuid, description, disabled, created_at, updated_at) <> ((Product.apply _).tupled, Product.unapply)
+    def * = (id, price, name, stock, uuid, description, disabled, deleted, created_at, updated_at) <> ((Product.apply _).tupled, Product.unapply)
   }
 
   def find(id: Long): Future[Product] = db.run {
-    TableQuery[ProductsTable].filter(_.id === id).result.head
+    TableQuery[ProductsTable]
+      .filter(_.id === id)
+      .filter(!_.deleted)
+      .result
+      .head
   }
 
   def list(): Future[Seq[Product]] = db.run {
-    TableQuery[ProductsTable].sortBy(_.id.desc).result
+    TableQuery[ProductsTable]
+      .filter(!_.deleted)
+      .sortBy(_.id.desc)
+      .result
   }
 
   def create(data: productEditData): Future[Any] = db.run {
@@ -62,5 +71,16 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
     val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
 
     query.update(data.name, data.price, Option[String](data.description))
+  }
+
+  def delete(id: Long, soft: Boolean = true): Future[Int] = db.run {
+    val products = TableQuery[ProductsTable]
+
+    if (soft) {
+      val query = for {c <- products if c.id === id} yield c.deleted
+      query.update(true)
+    } else {
+      products.filter(_.id === id).delete
+    }
   }
 }

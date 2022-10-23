@@ -14,6 +14,7 @@ case class Product(
                     uuid: Option[UUID] = None,
                     description: Option[String],
                     disabled: Boolean = false,
+                    deleted: Boolean = false,
                     created_at: Option[LocalDateTime] = None,
                     updated_at: Option[LocalDateTime] = None,
                   )
