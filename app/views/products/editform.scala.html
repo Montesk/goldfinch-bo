@@ -14,6 +14,9 @@
     <div class="form-group">
     @components.form.components.input(name = "price", value = product.price.toString, label = "Цена", required = true)
     </div>
+    <div class="form-group mb-4">
+        <div id="filepond" multiple></div>
+    </div>
     <div class="form-group d-flex justify-content-between">
         <div class="d-flex">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -26,44 +29,48 @@
     @CSRF.formField
 </form>
 
-<div id="filepond" multiple></div>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        $(function () {
-            const pond = FilePond.create(
-                    document.getElementById('filepond'),
-                    // https://pqina.nl/filepond/docs/api/server/
-                    {}
-            )
+        document.addEventListener('DOMContentLoaded', function () {
+            $(function () {
+                const pond = FilePond.create(
+                        document.getElementById('filepond'),
+                        // https://pqina.nl/filepond/docs/api/server/
+                        {
+                            credits: [],
+                            server: {
+                                url: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                                method: 'POST',
+                            },
+                        }
+                )
 
-            // https://pqina.nl/filepond/docs/api/instance/events/
-            pond.on('addfile', (error, file) => {
-                if (error) {
-                    console.log('Oh no');
-                    return;
-                }
+                // https://pqina.nl/filepond/docs/api/plugins/image-preview/
+                // https://pqina.nl/filepond/docs/api/instance/events/
 
-                console.log('File added', file);
+                pond.on('processfiles', () => {
+
+                    const elems = $('input[name="filepond"]').each(function () {
+                        console.log('File added', $(this).val());
+                    })
+                });
             });
-        });
-    })
+        })
 
 </script>
 
 <script>
-    function deleteProduct() {
-        if (confirm("Вы действительно хотите удалить @product.name ?")) {
-            $.ajax({
-                url: "@routes.ProductsController.delete(product.id)",
-                method: "POST",
-                data: {
-                    "@CSRF.getToken.name": "@CSRF.getToken.value"
-                },
-            }).done(function (response) {
-                console.warn(response)
-                window.location.href = "@routes.ProductsController.index()"
-            })
+        function deleteProduct() {
+            if (confirm("Вы действительно хотите удалить @product.name ?")) {
+                $.ajax({
+                    url: "@routes.ProductsController.delete(product.id)",
+                    method: "POST",
+                    data: {
+                        "@CSRF.getToken.name": "@CSRF.getToken.value"
+                    },
+                }).done(function (response) {
+                    console.warn(response)
+                    window.location.href = "@routes.ProductsController.index()"
+                })
+            }
         }
-    }
 </script>

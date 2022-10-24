@@ -1,7 +1,9 @@
 package controllers
 
+
 import javax.inject._
 import java.nio.file.Paths
+import java.io.File
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -73,19 +75,30 @@ class ProductsController @Inject()(
     Await.result(productsRepo.find(id), Duration(10, SECONDS))
   }
 
+  /**
+   *
+   * Params: {
+   * <body> "files": [fileObj]
+   * <query> "uuid": Option[UUID] // if not passed it is assumed it is the new product
+   * <query> "csrfTokenName": "csrfTokenValue"
+   * }
+   *
+   * @return
+   */
   def upload(): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request =>
-    request.body
-      .file("image")
-      .map { picture =>
+    val productUUID = request.getQueryString("uuid").get
 
-        val filename = Paths.get(picture.filename).getFileName
-        val fileSize = picture.fileSize
-        val contentType = picture.contentType
+    request.body.files.map(f => {
+      val projectTempDirPath = "uploads/temp"
+      val tempFilePath = Paths.get(s"""${projectTempDirPath}/${productUUID}/${f.filename}""")
 
-        picture.ref.copyTo(Paths.get(s"./public/images/upload/$filename"), replace = true)
+      val newLocation = new File(tempFilePath.toString)
+      newLocation.mkdirs()
 
-        Ok("File uploaded")
-      }.getOrElse(throw new Exception("Invalid data"))
+      f.ref.moveTo(tempFilePath.toAbsolutePath, replace = true)
+    })
+
+    Ok("""{"uuid": "some_uuid"}""")
   }
 
   private def productsList(): Seq[DBProduct] = {
