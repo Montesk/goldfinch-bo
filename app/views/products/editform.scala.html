@@ -14,6 +14,14 @@
     <div class="form-group">
     @components.form.components.input(name = "price", value = product.price.toString, label = "Цена", required = true)
     </div>
+    <div id="product-sub-files"></div>
+    <div class="row no-gutters mb-4">
+    @for(imageName <- product.files) {
+        <div class="col-3 ml-2">
+            <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${imageName}""")" alt="alt">
+        </div>
+    }
+    </div>
     <div class="form-group mb-4">
         <div id="filepond" multiple></div>
     </div>
@@ -30,11 +38,14 @@
 </form>
 
 <script>
+        // https://pqina.nl/filepond/docs/api/plugins/image-preview/
+        // https://pqina.nl/filepond/docs/api/instance/events/
+        // https://pqina.nl/filepond/docs/api/server/
+
         document.addEventListener('DOMContentLoaded', function () {
             $(function () {
                 const pond = FilePond.create(
                         document.getElementById('filepond'),
-                        // https://pqina.nl/filepond/docs/api/server/
                         {
                             credits: [],
                             server: {
@@ -44,13 +55,10 @@
                         }
                 )
 
-                // https://pqina.nl/filepond/docs/api/plugins/image-preview/
-                // https://pqina.nl/filepond/docs/api/instance/events/
-
                 pond.on('processfiles', () => {
-
-                    const elems = $('input[name="filepond"]').each(function () {
-                        console.log('File added', $(this).val());
+                    $('input[name="filepond"]').each(function () {
+                        console.log('File added', $(this).val())
+                        $('<input type="hidden" name="files[]" value="' + $(this).val() + '" >').appendTo('#product-sub-files')
                     })
                 });
             });

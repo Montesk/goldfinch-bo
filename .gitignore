@@ -2,9 +2,9 @@ logs
 target
 /.bsp
 /.idea
-uploads
 /.idea_modules
 /.classpath
 /.project
 /.settings
+public/uploads
 /RUNNING_PID

@@ -1,9 +1,6 @@
 package controllers
 
-
 import javax.inject._
-import java.nio.file.Paths
-import java.io.File
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -14,13 +11,15 @@ import play.api.data.Forms._
 import play.api.libs.Files
 
 import repository.products.{ProductsRepository, productData, Product => DBProduct}
+import services.assets.{Assets => AssetsManager}
 import view.Product
 
 
 @Singleton
 class ProductsController @Inject()(
                                     val controllerComponents: ControllerComponents,
-                                    val productsRepo: ProductsRepository
+                                    val productsRepo: ProductsRepository,
+                                    val assetsManager: AssetsManager,
                                   ) extends BaseController {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(products = Product.listFromDB(productsList())))
@@ -60,6 +59,12 @@ class ProductsController @Inject()(
       },
       productData => {
         Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
+
+        for ((image, idx) <- productData.files.zipWithIndex) {
+          val product = this.product(id)
+          val extension = image.split("\\.")(1)
+          assetsManager.PersistTempFile(product.uuid.get.toString, image, (idx + 1).toString + "." + extension)
+        }
       }
     )
 
@@ -67,7 +72,7 @@ class ProductsController @Inject()(
   }
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Await.result(productsRepo.delete(id = id, soft = true), Duration(10, SECONDS))
+    Await.result(productsRepo.delete(id = id), Duration(10, SECONDS))
     Redirect(routes.ProductsController.index())
   }
 
@@ -78,7 +83,7 @@ class ProductsController @Inject()(
   /**
    *
    * Params: {
-   * <body> "files": [fileObj]
+   * <body> "files": [fileObj] // :WARNING: currently supported single file upload
    * <query> "uuid": Option[UUID] // if not passed it is assumed it is the new product
    * <query> "csrfTokenName": "csrfTokenValue"
    * }
@@ -88,17 +93,14 @@ class ProductsController @Inject()(
   def upload(): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request =>
     val productUUID = request.getQueryString("uuid").get
 
-    request.body.files.map(f => {
-      val projectTempDirPath = "uploads/temp"
-      val tempFilePath = Paths.get(s"""${projectTempDirPath}/${productUUID}/${f.filename}""")
+    var uploaded: String = ""
 
-      val newLocation = new File(tempFilePath.toString)
-      newLocation.mkdirs()
+    for (file <- request.body.files) {
+      assetsManager.SaveTemporaryFile(file = file.ref, productUUID, file.filename)
+      uploaded = file.filename
+    }
 
-      f.ref.moveTo(tempFilePath.toAbsolutePath, replace = true)
-    })
-
-    Ok("""{"uuid": "some_uuid"}""")
+    Ok(uploaded)
   }
 
   private def productsList(): Seq[DBProduct] = {
@@ -109,7 +111,8 @@ class ProductsController @Inject()(
     mapping(
       "name" -> text,
       "description" -> text,
-      "price" -> number
+      "price" -> number,
+      "files" -> list(text)
     )(productData.apply)(productData.unapply)
   )
 }

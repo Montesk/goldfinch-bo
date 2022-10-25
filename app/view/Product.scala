@@ -3,21 +3,25 @@ package view
 import java.time.format.DateTimeFormatter
 
 import repository.products.{Product => DBProduct}
+import services.assets.{Manager, Assets}
 
 object Product {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
 
-  def fromDB(order: DBProduct): Product = {
+  private val assetsManager: Manager = new Assets
+
+  def fromDB(product: DBProduct): Product = {
     Product(
-      id = order.id,
-      price = order.price.toInt,
-      name = order.name,
-      stock = order.stock.toInt,
-      uuid = order.uuid.get.toString,
-      description = order.description,
-      disabled = order.disabled,
-      created_at = order.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at = order.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat))
+      id = product.id,
+      price = product.price.toInt,
+      name = product.name,
+      stock = product.stock.toInt,
+      uuid = product.uuid.get.toString,
+      description = product.description,
+      disabled = product.disabled,
+      created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      files = assetsManager.GetGroupAssets(product.uuid.get.toString)
     )
   }
 
@@ -50,4 +54,5 @@ final case class Product(
                           disabled: Boolean,
                           created_at: String,
                           updated_at: String,
+                          files: List[String] = List()
                         ) {}
