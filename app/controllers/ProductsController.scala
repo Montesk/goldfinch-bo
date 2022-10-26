@@ -52,18 +52,30 @@ class ProductsController @Inject()(
     ))
   }
 
+  private def persistImage(productId: Long, image: String, isMain: Boolean = false, idx: Int = 0): Unit = {
+    val product = this.product(productId)
+    val extension = image.split("\\.")(1)
+    if (isMain) {
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
+    } else {
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, (idx + 1).toString + "." + extension)
+    }
+  }
+
   def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
-        throw new Exception("Invalid data")
+        throw new Exception("Invalid data " + formWithErrors.toString)
       },
       productData => {
         Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
 
         for ((image, idx) <- productData.files.zipWithIndex) {
-          val product = this.product(id)
-          val extension = image.split("\\.")(1)
-          assetsManager.PersistTempFile(product.uuid.get.toString, image, (idx + 1).toString + "." + extension)
+          persistImage(productId = id, idx = idx, image = image)
+        }
+
+        if (productData.titleImage.nonEmpty) {
+          persistImage(productId = id, isMain = true, image = productData.titleImage.getOrElse(""))
         }
       }
     )
@@ -112,7 +124,8 @@ class ProductsController @Inject()(
       "name" -> text,
       "description" -> text,
       "price" -> number,
-      "files" -> list(text)
+      "files" -> list(text),
+      "title-image" -> optional(text),
     )(productData.apply)(productData.unapply)
   )
 }

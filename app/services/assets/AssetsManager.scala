@@ -10,10 +10,16 @@ trait Manager {
 
   def PersistTempFile(group: String, srcFile: String, destFile: String): Unit
 
-  def GetGroupAssets(group: String): List[String]
+  def GetGroupAssets(group: String, exclude: List[String] = List()): List[String]
+
+  /**
+   * Get file by name ignoring extension
+   * fileName param must be passed without extension
+   */
+  def GetFileByName(group: String, fileName: String): String
 }
 
-class Assets extends Manager {
+class Assets() extends Manager {
   private val tempDirPath: String = "public/uploads/temp"
   private val assetsDirPath: String = "public/uploads/assets"
 
@@ -30,16 +36,27 @@ class Assets extends Manager {
     val temp = new File(tempFile(group, srcFile).toAbsolutePath.toString)
     val dest = new File(assetFile(group, destFile).toAbsolutePath.toString)
 
-    ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING)
+    ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
   }
 
-  override def GetGroupAssets(group: String): List[String] = {
+  override def GetGroupAssets(group: String, exclude: List[String] = List()): List[String] = {
     val result = new File(s"""${assetsDirPath}/${group}/""").list()
     if (result ne null) {
-      return result.toList
+      return result.toList.filter(r => !exclude.contains(r))
     }
 
     List[String]()
+  }
+
+  override def GetFileByName(group: String, fileName: String): String = {
+    val allFiles = GetGroupAssets(group)
+    for (fileName <- allFiles) {
+      val withoutExtension = fileName.split("\\.")(0)
+      if (withoutExtension == "main") {
+        return fileName
+      }
+    }
+    ""
   }
 
   private def mkDirAll(path: String): Unit = {

@@ -6,6 +6,18 @@
 
 <form method="POST" action="@routes.ProductsController.edit(product.id).url">
     <div class="form-group">
+        <h5>Главная картинка</h5>
+        <div class="row mb-2">
+            <div class="col-12">
+                <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${product.titleImage}""")" alt="@product.name">
+            </div>
+        </div>
+        <div class="form-group mb-4">
+            <div id="filepond-title-image"></div>
+        </div>
+    </div>
+    <div id="product-title-image"></div>
+    <div class="form-group">
     @components.form.components.input(name = "name", value = product.name, label = "Имя", required = true)
     </div>
     <div class="form-group">
@@ -13,6 +25,9 @@
     </div>
     <div class="form-group">
     @components.form.components.input(name = "price", value = product.price.toString, label = "Цена", required = true)
+    </div>
+    <div class="form-group">
+        <h5>Дополнительные изображения</h5>
     </div>
     <div id="product-sub-files"></div>
     <div class="row no-gutters mb-4">
@@ -44,6 +59,26 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             $(function () {
+                // title image upload
+                const mainPond = FilePond.create(
+                        document.getElementById('filepond-title-image'),
+                        {
+                            credits: [],
+                            server: {
+                                url: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                                method: 'POST',
+                            },
+                        }
+                )
+
+                mainPond.on('processfiles', () => {
+                    $('input[name="filepond"]').each(function () {
+                        console.log('Title image file added', $(this).val())
+                        $('<input type="hidden" name="title-image" value="' + $(this).val() + '" >').appendTo('#product-title-image')
+                    })
+                });
+
+                // additional images upload
                 const pond = FilePond.create(
                         document.getElementById('filepond'),
                         {

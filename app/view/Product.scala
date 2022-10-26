@@ -21,7 +21,8 @@ object Product {
       disabled = product.disabled,
       created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.GetGroupAssets(product.uuid.get.toString)
+      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List("main.jpg", "main.jpeg", "main.png")),
+      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, "main"),
     )
   }
 
@@ -54,5 +55,6 @@ final case class Product(
                           disabled: Boolean,
                           created_at: String,
                           updated_at: String,
-                          files: List[String] = List()
+                          files: List[String] = List(),
+                          titleImage: String = ""
                         ) {}
