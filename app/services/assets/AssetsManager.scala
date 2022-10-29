@@ -7,12 +7,11 @@ import java.nio.file.{Path, Paths, StandardCopyOption, Files => ioFiles}
 
 import play.api.libs.Files
 
-
 @ImplementedBy(classOf[Assets])
 trait Manager {
   def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String = "", replace: Boolean = true, moveFile: Boolean = true): Path
 
-  def PersistTempFile(group: String, srcFile: String, destFile: String): Unit
+  def PersistTempFile(group: String, srcFile: String, destFile: String, moveFile: Boolean = true): Path
 
   def GetGroupAssets(group: String, exclude: List[String] = List()): List[String]
 
@@ -48,13 +47,17 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
     file.copyTo(tmpFilePath.toAbsolutePath, replace = replace)
   }
 
-  override def PersistTempFile(group: String, srcFile: String, destFile: String): Unit = {
+  override def PersistTempFile(group: String, srcFile: String, destFile: String, moveFile: Boolean = true): Path = {
     mkDirAll(assetFile(group, destFile).toString)
 
     val temp = new File(tempFile(group, srcFile).toAbsolutePath.toString)
     val dest = new File(assetFile(group, destFile).toAbsolutePath.toString)
 
-    ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+    if (moveFile) {
+      return ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
+    }
+
+    ioFiles.copy(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
   }
 
   override def GetGroupAssets(group: String, exclude: List[String] = List()): List[String] = {
