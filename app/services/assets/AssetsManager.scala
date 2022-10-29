@@ -1,10 +1,14 @@
 package services.assets
 
 import java.io.File
+import javax.inject.Inject
+import com.google.inject.ImplementedBy
 import java.nio.file.{Path, Paths, StandardCopyOption, Files => ioFiles}
 
 import play.api.libs.Files
 
+
+@ImplementedBy(classOf[Assets])
 trait Manager {
   def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String = "", replace: Boolean = true, moveFile: Boolean = true): Path
 
@@ -24,14 +28,14 @@ object DefaultOptions {
   val assetsDirPath = "public/uploads/assets"
 }
 
-case class Options(
-                    tempDirPath: Option[String] = None,
-                    assetsDirPath: Option[String] = None
-                  ) {}
+case class Options @Inject()(
+                              tempDirPath: String = "",
+                              assetsDirPath: String = ""
+                            ) {}
 
-class Assets(opts: Options = Options()) extends Manager {
-  private val tempDirPath: String = opts.tempDirPath.getOrElse(DefaultOptions.tempDirPath)
-  private val assetsDirPath: String = opts.assetsDirPath.getOrElse(DefaultOptions.assetsDirPath)
+class Assets @Inject()(opts: Options = Options()) extends Manager {
+  private val tempDirPath: String = if (opts.tempDirPath.isEmpty) DefaultOptions.tempDirPath else opts.tempDirPath
+  private val assetsDirPath: String = if (opts.assetsDirPath.isEmpty) DefaultOptions.assetsDirPath else opts.assetsDirPath
 
   override def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String, replace: Boolean = true, moveFile: Boolean = true): Path = {
     val tmpFilePath = tempFile(group, fileName)

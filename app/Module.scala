@@ -10,9 +10,7 @@ import com.google.inject.AbstractModule
  * configuration file.
  */
 class Module extends AbstractModule {
-
   override def configure() = {
-    println("Hello world")
+    println("Application start")
   }
-
 }

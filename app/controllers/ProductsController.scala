@@ -11,7 +11,7 @@ import play.api.data.Forms._
 import play.api.libs.Files
 
 import repository.products.{ProductsRepository, productData, Product => DBProduct}
-import services.assets.{Assets => AssetsManager}
+import services.assets.{Manager}
 import view.Product
 
 
@@ -19,7 +19,7 @@ import view.Product
 class ProductsController @Inject()(
                                     val controllerComponents: ControllerComponents,
                                     val productsRepo: ProductsRepository,
-                                    val assetsManager: AssetsManager,
+                                    val assetsManager: Manager,
                                   ) extends BaseController {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(products = Product.listFromDB(productsList())))

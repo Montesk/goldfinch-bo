@@ -13,8 +13,8 @@ class AssetsManagerSpec extends PlaySpec {
   val testStubFileDir: String = "test/services/assets/stubs/files"
 
   val testAssetsManagerOptions: Options = Options(
-    tempDirPath = Option[String](testTempUploadDirPath),
-    assetsDirPath = Option[String](testAssetsUploadDirPath)
+    tempDirPath = testTempUploadDirPath,
+    assetsDirPath = testAssetsUploadDirPath
   )
 
   "AssetsManager" must {
