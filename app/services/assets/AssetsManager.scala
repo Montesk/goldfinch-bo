@@ -6,7 +6,7 @@ import java.nio.file.{Path, Paths, StandardCopyOption, Files => ioFiles}
 import play.api.libs.Files
 
 trait Manager {
-  def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String = "", replace: Boolean = true): Path
+  def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String = "", replace: Boolean = true, moveFile: Boolean = true): Path
 
   def PersistTempFile(group: String, srcFile: String, destFile: String): Unit
 
@@ -19,15 +19,29 @@ trait Manager {
   def GetFileByName(group: String, fileName: String): String
 }
 
-class Assets() extends Manager {
-  private val tempDirPath: String = "public/uploads/temp"
-  private val assetsDirPath: String = "public/uploads/assets"
+object DefaultOptions {
+  val tempDirPath = "public/uploads/temp"
+  val assetsDirPath = "public/uploads/assets"
+}
 
-  override def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String, replace: Boolean = true): Path = {
+case class Options(
+                    tempDirPath: Option[String] = None,
+                    assetsDirPath: Option[String] = None
+                  ) {}
+
+class Assets(opts: Options = Options()) extends Manager {
+  private val tempDirPath: String = opts.tempDirPath.getOrElse(DefaultOptions.tempDirPath)
+  private val assetsDirPath: String = opts.assetsDirPath.getOrElse(DefaultOptions.assetsDirPath)
+
+  override def SaveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String, replace: Boolean = true, moveFile: Boolean = true): Path = {
     val tmpFilePath = tempFile(group, fileName)
     mkDirAll(tmpFilePath.toString)
 
-    file.moveTo(tmpFilePath.toAbsolutePath, replace = replace)
+    if (moveFile) {
+      return file.moveTo(tmpFilePath.toAbsolutePath, replace = replace)
+    }
+
+    file.copyTo(tmpFilePath.toAbsolutePath, replace = replace)
   }
 
   override def PersistTempFile(group: String, srcFile: String, destFile: String): Unit = {
