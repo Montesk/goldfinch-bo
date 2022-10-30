@@ -53,15 +53,6 @@ class ProductsController @Inject()(
     ))
   }
 
-  private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
-    val extension = helperFiles.getFileExtension(image)
-    if (isMain) {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
-    } else {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
-    }
-  }
-
   def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
@@ -71,6 +62,10 @@ class ProductsController @Inject()(
         Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
 
         val product = this.product(id)
+
+        for (imageToDelete <- productData.deleteFiles) {
+          deleteImage(product = product, image = imageToDelete)
+        }
 
         for (image <- productData.files) {
           persistImage(product = product, fileName = (lastImg(Product.fromDB(product).files) + 1).toString, image = image)
@@ -88,10 +83,6 @@ class ProductsController @Inject()(
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Await.result(productsRepo.delete(id = id), Duration(10, SECONDS))
     Redirect(routes.ProductsController.index())
-  }
-
-  private def product(id: Long): DBProduct = {
-    Await.result(productsRepo.find(id), Duration(10, SECONDS))
   }
 
   /**
@@ -117,6 +108,10 @@ class ProductsController @Inject()(
     Ok(uploaded)
   }
 
+  private def product(id: Long): DBProduct = {
+    Await.result(productsRepo.find(id), Duration(10, SECONDS))
+  }
+
   private def productsList(): Seq[DBProduct] = {
     Await.result(productsRepo.list(), Duration(10, SECONDS))
   }
@@ -128,6 +123,7 @@ class ProductsController @Inject()(
       "price" -> number,
       "files" -> list(text),
       "title-image" -> optional(text),
+      "delete-files" -> list(text),
     )(productData.apply)(productData.unapply)
   )
 
@@ -142,5 +138,18 @@ class ProductsController @Inject()(
     }
 
     result
+  }
+
+  private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
+    val extension = helperFiles.getFileExtension(image)
+    if (isMain) {
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
+    } else {
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
+    }
+  }
+
+  private def deleteImage(product: DBProduct, image: String): Unit = {
+    assetsManager.DeleteFile(product.uuid.get.toString, image)
   }
 }

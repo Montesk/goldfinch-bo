@@ -9,7 +9,14 @@ import scala.concurrent.{ExecutionContext, Future}
 import slick.jdbc.JdbcProfile
 import play.api.db.slick.DatabaseConfigProvider
 
-case class productData(name: String, description: String, price: Int, files: List[String] = List(), titleImage: Option[String] = Option[String](""))
+case class productData(
+                        name: String,
+                        description: String,
+                        price: Int,
+                        files: List[String] = List(),
+                        titleImage: Option[String] = Option[String](""),
+                        deleteFiles: List[String] = List(),
+                      )
 
 @Singleton
 class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {

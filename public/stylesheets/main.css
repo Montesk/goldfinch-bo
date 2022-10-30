@@ -33,9 +33,14 @@
 
 .bo-image-control {
     opacity: 0.75;
+    transition: opacity .15s ease-in-out;
 }
 
-.bo-image-control:hover {
-    opacity: 1;
-    transition: opacity .15s ease-in-out;
+.bo-active {
+    opacity: 1 !important;
+}
+
+.bo-disabled {
+    opacity: 0 !important;
+    pointer-events: none !important;
 }

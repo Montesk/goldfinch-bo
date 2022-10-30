@@ -21,6 +21,8 @@ trait Manager {
    * fileName param must be passed without extension
    */
   def GetFileByName(group: String, fileName: String): String
+
+  def DeleteFile(group: String, fileName: String): Unit
 }
 
 object DefaultOptions {
@@ -80,6 +82,10 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
       }
     }
     ""
+  }
+
+  override def DeleteFile(group: String, fileName: String): Unit = {
+    ioFiles.delete(assetFile(group, fileName))
   }
 
   private def mkDirAll(path: String): Unit = {

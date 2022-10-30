@@ -41,7 +41,7 @@
     @for(imageName <- product.files) {
         <div class="col-3 pl-2 mb-2 bo-sub-file-container">
             <div class="row no-gutters justify-content-end">
-                <div class="bo-image-control">
+                <div class="bo-image-control bo-disabled">
                     <div
                     class="bo-delete-file"
                     data-image="@imageName"
@@ -145,6 +145,19 @@
                     $('<input type="hidden" name="delete-files[]" value="' + $(this).data('image') + '" >').appendTo('#delete-sub-files')
                     $(this).parents('.bo-sub-file-container').remove()
                 })
+            })
+        })
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $('.bo-sub-file-container').each(function () {
+                $(this).hover(
+                        function () {
+                            $(this).find('.bo-image-control').removeClass('bo-disabled').addClass('bo-active')
+                        },
+                        function () {
+                            $(this).find('.bo-image-control').removeClass('bo-active').addClass('bo-disabled')
+                        },
+                )
             })
         })
 </script>
