@@ -44,3 +44,8 @@
     opacity: 0 !important;
     pointer-events: none !important;
 }
+
+.bo-multirows-item {
+    min-height: 300px;
+    min-width: 160px;
+}

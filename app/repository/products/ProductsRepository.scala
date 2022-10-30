@@ -84,7 +84,7 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
     val products = TableQuery[ProductsTable]
 
     if (soft) {
-      val query = for {c <- products if c.id === id} yield c.deleted
+      val query = for {p <- products if p.id === id} yield p.deleted
       query.update(true)
     } else {
       products.filter(_.id === id).delete
