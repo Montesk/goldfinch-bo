@@ -33,12 +33,26 @@
     <div class="form-group">
         <h5>Дополнительные изображения</h5>
     </div>
+
     <div id="product-sub-files"></div>
+    <div id="delete-sub-files"></div>
+
     <div class="row no-gutters mb-4 bo-mfp-container">
     @for(imageName <- product.files) {
-        <div class="col-3 ml-2 mb-2">
+        <div class="col-3 pl-2 mb-2 bo-sub-file-container">
+            <div class="row no-gutters justify-content-end">
+                <div class="bo-image-control">
+                    <div
+                    class="bo-delete-file"
+                    data-image="@imageName"
+                    >
+                        <i class="fa fa-trash text-danger pointer-event" role="button" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+
             <a href="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${imageName}""")">
-                <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${imageName}""")" alt="alt">
+                <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/$imageName""")" alt="@imageName">
             </a>
         </div>
     }
@@ -124,4 +138,13 @@
                 })
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $('.bo-delete-file').each(function () {
+                $(this).on('click', function () {
+                    $('<input type="hidden" name="delete-files[]" value="' + $(this).data('image') + '" >').appendTo('#delete-sub-files')
+                    $(this).parents('.bo-sub-file-container').remove()
+                })
+            })
+        })
 </script>

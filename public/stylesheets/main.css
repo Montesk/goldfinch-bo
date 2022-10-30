@@ -30,3 +30,12 @@
 .mfp-bg, .mfp-wrap {
     z-index: 1100;
 }
+
+.bo-image-control {
+    opacity: 0.75;
+}
+
+.bo-image-control:hover {
+    opacity: 1;
+    transition: opacity .15s ease-in-out;
+}
