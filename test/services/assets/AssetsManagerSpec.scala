@@ -59,6 +59,12 @@ class AssetsManagerSpec extends PlaySpec {
 
       noException mustBe thrownBy(new File(expectPath.toAbsolutePath.toString))
 
+      // delete temp file
+      ioFiles.delete(Paths.get(s"$testTempUploadDirPath/$group/$srcFileName"))
+
+      // delete temp file directory
+      ioFiles.delete(Paths.get(s"$testTempUploadDirPath/$group"))
+
       // delete created by test file
       ioFiles.delete(expectPath)
 

@@ -1,6 +1,7 @@
 package controllers
 
 import javax.inject._
+import com.google.common.io.{Files => helperFiles}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -11,7 +12,7 @@ import play.api.data.Forms._
 import play.api.libs.Files
 
 import repository.products.{ProductsRepository, productData, Product => DBProduct}
-import services.assets.{Manager}
+import services.assets.Manager
 import view.Product
 
 
@@ -52,13 +53,12 @@ class ProductsController @Inject()(
     ))
   }
 
-  private def persistImage(productId: Long, image: String, isMain: Boolean = false, idx: Int = 0): Unit = {
-    val product = this.product(productId)
-    val extension = image.split("\\.")(1)
+  private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
+    val extension = helperFiles.getFileExtension(image)
     if (isMain) {
       assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
     } else {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, (idx + 1).toString + "." + extension)
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
     }
   }
 
@@ -70,12 +70,14 @@ class ProductsController @Inject()(
       productData => {
         Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
 
-        for ((image, idx) <- productData.files.zipWithIndex) {
-          persistImage(productId = id, idx = idx, image = image)
+        val product = this.product(id)
+
+        for (image <- productData.files) {
+          persistImage(product = product, fileName = (lastImg(Product.fromDB(product).files) + 1).toString, image = image)
         }
 
         if (productData.titleImage.nonEmpty) {
-          persistImage(productId = id, isMain = true, image = productData.titleImage.getOrElse(""))
+          persistImage(product = product, isMain = true, image = productData.titleImage.getOrElse(""))
         }
       }
     )
@@ -128,4 +130,17 @@ class ProductsController @Inject()(
       "title-image" -> optional(text),
     )(productData.apply)(productData.unapply)
   )
+
+  private def lastImg(files: List[String]): Int = {
+    var result = 0
+
+    for (f <- files) {
+      val got = helperFiles.getNameWithoutExtension(f).toInt
+      if (got > result) {
+        result = got
+      }
+    }
+
+    result
+  }
 }

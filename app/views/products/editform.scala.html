@@ -8,9 +8,11 @@
     <div class="form-group">
         <h5>Главная картинка</h5>
         <div class="row mb-2">
+        @if(product.titleImage.nonEmpty) {
             <div class="col-12">
                 <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${product.titleImage}""")" alt="@product.name">
             </div>
+        }
         </div>
         <div class="form-group mb-4">
             <div id="filepond-title-image"></div>
@@ -32,7 +34,7 @@
     <div id="product-sub-files"></div>
     <div class="row no-gutters mb-4">
     @for(imageName <- product.files) {
-        <div class="col-3 ml-2">
+        <div class="col-3 ml-2 mb-2">
             <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${imageName}""")" alt="alt">
         </div>
     }
@@ -92,8 +94,10 @@
 
                 pond.on('processfiles', () => {
                     $('input[name="filepond"]').each(function () {
-                        console.log('File added', $(this).val())
-                        $('<input type="hidden" name="files[]" value="' + $(this).val() + '" >').appendTo('#product-sub-files')
+                        if ($(this).val()) {
+                            console.log('File added', $(this).val())
+                            $('<input type="hidden" name="files[]" value="' + $(this).val() + '" >').appendTo('#product-sub-files')
+                        }
                     })
                 });
             });

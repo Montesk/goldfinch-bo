@@ -21,7 +21,7 @@ object Product {
       disabled = product.disabled,
       created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List("main.jpg", "main.jpeg", "main.png")),
+      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List("main")),
       titleImage = assetsManager.GetFileByName(product.uuid.get.toString, "main"),
     )
   }

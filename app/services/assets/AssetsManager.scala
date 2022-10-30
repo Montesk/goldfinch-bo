@@ -4,6 +4,7 @@ import java.io.File
 import javax.inject.Inject
 import com.google.inject.ImplementedBy
 import java.nio.file.{Path, Paths, StandardCopyOption, Files => ioFiles}
+import com.google.common.io.{Files => helperFiles}
 
 import play.api.libs.Files
 
@@ -54,16 +55,17 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
     val dest = new File(assetFile(group, destFile).toAbsolutePath.toString)
 
     if (moveFile) {
-      return ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
+      return ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING)
     }
 
-    ioFiles.copy(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
+    ioFiles.copy(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING)
   }
 
+  // @param exclude supports only filenames without extension
   override def GetGroupAssets(group: String, exclude: List[String] = List()): List[String] = {
     val result = new File(s"""${assetsDirPath}/${group}/""").list()
     if (result ne null) {
-      return result.toList.filter(r => !exclude.contains(r))
+      return result.toList.filter(r => !exclude.contains(helperFiles.getNameWithoutExtension(r)))
     }
 
     List[String]()
@@ -72,7 +74,7 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
   override def GetFileByName(group: String, fileName: String): String = {
     val allFiles = GetGroupAssets(group)
     for (fileName <- allFiles) {
-      val withoutExtension = fileName.split("\\.")(0)
+      val withoutExtension = helperFiles.getNameWithoutExtension(fileName)
       if (withoutExtension == "main") {
         return fileName
       }
