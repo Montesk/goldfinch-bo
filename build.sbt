@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "3.3.1-2",
   "org.webjars" % "font-awesome" % "4.7.0",
   "org.webjars" % "bootstrap-datepicker" % "1.4.0" exclude("org.webjars", "bootstrap"),
+  "org.webjars.npm" % "filepond" % "4.30.3",
   "org.webjars" % "Magnific-Popup" % "1.1.0",
   "org.scalatest" %% "scalatest" % "3.2.14" % Test withSources(),
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test withSources(),
