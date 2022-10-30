@@ -26,3 +26,7 @@
 .bo-success-hover:hover {
     background-color: rgb(40 167 69 / 25%);
 }
+
+.mfp-bg, .mfp-wrap {
+    z-index: 1100;
+}
