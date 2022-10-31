@@ -89,7 +89,7 @@
                         {inputName: 'files[]', formGroupId: 'product-sub-files'}
                 )
 
-                window.deleteProduct = editForm.deleteProduct(
+                editForm.initDeleteProduct(
                         'delete-btn',
                         'Вы действительно хотите удалить @product.name ?',
                         '@routes.ProductsController.delete(product.id)',

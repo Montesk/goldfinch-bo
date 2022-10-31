@@ -53,7 +53,7 @@ define(function (require) {
          * @param onDoneRedirectTo {string}
          * @param method {string}
          */
-        deleteProduct: function (triggerId, confirmMessage, deleteUri, token, onDoneRedirectTo, method = "POST") {
+        initDeleteProduct: function (triggerId, confirmMessage, deleteUri, token, onDoneRedirectTo, method = "POST") {
             $('#' + triggerId).on('click', function () {
                 if (confirm(confirmMessage)) {
                     $.ajax({
