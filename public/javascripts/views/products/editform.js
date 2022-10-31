@@ -35,6 +35,9 @@ define(function (require) {
 
             pond.on('processfiles', () => {
                 $('input[name="filepond"]').each(function () {
+                    if (!$(this).val()) {
+                        return
+                    }
                     console.log('Image added', $(this).val())
                     $('<input type="hidden" name="' + outputOptions.inputName + '" value="' + $(this).val() + '" >').appendTo('#' + outputOptions.formGroupId)
                 })
