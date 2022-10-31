@@ -63,7 +63,7 @@
     <div class="form-group d-flex justify-content-between">
         <div class="d-flex">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-            <a href="javascript:;" onclick="deleteProduct();" class="btn btn-danger ml-2">Удалить</a>
+            <a href="javascript:;" id="delete-btn" class="btn btn-danger ml-2">Удалить</a>
         </div>
         <div class="d-flex">
             <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -88,26 +88,19 @@
                         '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
                         {inputName: 'files[]', formGroupId: 'product-sub-files'}
                 )
+
+                window.deleteProduct = editForm.deleteProduct(
+                        'delete-btn',
+                        'Вы действительно хотите удалить @product.name ?',
+                        '@routes.ProductsController.delete(product.id)',
+                        {name: '@CSRF.getToken.name', value: '@CSRF.getToken.value'},
+                        '@routes.ProductsController.index()',
+                )
             })
         })
 </script>
 
 <script>
-        function deleteProduct() {
-            if (confirm("Вы действительно хотите удалить @product.name ?")) {
-                $.ajax({
-                    url: "@routes.ProductsController.delete(product.id)",
-                    method: "POST",
-                    data: {
-                        "@CSRF.getToken.name": "@CSRF.getToken.value"
-                    },
-                }).done(function (response) {
-                    console.warn(response)
-                    window.location.href = "@routes.ProductsController.index()"
-                })
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
             $('.bo-delete-file').each(function () {
                 $(this).on('click', function () {

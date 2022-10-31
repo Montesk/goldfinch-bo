@@ -42,6 +42,32 @@ define(function (require) {
                     $('<input type="hidden" name="' + outputOptions.inputName + '" value="' + $(this).val() + '" >').appendTo('#' + outputOptions.formGroupId)
                 })
             });
+        },
+
+        /**
+         *
+         * @param triggerId {string}
+         * @param confirmMessage {string}
+         * @param deleteUri {string}
+         * @param token {{name: string, value: string}}
+         * @param onDoneRedirectTo {string}
+         * @param method {string}
+         */
+        deleteProduct: function (triggerId, confirmMessage, deleteUri, token, onDoneRedirectTo, method = "POST") {
+            $('#' + triggerId).on('click', function () {
+                if (confirm(confirmMessage)) {
+                    $.ajax({
+                        url: deleteUri,
+                        method: method,
+                        data: {
+                            [token.name]: token.value,
+                        },
+                    }).done(function (response) {
+                        console.warn(response)
+                        window.location.href = onDoneRedirectTo
+                    })
+                }
+            })
         }
     };
 })
