@@ -3,7 +3,9 @@ organization := "com.example"
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, SbtWeb)
+
+pipelineStages := Seq(rjs)
 
 scalaVersion := "2.13.8"
 
@@ -16,6 +18,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap-datepicker" % "1.9.0" exclude("org.webjars", "bootstrap"),
   "org.webjars.npm" % "filepond" % "4.30.3",
   "org.webjars" % "Magnific-Popup" % "1.1.0",
+  "org.webjars" % "requirejs" % "2.3.6",
   "org.scalatest" %% "scalatest" % "3.2.14" % Test withSources(),
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test withSources(),
   "com.typesafe.play" %% "play-slick" % "5.1.0" withSources(),
