@@ -73,52 +73,22 @@
 </form>
 
 <script>
-        // https://pqina.nl/filepond/docs/api/plugins/image-preview/
-        // https://pqina.nl/filepond/docs/api/instance/events/
-        // https://pqina.nl/filepond/docs/api/server/
-
         document.addEventListener('DOMContentLoaded', function () {
-            $(function () {
+            require(["views/products/editform"], function (editForm) {
                 // title image upload
-                const mainPond = FilePond.create(
-                        document.getElementById('filepond-title-image'),
-                        {
-                            credits: [],
-                            server: {
-                                url: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
-                                method: 'POST',
-                            },
-                        }
+                editForm.initFileUpload(
+                        'filepond-title-image',
+                        '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                        {inputName: 'title-image', formGroupId: 'product-title-image'}
                 )
-
-                mainPond.on('processfiles', () => {
-                    $('input[name="filepond"]').each(function () {
-                        console.log('Title image file added', $(this).val())
-                        $('<input type="hidden" name="title-image" value="' + $(this).val() + '" >').appendTo('#product-title-image')
-                    })
-                });
 
                 // additional images upload
-                const pond = FilePond.create(
-                        document.getElementById('filepond'),
-                        {
-                            credits: [],
-                            server: {
-                                url: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
-                                method: 'POST',
-                            },
-                        }
+                editForm.initFileUpload(
+                        'filepond',
+                        '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                        {inputName: 'files[]', formGroupId: 'product-sub-files'}
                 )
-
-                pond.on('processfiles', () => {
-                    $('input[name="filepond"]').each(function () {
-                        if ($(this).val()) {
-                            console.log('File added', $(this).val())
-                            $('<input type="hidden" name="files[]" value="' + $(this).val() + '" >').appendTo('#product-sub-files')
-                        }
-                    })
-                });
-            });
+            })
         })
 
 </script>
