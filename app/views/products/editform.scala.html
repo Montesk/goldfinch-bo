@@ -76,50 +76,36 @@
         document.addEventListener('DOMContentLoaded', function () {
             require(["views/products/editform"], function (editForm) {
                 // title image upload
-                editForm.initFileUpload(
-                        'filepond-title-image',
-                        '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
-                        {inputName: 'title-image', formGroupId: 'product-title-image'}
-                )
+                editForm.imageUploadForm(
+                        {
+                            formGroupId: 'filepond-title-image',
+                            uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                            outputOptions: {inputName: 'title-image', formGroupId: 'product-title-image'},
+                        },
+                );
 
                 // additional images upload
-                editForm.initFileUpload(
-                        'filepond',
-                        '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
-                        {inputName: 'files[]', formGroupId: 'product-sub-files'}
-                )
-
-                editForm.initDeleteProduct(
-                        'delete-btn',
-                        'Вы действительно хотите удалить @product.name ?',
-                        '@routes.ProductsController.delete(product.id)',
-                        {name: '@CSRF.getToken.name', value: '@CSRF.getToken.value'},
-                        '@routes.ProductsController.index()',
-                )
-            })
-        })
-</script>
-
-<script>
-        document.addEventListener('DOMContentLoaded', function () {
-            $('.bo-delete-file').each(function () {
-                $(this).on('click', function () {
-                    $('<input type="hidden" name="delete-files[]" value="' + $(this).data('image') + '" >').appendTo('#delete-sub-files')
-                    $(this).parents('.bo-sub-file-container').remove()
-                })
-            })
-        })
-
-        document.addEventListener('DOMContentLoaded', function () {
-            $('.bo-sub-file-container').each(function () {
-                $(this).hover(
-                        function () {
-                            $(this).find('.bo-image-control').removeClass('bo-disabled').addClass('bo-active')
+                editForm.imageUploadForm(
+                        {
+                            formGroupId: 'filepond',
+                            uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                            outputOptions: {inputName: 'files[]', formGroupId: 'product-sub-files'},
                         },
-                        function () {
-                            $(this).find('.bo-image-control').removeClass('bo-active').addClass('bo-disabled')
+                );
+
+                editForm.deleteRequest(
+                        {
+                            triggerElemId: 'delete-btn',
+                            confirmMessage: 'Вы действительно хотите удалить @product.name ?',
+                            deleteUri: '@routes.ProductsController.delete(product.id)',
+                            token: {name: '@CSRF.getToken.name', value: '@CSRF.getToken.value'},
+                            onDoneRedirectTo: '@routes.ProductsController.index()',
                         },
-                )
+                );
+
+                editForm.deleteSubImages();
+
+                editForm.toggleSubImageIcons();
             })
         })
 </script>

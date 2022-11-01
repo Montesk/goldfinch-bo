@@ -5,18 +5,15 @@ define(function (require) {
 
     return {
         /**
-         * @param formGroupId {string}
-         * @param uploadUri {string}
-         * @param outputOptions {{ inputName: string, formGroupId: string }}
-         * @param method {string}
-         * @param credits {any[]}
+         * @param {Object} options
+         * @param options.formGroupId {string}
+         * @param options.credits {[]=[]}
+         * @param options.uploadUri {string}
+         * @param options.method {string=POST}
+         * @param options.outputOptions {{inputName: string, formGroupId: string}}
          */
-        initFileUpload: function (
-            formGroupId,
-            uploadUri,
-            outputOptions,
-            method = 'POST',
-            credits = [],
+        imageUploadForm: function (
+            {formGroupId, uploadUri, outputOptions, credits = [], method = 'POST'},
         ) {
             // https://pqina.nl/filepond/docs/api/plugins/image-preview/
             // https://pqina.nl/filepond/docs/api/instance/events/
@@ -46,15 +43,23 @@ define(function (require) {
 
         /**
          *
-         * @param triggerId {string}
-         * @param confirmMessage {string}
-         * @param deleteUri {string}
-         * @param token {{name: string, value: string}}
-         * @param onDoneRedirectTo {string}
-         * @param method {string}
+         * @param options {Object}
+         * @param options.triggerElemId {string}
+         * @param options.confirmMessage {string}
+         * @param options.deleteUri {string}
+         * @param options.token {{name: string, value: string}}
+         * @param options.onDoneRedirectTo {string}
+         * @param options.method {string}
          */
-        initDeleteProduct: function (triggerId, confirmMessage, deleteUri, token, onDoneRedirectTo, method = "POST") {
-            $('#' + triggerId).on('click', function () {
+        deleteRequest: function ({
+                                     triggerElemId,
+                                     confirmMessage,
+                                     deleteUri,
+                                     token,
+                                     onDoneRedirectTo,
+                                     method = "POST"
+                                 }) {
+            $('#' + triggerElemId).on('click', function () {
                 if (confirm(confirmMessage)) {
                     $.ajax({
                         url: deleteUri,
@@ -68,6 +73,28 @@ define(function (require) {
                     })
                 }
             })
-        }
+        },
+
+        deleteSubImages: function () {
+            $('.bo-delete-file').each(function () {
+                $(this).on('click', function () {
+                    $('<input type="hidden" name="delete-files[]" value="' + $(this).data('image') + '" >').appendTo('#delete-sub-files')
+                    $(this).parents('.bo-sub-file-container').remove()
+                })
+            })
+        },
+
+        toggleSubImageIcons: function () {
+            $('.bo-sub-file-container').each(function () {
+                $(this).hover(
+                    function () {
+                        $(this).find('.bo-image-control').removeClass('bo-disabled').addClass('bo-active')
+                    },
+                    function () {
+                        $(this).find('.bo-image-control').removeClass('bo-active').addClass('bo-disabled')
+                    },
+                )
+            })
+        },
     };
 })
