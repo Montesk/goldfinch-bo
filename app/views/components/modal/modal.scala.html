@@ -38,22 +38,16 @@ aria-hidden="true"
     </div>
 </div>
 
-@if(showOnLoad) {
-    <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                setTimeout(function () {
-                    $('#@modalId').modal({show: true})
-                }, 150)
-            })
-    </script>
-}
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            require(["components/modal"], function (modal) {
+                @if(showOnLoad) {
+                modal.showOnLoad("@modalId");
+                }
 
-@if(redirectUrlOnClose.isDefined) {
-    <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                $('#@modalId').on('hide.bs.modal', function () {
-                    history.pushState({}, '', "@redirectUrlOnClose.get")
-                })
+                @if(redirectUrlOnClose.isDefined) {
+                modal.redirectOnModalClose('@modalId', '@redirectUrlOnClose.get');
+                }
             })
-    </script>
-}
+        })
+</script>
