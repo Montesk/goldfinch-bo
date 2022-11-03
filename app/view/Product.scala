@@ -30,7 +30,7 @@ object Product {
     orders.map(fromDB)
   }
 
-  def create(): Product = {
+  def newProduct(): Product = {
     Product(
       id = 0,
       price = 0,

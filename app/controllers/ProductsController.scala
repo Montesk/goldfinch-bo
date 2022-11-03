@@ -29,7 +29,7 @@ class ProductsController @Inject()(
   def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(
       products = Product.listFromDB(productsList()),
-      product = Option[Product](Product.create())
+      product = Option[Product](Product.newProduct())
     ))
   }
 
