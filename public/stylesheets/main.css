@@ -18,6 +18,11 @@
     font-size: 4rem;
 }
 
+.bo-add-small {
+    font-size: 3rem;
+    line-height: 1;
+}
+
 .bo-success-hover {
     transition: background-color .15s ease-in-out;
 
