@@ -29,7 +29,7 @@ class ProductsController @Inject()(
   def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(
       products = Product.listFromDB(productsList()),
-      product = Option[Product](Product.create())
+      product = Option[Product](Product.newProduct())
     ))
   }
 
@@ -143,7 +143,7 @@ class ProductsController @Inject()(
   private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
     val extension = helperFiles.getFileExtension(image)
     if (isMain) {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, Product.MainImageFileName + "." + extension)
     } else {
       assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
     }

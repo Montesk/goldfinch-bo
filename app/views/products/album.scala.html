@@ -1,0 +1,43 @@
+@import view.Product
+
+@(data: Seq[Product] = Seq())(implicit request: Request[AnyContent])
+
+<div class="row">
+    <div class="col-3 mb-4">
+        <a href="@routes.ProductsController.create().url" class="text-decoration-none" title="Добавить новый товар">
+            <div class="card h-100 bo-success-hover bo-multirows-item">
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <h5 class="text-center card-title mb-3 text-success bo-add">
+                        <span>+</span>
+                    </h5>
+                </div>
+            </div>
+        </a>
+    </div>
+    @for(product <- data) {
+        <div class="col-3 mb-4">
+            <div class="card h-100 bo-multirows-item">
+                @if(product.titleImage.nonEmpty) {
+                    <img class="card-img-top" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${product.titleImage}""")" alt="Card image cap">
+                }
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="card-title mb-3">@product.name</h5>
+                @if(product.description) {
+                    <p class="card-text">Описание: @product.description</p>
+                }
+                <p class="card-text font-weight-bold">Цена: @product.price</p>
+                <a
+                class="btn btn-primary"
+                href="@Product.saveQueryUriTo(product.id, request)"
+                role="button"
+                >
+                        Редактировать
+                </a>
+            </div>
+            <div class="card-header text-muted text-monospace small bo-tech-text-60-pct">
+            @product.uuid
+            </div>
+            </div>
+        </div>
+    }
+</div>

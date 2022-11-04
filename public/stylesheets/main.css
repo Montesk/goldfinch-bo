@@ -18,6 +18,11 @@
     font-size: 4rem;
 }
 
+.bo-add-small {
+    font-size: 3rem;
+    line-height: 1;
+}
+
 .bo-success-hover {
     transition: background-color .15s ease-in-out;
 
@@ -48,4 +53,11 @@
 .bo-multirows-item {
     min-height: 300px;
     min-width: 160px;
+}
+
+.bo-table-image-wrapper {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 50%;
 }

@@ -5,14 +5,21 @@ import java.time.format.DateTimeFormatter
 import repository.products.{Product => DBProduct}
 import services.assets.{Manager, Assets}
 
-object Product {
+object Product extends DynamicLink {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
+  val MainImageFileName: String = "main"
 
   private val assetsManager: Manager = new Assets
 
+  type U = Int
+
+  override def uriTo[T <: U](identifier: T): String = {
+    ProductPath(identifier.toLong)
+  }
+
   def fromDB(product: DBProduct): Product = {
     Product(
-      id = product.id,
+      id = product.id.toInt,
       price = product.price.toInt,
       name = product.name,
       stock = product.stock.toInt,
@@ -21,8 +28,8 @@ object Product {
       disabled = product.disabled,
       created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List("main")),
-      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, "main"),
+      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List(MainImageFileName)),
+      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, MainImageFileName),
     )
   }
 
@@ -30,7 +37,7 @@ object Product {
     orders.map(fromDB)
   }
 
-  def create(): Product = {
+  def newProduct(): Product = {
     Product(
       id = 0,
       price = 0,
@@ -46,7 +53,7 @@ object Product {
 }
 
 final case class Product(
-                          id: Long,
+                          id: Int,
                           price: Int,
                           name: String,
                           stock: Int,

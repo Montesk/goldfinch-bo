@@ -1,25 +1,48 @@
 @import view.{Order, Product}
 
+@import akka.http.scaladsl.model.Uri
+
+@import view.Products
+
 @(
         ordersData: Seq[Order] = Seq(),
         productsData: Seq[Product] = Seq(),
         product: Option[Product]
 )(implicit request: Request[AnyContent])
 
+<div class="container-fluid">
+    <div class="row justify-content-end">
+        <div class="col-3">
+            <div class="text-right pt-2">
+                <div class="bo-control-icon d-inline-block mr-1 @if(Products.isTableView(req = request)) { text-primary } ">
+                    <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.tableView}"))">
+                        <i class="fa-solid fa-table-list h4" role="button" title="Режим таблицы"></i>
+                    </a>
+                </div>
+                <div class="bo-control-icon d-inline @if(Products.isAlbumView(req = request)) { text-primary } ">
+                    <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.albumView}"))">
+                        <i class="fa-solid fa-grip h4" role="button" title="Режим альбома"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="row">
-        @{
-            if(request.path == routes.OrdersController.index.path) {
-                orders.content(data = ordersData)
-            } else if(request.path == routes.ProductsController.index.path) {
-                products.content(data = productsData)
-            } else if(request.path.contains("product/edit")) {
-                products.edit(data = productsData, product.get)
-            } else if(request.path.contains("product/create")) {
-                products.create(data = productsData, product.get)
-            } else {
-                dashboard.content()
-            }
+    @{
+        if(request.path == routes.OrdersController.index.path) {
+            orders.content(data = ordersData)
+        } else if(request.path == routes.ProductsController.index.path) {
+            products.content(data = productsData)
+        } else if(request.path.contains("product/edit")) {
+            products.edit(data = productsData, product.get)
+        } else if(request.path.contains("product/create")) {
+            products.create(data = productsData, product.get)
+        } else {
+            dashboard.content()
         }
+    }
     </div>
 </div>

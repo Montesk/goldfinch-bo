@@ -1,0 +1,40 @@
+package view
+
+import akka.http.scaladsl.model.Uri
+
+import play.api.mvc.{AnyContent, Request}
+
+object Products extends Link {
+  val tableView = "table"
+  val albumView = "album"
+
+  private[view] val defaultView = tableView
+
+  final case class UnsupportedViewException(message: String) extends Exception {
+    new Exception(s"unsupported products page view ${message}")
+  }
+
+  def uri(): String = {
+    Uri.from(path = ProductsPath).toString()
+  }
+
+  def isTableView(req: Request[AnyContent]): Boolean = {
+    getViewFromRequest(req = req).eq(tableView)
+  }
+
+  def isAlbumView(req: Request[AnyContent]): Boolean = {
+    getViewFromRequest(req = req).eq(albumView)
+  }
+
+  private[view] def getViewFromRequest(req: Request[AnyContent]): String = {
+    if (req.getQueryString("view").isEmpty) {
+      return defaultView
+    }
+
+    req.getQueryString("view").get match {
+      case `tableView` => tableView
+      case `albumView` => albumView
+      case _ => throw UnsupportedViewException(req.getQueryString("view").get)
+    }
+  }
+}
