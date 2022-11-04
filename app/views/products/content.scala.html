@@ -1,6 +1,6 @@
 @import view.Product
 
-@(data: Seq[Product] = Seq())(implicit request: RequestHeader)
+@(data: Seq[Product] = Seq())(implicit request: Request[AnyContent])
 
 <div class="row mt-5">
     <div class="col-3 mb-4">
@@ -28,7 +28,7 @@
                 <p class="card-text font-weight-bold">Цена: @product.price</p>
                 <a
                 class="btn btn-primary"
-                href="@routes.ProductsController.edit(product.id.toInt).url"
+                href="@Product.saveQueryUriTo(product.id, request)"
                 role="button"
                 >
                         Редактировать

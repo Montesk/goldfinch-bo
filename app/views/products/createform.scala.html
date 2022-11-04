@@ -2,7 +2,7 @@
 
 @import view.Product
 
-@(product: Product)(implicit request: RequestHeader)
+@(product: Product)(implicit request: Request[AnyContent])
 
 <form method="POST" action="@routes.ProductsController.create().url">
     <div class="form-group">

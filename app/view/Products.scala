@@ -1,8 +1,10 @@
 package view
 
+import akka.http.scaladsl.model.Uri
+
 import play.api.mvc.{AnyContent, Request}
 
-object Products {
+object Products extends Link {
   val tableView = "table"
   val albumView = "album"
 
@@ -10,6 +12,10 @@ object Products {
 
   final case class UnsupportedViewException(message: String) extends Exception {
     new Exception(s"unsupported products page view ${message}")
+  }
+
+  def uri(): String = {
+    Uri.from(path = ProductsPath).toString()
   }
 
   def isTableView(req: Request[AnyContent]): Boolean = {

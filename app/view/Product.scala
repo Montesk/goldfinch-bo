@@ -5,14 +5,18 @@ import java.time.format.DateTimeFormatter
 import repository.products.{Product => DBProduct}
 import services.assets.{Manager, Assets}
 
-object Product {
+object Product extends DynamicLink {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
 
   private val assetsManager: Manager = new Assets
 
+  override def uriTo[T <: AnyVal](identifier: T): String = {
+    ProductPath(identifier.asInstanceOf[Int].toLong)
+  }
+
   def fromDB(product: DBProduct): Product = {
     Product(
-      id = product.id,
+      id = product.id.toInt,
       price = product.price.toInt,
       name = product.name,
       stock = product.stock.toInt,
@@ -46,7 +50,7 @@ object Product {
 }
 
 final case class Product(
-                          id: Long,
+                          id: Int,
                           price: Int,
                           name: String,
                           stock: Int,
