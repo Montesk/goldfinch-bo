@@ -31,7 +31,12 @@ class ProductsSpec extends PlaySpec {
       val expect = s"${Products.ProductsPath}?key=value"
       Products.withQuery(Products.ProductsPath, Some("key=value")) mustBe expect
     }
-    "request with unsupported view query value must return excpection" in {
+    "request preserves the query" in {
+      val expect = s"${Products.ProductsPath}?key=value"
+      val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some("key=value")).toString())
+      Products.saveQuery(req) mustBe expect
+    }
+    "request with unsupported view query value must return exception" in {
       val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some("view=undefined")).toString())
       assertThrows[Products.UnsupportedViewException](Products.getViewFromRequest(req))
     }

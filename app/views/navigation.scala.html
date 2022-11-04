@@ -1,4 +1,6 @@
-@(title: String = "Goldfinch")
+@import view.Products
+
+@(title: String = "Goldfinch")(implicit request: Request[AnyContent])
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="@routes.HomeController.index().url">@title</a>
@@ -12,7 +14,7 @@
                     (current)</span></a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="@routes.ProductsController.index().url">Товары</a>
+                <a class="nav-link" href="@Products.saveQuery(request)">Товары</a>
             </li>
         </ul>
     </div>

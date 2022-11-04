@@ -19,6 +19,16 @@ trait Link {
 
     Uri.from(path = uri, queryString = queryString).toString()
   }
+
+  def saveQuery(current: Request[AnyContent]): String = {
+    val query = if (current.rawQueryString.nonEmpty) {
+      Some(current.rawQueryString)
+    } else {
+      None
+    }
+
+    Uri.from(path = uri(), queryString = query).toString()
+  }
 }
 
 trait DynamicLink extends Link {
