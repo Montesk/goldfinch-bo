@@ -24,9 +24,11 @@ trait Link {
 trait DynamicLink extends Link {
   override def uri(): String = throw new Exception("unsupported static uri without params")
 
-  def uriTo[T <: AnyVal](identifier: T): String
+  type U
 
-  def saveQueryUriTo[T <: AnyVal](identifier: T, current: Request[AnyContent]): String = {
+  def uriTo[T <: U](identifier: T): String
+
+  def saveQueryUriTo[T <: U](identifier: T, current: Request[AnyContent]): String = {
     val query = if (current.rawQueryString.nonEmpty) {
       Some(current.rawQueryString)
     } else {

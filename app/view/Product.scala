@@ -10,8 +10,10 @@ object Product extends DynamicLink {
 
   private val assetsManager: Manager = new Assets
 
-  override def uriTo[T <: AnyVal](identifier: T): String = {
-    ProductPath(identifier.asInstanceOf[Int].toLong)
+  type U = Int
+
+  override def uriTo[T <: U](identifier: T): String = {
+    ProductPath(identifier.toLong)
   }
 
   def fromDB(product: DBProduct): Product = {
