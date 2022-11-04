@@ -75,10 +75,9 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
 
   override def GetFileByName(group: String, fileName: String): String = {
     val allFiles = GetGroupAssets(group)
-    for (fileName <- allFiles) {
-      val withoutExtension = helperFiles.getNameWithoutExtension(fileName)
-      if (withoutExtension == "main") {
-        return fileName
+    for (file <- allFiles) {
+      if (helperFiles.getNameWithoutExtension(file) == helperFiles.getNameWithoutExtension(fileName)) {
+        return file
       }
     }
     ""

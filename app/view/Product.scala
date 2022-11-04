@@ -7,6 +7,7 @@ import services.assets.{Manager, Assets}
 
 object Product extends DynamicLink {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
+  val MainImageFileName: String = "main"
 
   private val assetsManager: Manager = new Assets
 
@@ -27,8 +28,8 @@ object Product extends DynamicLink {
       disabled = product.disabled,
       created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List("main")),
-      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, "main"),
+      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List(MainImageFileName)),
+      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, MainImageFileName),
     )
   }
 

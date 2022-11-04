@@ -143,7 +143,7 @@ class ProductsController @Inject()(
   private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
     val extension = helperFiles.getFileExtension(image)
     if (isMain) {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, "main" + "." + extension)
+      assetsManager.PersistTempFile(product.uuid.get.toString, image, Product.MainImageFileName + "." + extension)
     } else {
       assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
     }
