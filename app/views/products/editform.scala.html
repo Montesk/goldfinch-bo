@@ -10,8 +10,8 @@
         <div class="row mb-2">
         @if(product.titleImage.nonEmpty) {
             <div class="col-12">
-                <a class="bo-mfp-show" href="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${product.titleImage}""")">
-                    <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${product.titleImage}""")" alt="@product.name">
+                <a class="bo-mfp-show" href="@product.titleImage">
+                    <img class="mw-100" src="@product.titleImage" alt="@product.name">
                 </a>
             </div>
         }
@@ -38,21 +38,21 @@
     <div id="delete-sub-files"></div>
 
     <div class="row no-gutters mb-4 bo-mfp-container">
-    @for(imageName <- product.files) {
+    @for(imagePath <- product.files) {
         <div class="col-3 pl-2 mb-2 bo-sub-file-container">
             <div class="row no-gutters justify-content-end">
                 <div class="bo-image-control bo-disabled">
                     <div
                     class="bo-delete-file"
-                    data-image="@imageName"
+                    data-image="@imagePath"
                     >
                         <i class="fa fa-trash text-danger pointer-event" role="button" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
 
-            <a href="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/${imageName}""")">
-                <img class="mw-100" src="@routes.Assets.versioned(s"""uploads/assets/${product.uuid}/$imageName""")" alt="@imageName">
+            <a href="@imagePath">
+                <img class="mw-100" src="@imagePath">
             </a>
         </div>
     }

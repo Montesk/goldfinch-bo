@@ -9,13 +9,15 @@ import play.api.libs.Files
 import play.api.libs.Files.TemporaryFile
 
 class AssetsManagerSpec extends PlaySpec {
-  val testTempUploadDirPath: String = "test/services/assets/uploads/temp"
-  val testAssetsUploadDirPath: String = "test/services/assets/uploads/assets"
-  val testStubFileDir: String = "test/services/assets/stubs/files"
+  val testProjectAssetsDir: String = "test"
+  val testTempUploadDirPath: String = s"${testProjectAssetsDir}/services/assets/uploads/temp"
+  val testAssetsUploadDirPath: String = s"${testProjectAssetsDir}/services/assets/uploads/assets"
+  val testStubFileDir: String = s"${testProjectAssetsDir}/services/assets/stubs/files"
 
   val testAssetsManagerOptions: Options = Options(
-    tempDirPath = testTempUploadDirPath,
-    assetsDirPath = testAssetsUploadDirPath
+    projectAssetsDir = testProjectAssetsDir,
+    tempDirPath = "services/assets/uploads/temp",
+    assetsDirPath = "services/assets/uploads/assets"
   )
 
   "AssetsManager" must {
@@ -27,7 +29,7 @@ class AssetsManagerSpec extends PlaySpec {
 
       val expectCreated: Path = Paths.get(s"$testTempUploadDirPath/$group/$fileName")
 
-      assetsManager.SaveTemporaryFile(tempFileFromStub(s"$testStubFileDir/$fileName"), group.toString, fileName, moveFile = false) mustBe expectCreated.toAbsolutePath
+      assetsManager.saveTemporaryFile(tempFileFromStub(s"$testStubFileDir/$fileName"), group.toString, fileName, moveFile = false) mustBe expectCreated.toAbsolutePath
 
       noException mustBe thrownBy(new File(expectCreated.toAbsolutePath.toString))
 
@@ -40,7 +42,7 @@ class AssetsManagerSpec extends PlaySpec {
 
     "SaveTemporaryFile throw null pointer exception (passed file is null)" in {
       val assetsManager = new Assets(testAssetsManagerOptions)
-      a[NullPointerException] mustBe thrownBy(assetsManager.SaveTemporaryFile(null, "", ""))
+      a[NullPointerException] mustBe thrownBy(assetsManager.saveTemporaryFile(null, "", ""))
     }
 
     "PersistTempFile success" in {
@@ -51,11 +53,11 @@ class AssetsManagerSpec extends PlaySpec {
       val group: UUID = UUID.fromString("56e0fc4d-8671-45cf-a2a4-a18db65e2cd1")
 
       // create temp file to persist
-      noException mustBe thrownBy(assetsManager.SaveTemporaryFile(tempFileFromStub(s"$testStubFileDir/$srcFileName"), group.toString, srcFileName, moveFile = false))
+      noException mustBe thrownBy(assetsManager.saveTemporaryFile(tempFileFromStub(s"$testStubFileDir/$srcFileName"), group.toString, srcFileName, moveFile = false))
 
       val expectPath = Paths.get(s"$testAssetsUploadDirPath/$group/$destFileName")
 
-      assetsManager.PersistTempFile(group.toString, srcFileName, destFileName, moveFile = false)
+      assetsManager.persistTempFile(group.toString, srcFileName, destFileName, moveFile = false)
 
       noException mustBe thrownBy(new File(expectPath.toAbsolutePath.toString))
 

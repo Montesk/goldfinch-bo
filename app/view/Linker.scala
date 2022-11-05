@@ -4,12 +4,7 @@ import akka.http.scaladsl.model.Uri
 
 import play.api.mvc.{AnyContent, Request}
 
-import controllers.routes
-
-trait Link {
-  val ProductsPath: String = routes.ProductsController.index().url
-  val ProductPath: Long => String = (productId: Long) => routes.ProductsController.editView(productId: Long).url
-
+trait Linker extends Routes {
   def uri(): String
 
   def withQuery(uri: String = "", queryString: Option[String]): String = {
@@ -31,7 +26,7 @@ trait Link {
   }
 }
 
-trait DynamicLink extends Link {
+trait DynamicLinker extends Linker {
   override def uri(): String = throw new Exception("unsupported static uri without params")
 
   type U

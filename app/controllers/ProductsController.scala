@@ -101,7 +101,7 @@ class ProductsController @Inject()(
     var uploaded: String = ""
 
     for (file <- request.body.files) {
-      assetsManager.SaveTemporaryFile(file = file.ref, productUUID, file.filename)
+      assetsManager.saveTemporaryFile(file = file.ref, productUUID, file.filename)
       uploaded = file.filename
     }
 
@@ -143,13 +143,13 @@ class ProductsController @Inject()(
   private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
     val extension = helperFiles.getFileExtension(image)
     if (isMain) {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, Product.MainImageFileName + "." + extension)
+      assetsManager.persistTempFile(product.uuid.get.toString, image, Product.MainImageFileName + "." + extension)
     } else {
-      assetsManager.PersistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
+      assetsManager.persistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
     }
   }
 
   private def deleteImage(product: DBProduct, image: String): Unit = {
-    assetsManager.DeleteFile(product.uuid.get.toString, image)
+    assetsManager.deleteFile(product.uuid.get.toString, image)
   }
 }

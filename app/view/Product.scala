@@ -1,15 +1,17 @@
 package view
 
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 import repository.products.{Product => DBProduct}
-import services.assets.{Manager, Assets}
+import services.assets.{Manager, Assets => AService}
+import controllers.routes
 
-object Product extends DynamicLink {
+object Product extends DynamicLinker {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
   val MainImageFileName: String = "main"
 
-  private val assetsManager: Manager = new Assets
+  private val assetsManager: Manager = new AService
 
   type U = Int
 
@@ -28,8 +30,8 @@ object Product extends DynamicLink {
       disabled = product.disabled,
       created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.GetGroupAssets(product.uuid.get.toString, List(MainImageFileName)),
-      titleImage = assetsManager.GetFileByName(product.uuid.get.toString, MainImageFileName),
+      files = assetsManager.getGroupAssets(product.uuid.get.toString, List(MainImageFileName)).map(file => buildAssetPath(product.uuid.get, file)),
+      titleImage = buildAssetPath(product.uuid.get, assetsManager.getFileByName(product.uuid.get.toString, MainImageFileName)),
     )
   }
 
@@ -49,6 +51,10 @@ object Product extends DynamicLink {
       created_at = "",
       updated_at = "",
     )
+  }
+
+  private def buildAssetPath(group: UUID, fileName: String): String = {
+    routes.Assets.versioned(s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}").url
   }
 }
 

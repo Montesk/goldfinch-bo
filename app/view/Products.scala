@@ -4,7 +4,7 @@ import akka.http.scaladsl.model.Uri
 
 import play.api.mvc.{AnyContent, Request}
 
-object Products extends Link {
+object Products extends Linker {
   val tableView = "table"
   val albumView = "album"
 
