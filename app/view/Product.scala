@@ -13,9 +13,9 @@ object Product extends DynamicLinker {
 
   private val assetsManager: Manager = new AService
 
-  type U = Int
+  type B = Int
 
-  override def uriTo[T <: U](identifier: T): String = {
+  override def uriTo[A <: B](identifier: A): String = {
     ProductPath(identifier.toLong)
   }
 
