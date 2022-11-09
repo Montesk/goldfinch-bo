@@ -11,10 +11,9 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.Files
 
-import repository.products.{ProductsRepository, productData, Product => DBProduct}
+import repository.products.{ProductsRepository, ProductData, Product => DBProduct}
 import services.assets.Manager
 import view.Product
-
 
 @Singleton
 class ProductsController @Inject()(
@@ -36,7 +35,7 @@ class ProductsController @Inject()(
   def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
-        throw new Exception("Invalid data")
+        throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
         Await.result(productsRepo.create(data = productData), Duration(10, SECONDS))
@@ -56,7 +55,7 @@ class ProductsController @Inject()(
   def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
-        throw new Exception("Invalid data " + formWithErrors.toString)
+        throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
         Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
@@ -116,7 +115,7 @@ class ProductsController @Inject()(
     Await.result(productsRepo.list(), Duration(10, SECONDS))
   }
 
-  private val productEditForm: Form[productData] = Form(
+  private val productEditForm: Form[ProductData] = Form(
     mapping(
       "name" -> text,
       "description" -> text,
@@ -124,7 +123,7 @@ class ProductsController @Inject()(
       "files" -> list(text),
       "title-image" -> optional(text),
       "delete-files" -> list(text),
-    )(productData.apply)(productData.unapply)
+    )(ProductData.apply)(ProductData.unapply)
   )
 
   private def lastImg(files: List[String]): Int = {

@@ -1,0 +1,14 @@
+@import view.{Delivery, Routes}
+
+@(data: Seq[Delivery] = Seq(), delivery: Delivery)(implicit request: Request[AnyContent])
+
+@deliveries.content(data)
+
+@components.modal.modal(
+    bodyContent = deliveries.createform(delivery),
+    title = "Добавить новую поставку",
+    modalId = "create-delivery",
+    static = false,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](Routes.DeliveriesPath)
+)

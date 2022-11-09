@@ -1,13 +1,12 @@
-@import view.{Order, Product}
-
-@import akka.http.scaladsl.model.Uri
-
+@import view.{Order, Product, Routes, Delivery}
 @import view.Products
 
 @(
         ordersData: Seq[Order] = Seq(),
         productsData: Seq[Product] = Seq(),
-        product: Option[Product]
+        product: Option[Product],
+        deliveriesData: Seq[Delivery] = Seq(),
+        delivery: Option[Delivery],
 )(implicit request: Request[AnyContent])
 
 <div class="container-fluid">
@@ -32,14 +31,18 @@
 <div class="container">
     <div class="row">
     @{
-        if(request.path == routes.OrdersController.index.path) {
+        if(request.path == Routes.OrdersPath) {
             orders.content(data = ordersData)
-        } else if(request.path == routes.ProductsController.index.path) {
+        } else if(request.path == Routes.ProductsPath) {
             products.content(data = productsData)
         } else if(request.path.contains("product/edit")) {
             products.edit(data = productsData, product.get)
         } else if(request.path.contains("product/create")) {
             products.create(data = productsData, product.get)
+        } else if(request.path.contains("warehouse/create")) {
+            deliveries.create(data = deliveriesData, delivery = delivery.get)
+        } else if(request.path == Routes.DeliveriesPath) {
+            deliveries.content(data = deliveriesData)
         } else {
             dashboard.content()
         }

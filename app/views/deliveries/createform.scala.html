@@ -1,0 +1,17 @@
+@import helper._
+@import view.{Routes, Delivery}
+@(delivery: Delivery)(implicit request: Request[AnyContent])
+
+<form method="POST" action="@Routes.DeliveryCreatePath">
+    <div class="form-group">
+    @components.form.components.input(name = "product_id", value = "0", label = "Product Id", required = true)
+    </div>
+    <div class="form-group">
+    @components.form.components.input(name = "quantity", value = "0", label = "Quantity", required = true)
+    </div>
+    <div class="form-group d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+    @CSRF.formField
+</form>

@@ -1,0 +1,67 @@
+package controllers
+
+import javax.inject._
+
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.mvc._
+
+import repository.deliveries.{DeliveriesRepository, DeliveryData, Delivery => DBDelivery}
+import repository.products.{Product => DBProduct}
+import view.Delivery
+
+@Singleton
+class DeliveriesController @Inject()(
+                                      val controllerComponents: ControllerComponents,
+                                      val deliveriesRepo: DeliveriesRepository,
+                                    ) extends BaseController {
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(deliveries = Delivery.listFromDB(deliveriesList())))
+  }
+
+  def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(
+      deliveries = Delivery.listFromDB(deliveriesList()),
+      delivery = Option(Delivery.newDelivery())
+    ))
+  }
+
+  def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    deliveryCreateForm.bindFromRequest.fold(
+      formWithErrors => {
+        throw new Exception(s"Invalid data errors: ${formWithErrors.toString}")
+      },
+      newDeliveryData => {
+        Await.result(deliveriesRepo.create(newDeliveryData), Duration(10, SECONDS))
+      }
+    )
+
+    Redirect(routes.DeliveriesController.index())
+  }
+
+  def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    ???
+  }
+
+  def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    ???
+  }
+
+  def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    ???
+  }
+
+  private val deliveryCreateForm: Form[DeliveryData] = Form(
+    mapping(
+      "product_id" -> longNumber,
+      "quantity" -> number,
+    )(DeliveryData.apply)(DeliveryData.unapply)
+  )
+
+  private def deliveriesList(): Seq[(DBDelivery, DBProduct)] = {
+    Await.result(deliveriesRepo.list(), Duration(10, SECONDS))
+  }
+}

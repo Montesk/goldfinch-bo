@@ -7,6 +7,20 @@ import repository.products.{Product => DBProduct}
 import services.assets.{Manager, Assets => AService}
 import controllers.routes
 
+final case class Product(
+                          id: Int,
+                          price: Int,
+                          name: String,
+                          stock: Int,
+                          uuid: String,
+                          description: Option[String],
+                          disabled: Boolean,
+                          created_at: String,
+                          updated_at: String,
+                          files: List[String] = List(),
+                          titleImage: String = ""
+                        ) {}
+
 object Product extends DynamicLinker {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
   val MainImageFileName: String = "main"
@@ -57,17 +71,3 @@ object Product extends DynamicLinker {
     routes.Assets.versioned(s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}").url
   }
 }
-
-final case class Product(
-                          id: Int,
-                          price: Int,
-                          name: String,
-                          stock: Int,
-                          uuid: String,
-                          description: Option[String],
-                          disabled: Boolean,
-                          created_at: String,
-                          updated_at: String,
-                          files: List[String] = List(),
-                          titleImage: String = ""
-                        ) {}
