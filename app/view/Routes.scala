@@ -11,6 +11,7 @@ trait Routes {
   val DeliveriesPath: String = Routes.DeliveriesPath
   val DeliveryPath: Long => String = Routes.DeliveryPath
   val DeliveryCreatePath: String = Routes.DeliveryCreatePath
+  val DeliveryDeletePath: Long => String = Routes.DeliveryDeletePath
 }
 
 object Routes {
@@ -22,4 +23,5 @@ object Routes {
   val DeliveriesPath: String = routes.DeliveriesController.index().url
   val DeliveryPath: Long => String = (deliveryId: Long) => routes.DeliveriesController.editView(deliveryId: Long).url
   val DeliveryCreatePath: String = routes.DeliveriesController.create().url
+  val DeliveryDeletePath: Long => String = (deliveryId: Long) => routes.DeliveriesController.delete(deliveryId: Long).url
 }

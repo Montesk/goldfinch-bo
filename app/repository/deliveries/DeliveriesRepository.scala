@@ -23,6 +23,8 @@ class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
 
   def quantity = column[Int]("quantity")
 
+  def deleted = column[Boolean]("deleted", O.Default(false))
+
   def created_at = column[Option[LocalDateTime]]("created_at")
 
   def updated_at = column[Option[LocalDateTime]]("updated_at")
@@ -50,7 +52,7 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(i
 
   def list(): Future[Seq[(Delivery, Product)]] = db.run {
     val withJoin = for {
-      delivery <- deliveries.sortBy(_.created_at.desc)
+      delivery <- deliveries.filter(_.deleted === false).sortBy(_.created_at.desc)
       product <- delivery.productsFk
     } yield (delivery, product)
 
@@ -68,6 +70,11 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(i
   }
 
   def delete(id: Long, soft: Boolean = true): Future[Int] = db.run {
-    ???
+    if (soft) {
+      val query = for {d <- deliveries if d.id === id} yield d.deleted
+      query.update(true)
+    } else {
+      deliveries.filter(_.id === id).delete
+    }
   }
 }

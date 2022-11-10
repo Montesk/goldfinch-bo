@@ -1,7 +1,7 @@
 define(function (require) {
     const logger = require("app/logger")
 
-    logger.componentLoaded("edit form")
+    logger.componentLoaded("form")
 
     return {
         /**

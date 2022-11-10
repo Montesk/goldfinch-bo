@@ -53,7 +53,8 @@ class DeliveriesController @Inject()(
   }
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    ???
+    deliveriesRepo.delete(id)
+    Redirect(routes.DeliveriesController.index())
   }
 
   private val deliveryCreateForm: Form[DeliveryData] = Form(

@@ -1,5 +1,5 @@
-@import view.Delivery
-@import view.Routes
+@import helper._
+@import view.{Routes, Delivery}
 
 @(data: Seq[Delivery] = Seq())(implicit request: Request[AnyContent])
 
@@ -26,6 +26,7 @@
                         <th scope="col">Quantity</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
+                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +37,30 @@
                         <td class="align-middle">@delivery.quantity</td>
                         <td class="align-middle">@delivery.created_at</td>
                         <td class="align-middle">@delivery.updated_at</td>
+                        <td class="align-middle">
+                            <div class="bo-action d-inline-block" role="button" id="delivery-id-@delivery.id" title="Удалить поставку">
+                                <i class="fa-solid fa-trash-can text-danger"  title="Удалить поставку"></i>
+
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                require(["views/form"], function (form) {
+                                    form.deleteRequest(
+                                            {
+                                                triggerElemId: 'delivery-id-@delivery.id',
+                                                confirmMessage: 'Вы действительно хотите удалить поставку # @delivery.id ?',
+                                                deleteUri: '@Routes.DeliveryDeletePath(delivery.id)',
+                                                token: {
+                                                    name: '@CSRF.getToken.name',
+                                                    value: '@CSRF.getToken.value'
+                                                },
+                                                onDoneRedirectTo: '@Routes.DeliveriesPath',
+                                            },
+                                    );
+                                })
+                            })
+                                </script>
+                            </div>
+                        </td>
                     </tr>
                 }
                 </tbody>

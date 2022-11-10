@@ -74,9 +74,9 @@
 
 <script>
         document.addEventListener('DOMContentLoaded', function () {
-            require(["views/products/editform"], function (editForm) {
+            require(["views/form"], function (form) {
                 // title image upload
-                editForm.imageUploadForm(
+                form.imageUploadForm(
                         {
                             formGroupId: 'filepond-title-image',
                             uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
@@ -85,7 +85,7 @@
                 );
 
                 // additional images upload
-                editForm.imageUploadForm(
+                form.imageUploadForm(
                         {
                             formGroupId: 'filepond',
                             uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
@@ -93,7 +93,7 @@
                         },
                 );
 
-                editForm.deleteRequest(
+                form.deleteRequest(
                         {
                             triggerElemId: 'delete-btn',
                             confirmMessage: 'Вы действительно хотите удалить @product.name ?',
@@ -103,9 +103,9 @@
                         },
                 );
 
-                editForm.deleteSubImages();
+                form.deleteSubImages();
 
-                editForm.toggleSubImageIcons();
+                form.toggleSubImageIcons();
             })
         })
 </script>
