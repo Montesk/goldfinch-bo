@@ -1,10 +1,22 @@
 @import helper._
-@import view.{Routes, Delivery}
-@(delivery: Delivery)(implicit request: Request[AnyContent])
+@import view.{Routes, Delivery, Product}
+@import view.form.components.SelectOption
+
+@(delivery: Delivery, productsData: Seq[Product])(implicit request: Request[AnyContent])
 
 <form method="POST" action="@Routes.DeliveryCreatePath">
     <div class="form-group">
-    @components.form.components.input(name = "product_id", value = "0", label = "Product Id", required = true)
+    @components.form.components.select(
+        name = "product_id",
+        options = productsData.map(
+            p => SelectOption(
+                value = p.id.toString,
+                displayName = s"${p.name} [ID: ${p.id}]",
+            ),
+        ),
+        label = "Товар",
+        required = true,
+    )
     </div>
     <div class="form-group">
     @components.form.components.input(name = "quantity", value = "0", label = "Quantity", required = true)

@@ -1,0 +1,27 @@
+@import java.util.UUID
+@import view.form.components.SelectOption
+
+@(
+        name: String,
+        id: String = UUID.randomUUID().toString,
+        options: Seq[SelectOption],
+        label: String = "",
+        cssClass: String = "form-control",
+        required: Boolean = false,
+)
+
+@if(label) {
+    <label for="@id">@label</label>
+}
+
+<select
+class="@cssClass"
+name="@name"
+id="@id"
+@if(required) { required }>
+
+@for(opt <- options) {
+    <option value="@opt.value">@opt.displayName</option>
+}
+
+</select>

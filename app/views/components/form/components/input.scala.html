@@ -14,21 +14,10 @@
         <label for="@id">@label</label>
     }
 
-    @if(required) {
-        <input
-        type="@inputType"
-        class="@cssClass"
-        name="@name"
-        id="@id"
-        value="@value"
-        required
-        >
-    } else {
-        <input
-        type="@inputType"
-        class="@cssClass"
-        name="@name"
-        id="@id"
-        value="@value"
-        >
-    }
+    <input
+    type="@inputType"
+    class="@cssClass"
+    name="@name"
+    id="@id"
+    value="@value"
+    @if(required) { required }>

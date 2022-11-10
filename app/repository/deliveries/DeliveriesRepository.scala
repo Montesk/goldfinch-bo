@@ -50,7 +50,7 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(i
 
   def list(): Future[Seq[(Delivery, Product)]] = db.run {
     val withJoin = for {
-      delivery <- deliveries
+      delivery <- deliveries.sortBy(_.created_at.desc)
       product <- delivery.productsFk
     } yield (delivery, product)
 

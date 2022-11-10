@@ -10,13 +10,14 @@ import play.api.data.Forms._
 import play.api.mvc._
 
 import repository.deliveries.{DeliveriesRepository, DeliveryData, Delivery => DBDelivery}
-import repository.products.{Product => DBProduct}
-import view.Delivery
+import repository.products.{ProductsRepository, Product => DBProduct}
+import view.{Delivery, Product}
 
 @Singleton
 class DeliveriesController @Inject()(
                                       val controllerComponents: ControllerComponents,
                                       val deliveriesRepo: DeliveriesRepository,
+                                      val productsRepo: ProductsRepository,
                                     ) extends BaseController {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(deliveries = Delivery.listFromDB(deliveriesList())))
@@ -25,7 +26,8 @@ class DeliveriesController @Inject()(
   def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(
       deliveries = Delivery.listFromDB(deliveriesList()),
-      delivery = Option(Delivery.newDelivery())
+      delivery = Option(Delivery.newDelivery()),
+      products = Product.listFromDB(productsList()),
     ))
   }
 
@@ -63,5 +65,9 @@ class DeliveriesController @Inject()(
 
   private def deliveriesList(): Seq[(DBDelivery, DBProduct)] = {
     Await.result(deliveriesRepo.list(), Duration(10, SECONDS))
+  }
+
+  private def productsList(): Seq[DBProduct] = {
+    Await.result(productsRepo.list(), Duration(10, SECONDS))
   }
 }

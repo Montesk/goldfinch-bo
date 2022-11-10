@@ -1,5 +1,4 @@
-@import view.{Order, Product, Routes, Delivery}
-@import view.Products
+@import view.{Order, Product, Routes, Delivery, Products}
 
 @(
         ordersData: Seq[Order] = Seq(),
@@ -40,7 +39,7 @@
         } else if(request.path.contains("product/create")) {
             products.create(data = productsData, product.get)
         } else if(request.path.contains("warehouse/create")) {
-            deliveries.create(data = deliveriesData, delivery = delivery.get)
+            deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
         } else if(request.path == Routes.DeliveriesPath) {
             deliveries.content(data = deliveriesData)
         } else {

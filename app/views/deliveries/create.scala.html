@@ -1,11 +1,11 @@
-@import view.{Delivery, Routes}
+@import view.{Delivery, Routes, Product}
 
-@(data: Seq[Delivery] = Seq(), delivery: Delivery)(implicit request: Request[AnyContent])
+@(deliveriesData: Seq[Delivery] = Seq(), productsData: Seq[Product], delivery: Delivery)(implicit request: Request[AnyContent])
 
-@deliveries.content(data)
+@deliveries.content(deliveriesData)
 
 @components.modal.modal(
-    bodyContent = deliveries.createform(delivery),
+    bodyContent = deliveries.createform(delivery, productsData),
     title = "Добавить новую поставку",
     modalId = "create-delivery",
     static = false,
