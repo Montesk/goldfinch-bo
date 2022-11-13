@@ -1,8 +1,6 @@
 package controllers
 
 import javax.inject._
-import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
 
 import play.api.mvc._
 
@@ -18,7 +16,7 @@ class OrdersController @Inject()(
     Ok(views.html.index(orders = Order.listFromDB(ordersList())))
   }
 
-  private def ordersList(): Seq[DBOrder] = {
-    Await.result(ordersRepo.list(), Duration(10, SECONDS))
+  private def ordersList(): Vector[DBOrder] = {
+    ordersRepo.list()
   }
 }

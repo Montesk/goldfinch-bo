@@ -49,7 +49,7 @@ object Product extends DynamicLinker {
     )
   }
 
-  def listFromDB(orders: Seq[DBProduct]): Seq[Product] = {
+  def listFromDB(orders: Vector[DBProduct]): Vector[Product] = {
     orders.map(fromDB)
   }
 

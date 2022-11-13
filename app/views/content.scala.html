@@ -1,10 +1,10 @@
 @import view.{Order, Product, Routes, Delivery, Products}
 
 @(
-        ordersData: Seq[Order] = Seq(),
-        productsData: Seq[Product] = Seq(),
+        ordersData: Vector[Order] = Vector(),
+        productsData: Vector[Product] = Vector(),
         product: Option[Product],
-        deliveriesData: Seq[Delivery] = Seq(),
+        deliveriesData: Vector[Delivery] = Vector(),
         delivery: Option[Delivery],
 )(implicit request: Request[AnyContent])
 

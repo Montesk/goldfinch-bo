@@ -34,7 +34,7 @@ object Delivery extends DynamicLinker {
     )
   }
 
-  def listFromDB(orders: Seq[(DBDelivery, DBProduct)]): Seq[Delivery] = {
+  def listFromDB(orders: Vector[(DBDelivery, DBProduct)]): Vector[Delivery] = {
     orders.map(tpl => {
       fromDB(tpl._1, tpl._2)
     })

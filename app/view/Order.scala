@@ -17,7 +17,7 @@ object Order {
     )
   }
 
-  def listFromDB(orders: Seq[DBOrder]): Seq[Order] = {
+  def listFromDB(orders: Vector[DBOrder]): Vector[Order] = {
     orders.map(fromDB)
   }
 }

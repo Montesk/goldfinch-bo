@@ -1,7 +1,7 @@
 @import view.Product
 @import view.Products
 
-@(data: Seq[Product] = Seq())(implicit request: Request[AnyContent])
+@(data: Vector[Product] = Vector())(implicit request: Request[AnyContent])
 
 <div class="mt-5 col-12">
     @if(Products.isAlbumView(request)) {

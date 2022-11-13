@@ -3,13 +3,14 @@ package repository.deliveries
 import java.time._
 import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.DatabaseConfigProvider
 
-import repository.products.{Products, Product}
+import repository.products.{Product, Products}
 
 case class DeliveryData(
                          product_id: Long,
@@ -36,6 +37,8 @@ class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
 
 @Singleton
 class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+  val DefaultDBTimeout: FiniteDuration = Duration(10, SECONDS)
+
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -50,13 +53,8 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(i
       .head
   }
 
-  def list(): Future[Seq[(Delivery, Product)]] = db.run {
-    val withJoin = for {
-      delivery <- deliveries.filter(_.deleted === false).sortBy(_.created_at.desc)
-      product <- delivery.productsFk
-    } yield (delivery, product)
-
-    withJoin.result
+  def list(): Vector[(Delivery, Product)] = {
+    Await.result(execSelect(), DefaultDBTimeout).toVector
   }
 
   def create(data: DeliveryData): Future[Any] = db.run {
@@ -76,5 +74,14 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(i
     } else {
       deliveries.filter(_.id === id).delete
     }
+  }
+
+  private def execSelect(): Future[Seq[(Delivery, Product)]] = db.run {
+    val withJoin = for {
+      delivery <- deliveries.filter(_.deleted === false).sortBy(_.created_at.desc)
+      product <- delivery.productsFk
+    } yield (delivery, product)
+
+    withJoin.result
   }
 }

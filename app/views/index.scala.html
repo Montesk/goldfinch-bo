@@ -2,14 +2,14 @@
 
 @(
         headerName: String = "Goldfinch",
-        orders: Seq[Order] = Seq(),
-        products: Seq[Product] = Seq(),
+        orders: Vector[Order] = Vector(),
+        products: Vector[Product] = Vector(),
         product: Option[Product] = None,
-        deliveries: Seq[Delivery] = Seq(),
+        deliveries: Vector[Delivery] = Vector(),
         delivery: Option[Delivery] = None
 )(implicit request: Request[AnyContent])
 
     @main("Goldfinch") {
         @navigation(headerName)
         @content(orders, products, product, deliveries, delivery)
-    }
+}

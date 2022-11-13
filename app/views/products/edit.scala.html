@@ -2,7 +2,7 @@
 
 @import views.html.products.editform
 
-@(data: Seq[Product] = Seq(), product: Product)(implicit request: Request[AnyContent])
+@(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
 
 @products.content(data)
 

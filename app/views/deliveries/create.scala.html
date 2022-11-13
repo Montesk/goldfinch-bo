@@ -1,6 +1,6 @@
 @import view.{Delivery, Routes, Product}
 
-@(deliveriesData: Seq[Delivery] = Seq(), productsData: Seq[Product], delivery: Delivery)(implicit request: Request[AnyContent])
+@(deliveriesData: Vector[Delivery] = Vector(), productsData: Vector[Product], delivery: Delivery)(implicit request: Request[AnyContent])
 
 @deliveries.content(deliveriesData)
 

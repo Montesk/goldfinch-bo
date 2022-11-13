@@ -4,11 +4,11 @@ import java.time._
 import javax.inject.{Inject, Singleton}
 import java.util.UUID
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
 
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
-
 import play.api.db.slick.DatabaseConfigProvider
 
 case class ProductData(
@@ -46,6 +46,8 @@ class Products(tag: Tag) extends Table[Product](tag, "products") {
 
 @Singleton
 class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+  val DefaultDBTimeout: FiniteDuration = Duration(10, SECONDS)
+
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -60,11 +62,8 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
       .head
   }
 
-  def list(): Future[Seq[Product]] = db.run {
-    products
-      .filter(!_.deleted)
-      .sortBy(_.id.desc)
-      .result
+  def list(): Vector[Product] = {
+    Await.result(execSelect(), DefaultDBTimeout).toVector
   }
 
   def create(data: ProductData): Future[Any] = db.run {
@@ -85,5 +84,12 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
     } else {
       products.filter(_.id === id).delete
     }
+  }
+
+  private def execSelect(): Future[Seq[Product]] = db.run {
+    products
+      .filter(!_.deleted)
+      .sortBy(_.id.desc)
+      .result
   }
 }

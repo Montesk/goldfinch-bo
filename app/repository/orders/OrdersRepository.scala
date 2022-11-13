@@ -2,13 +2,17 @@ package repository.orders
 
 import java.time._
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
 
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
 @Singleton
 class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+  val DefaultDBTimeout: FiniteDuration = Duration(10, SECONDS)
+
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -31,7 +35,11 @@ class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(impli
 
   private val orders = TableQuery[OrderTable]
 
-  def list(): Future[Seq[Order]] = db.run {
+  def list(): Vector[Order] = {
+    Await.result(execSelect(), DefaultDBTimeout).toVector
+  }
+
+  private def execSelect(): Future[Seq[Order]] = db.run {
     orders.result
   }
 }

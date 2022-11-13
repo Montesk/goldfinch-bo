@@ -64,11 +64,11 @@ class DeliveriesController @Inject()(
     )(DeliveryData.apply)(DeliveryData.unapply)
   )
 
-  private def deliveriesList(): Seq[(DBDelivery, DBProduct)] = {
-    Await.result(deliveriesRepo.list(), Duration(10, SECONDS))
+  private def deliveriesList(): Vector[(DBDelivery, DBProduct)] = {
+    deliveriesRepo.list()
   }
 
-  private def productsList(): Seq[DBProduct] = {
-    Await.result(productsRepo.list(), Duration(10, SECONDS))
+  private def productsList(): Vector[DBProduct] = {
+    productsRepo.list()
   }
 }

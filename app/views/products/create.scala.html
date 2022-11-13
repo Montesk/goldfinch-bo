@@ -1,7 +1,7 @@
 @import view.{Product, Routes}
 @import views.html.products.createform
 
-@(data: Seq[Product] = Seq(), product: Product)(implicit request: Request[AnyContent])
+@(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
 
 @products.content(data)
 

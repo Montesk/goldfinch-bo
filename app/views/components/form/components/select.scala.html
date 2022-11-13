@@ -4,7 +4,7 @@
 @(
         name: String,
         id: String = UUID.randomUUID().toString,
-        options: Seq[SelectOption],
+        options: Vector[SelectOption],
         label: String = "",
         cssClass: String = "form-control",
         required: Boolean = false,
@@ -24,4 +24,4 @@ id="@id"
     <option value="@opt.value">@opt.displayName</option>
 }
 
-</select>
+    </select>

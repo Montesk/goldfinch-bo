@@ -2,7 +2,7 @@
 @import view.{Routes, Delivery, Product}
 @import view.form.components.SelectOption
 
-@(delivery: Delivery, productsData: Seq[Product])(implicit request: Request[AnyContent])
+@(delivery: Delivery, productsData: Vector[Product])(implicit request: Request[AnyContent])
 
 <form method="POST" action="@Routes.DeliveryCreatePath">
     <div class="form-group">

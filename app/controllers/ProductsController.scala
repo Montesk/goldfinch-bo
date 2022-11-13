@@ -111,8 +111,8 @@ class ProductsController @Inject()(
     Await.result(productsRepo.find(id), Duration(10, SECONDS))
   }
 
-  private def productsList(): Seq[DBProduct] = {
-    Await.result(productsRepo.list(), Duration(10, SECONDS))
+  private def productsList(): Vector[DBProduct] = {
+    productsRepo.list()
   }
 
   private val productEditForm: Form[ProductData] = Form(
