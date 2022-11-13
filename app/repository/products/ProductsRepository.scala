@@ -4,7 +4,7 @@ import java.time._
 import javax.inject.{Inject, Singleton}
 import java.util.UUID
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
 import slick.jdbc.JdbcProfile

@@ -3,7 +3,7 @@ package repository.orders
 import java.time._
 import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
 import play.api.db.slick.DatabaseConfigProvider

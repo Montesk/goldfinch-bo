@@ -4,7 +4,7 @@ import java.time._
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
