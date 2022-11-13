@@ -7,9 +7,9 @@
         product: Option[Product] = None,
         deliveries: Vector[Delivery] = Vector(),
         delivery: Option[Delivery] = None
-)(implicit request: Request[AnyContent])
+)(implicit request: Request[AnyContent], flash: Flash)
 
     @main("Goldfinch") {
         @navigation(headerName)
         @content(orders, products, product, deliveries, delivery)
-}
+    }

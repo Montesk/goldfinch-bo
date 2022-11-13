@@ -38,7 +38,7 @@ class DeliveriesController @Inject()(
       }
     )
 
-    Redirect(routes.DeliveriesController.index())
+    Redirect(routes.DeliveriesController.index()).flashing("success" -> s"Заказ успешно создан")
   }
 
   def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -51,7 +51,7 @@ class DeliveriesController @Inject()(
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     deliveriesRepo.delete(id)
-    Redirect(routes.DeliveriesController.index())
+    Redirect(routes.DeliveriesController.index()).flashing("warning" -> s"Заказ ID: [$id] успешно удалён")
   }
 
   private val deliveryCreateForm: Form[DeliveryData] = Form(

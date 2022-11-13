@@ -30,16 +30,19 @@ class ProductsController @Inject()(
   }
 
   def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    var flashMsgData: ProductData = null
+
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
         throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
         productsRepo.create(data = productData)
+        flashMsgData = productData
       }
     )
 
-    Redirect(routes.ProductsController.index())
+    Redirect(routes.ProductsController.index()).flashing("success" -> s"Товар ${flashMsgData.name} успешно добавлен")
   }
 
   def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -50,12 +53,18 @@ class ProductsController @Inject()(
   }
 
   def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    var flashMsgData: ProductData = null
+
     productEditForm.bindFromRequest.fold(
       formWithErrors => {
         throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
+        flashMsgData = productData
+        
         val product = this.product(id)
+
+        productsRepo.update(id, productData)
 
         for (imageToDelete <- productData.deleteFiles) {
           deleteImage(product = product, image = imageToDelete)
@@ -71,12 +80,12 @@ class ProductsController @Inject()(
       }
     )
 
-    Redirect(routes.ProductsController.index())
+    Redirect(routes.ProductsController.index()).flashing("success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован")
   }
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     productsRepo.delete(id = id)
-    Redirect(routes.ProductsController.index())
+    Redirect(routes.ProductsController.index()).flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
   }
 
   /**
