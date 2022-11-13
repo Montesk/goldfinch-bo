@@ -5,11 +5,13 @@ import javax.inject.{Inject, Singleton}
 import java.util.UUID
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
+import scala.concurrent.duration.Duration
 
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.DatabaseConfigProvider
+
+import repository.Repository
 
 case class ProductData(
                         name: String,
@@ -45,8 +47,8 @@ class Products(tag: Tag) extends Table[Product](tag, "products") {
 }
 
 @Singleton
-class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
-  val DefaultDBTimeout: FiniteDuration = Duration(10, SECONDS)
+class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) extends Repository {
+  val DefaultDBTimeout: Duration = withDefaultTimeout(config.product)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -54,36 +56,24 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
 
   val products = TableQuery[Products]
 
-  def find(id: Long): Future[Product] = db.run {
-    products
-      .filter(_.id === id)
-      .filter(!_.deleted)
-      .result
-      .head
+  def find(id: Long): Product = {
+    Await.result(execFind(id), DefaultDBTimeout)
   }
 
   def list(): Vector[Product] = {
     Await.result(execSelect(), DefaultDBTimeout).toVector
   }
 
-  def create(data: ProductData): Future[Any] = db.run {
-    DBIO.seq(
-      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
-    )
+  def create(data: ProductData): Unit = {
+    Await.result(execCreate(data), DefaultDBTimeout)
   }
 
-  def update(id: Long, data: ProductData): Future[Int] = db.run {
-    val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
-    query.update(data.name, data.price, Option[String](data.description))
+  def update(id: Long, data: ProductData): Int = {
+    Await.result(execUpdate(id, data), DefaultDBTimeout)
   }
 
-  def delete(id: Long, soft: Boolean = true): Future[Int] = db.run {
-    if (soft) {
-      val query = for {p <- products if p.id === id} yield p.deleted
-      query.update(true)
-    } else {
-      products.filter(_.id === id).delete
-    }
+  def delete(id: Long, soft: Boolean = true): Int = {
+    Await.result(execDelete(id, soft), DefaultDBTimeout)
   }
 
   private def execSelect(): Future[Seq[Product]] = db.run {
@@ -91,5 +81,33 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(imp
       .filter(!_.deleted)
       .sortBy(_.id.desc)
       .result
+  }
+
+  private def execUpdate(id: Long, data: ProductData): Future[Int] = db.run {
+    val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
+    query.update(data.name, data.price, Option[String](data.description))
+  }
+
+  private def execFind(id: Long): Future[Product] = db.run {
+    products
+      .filter(_.id === id)
+      .filter(!_.deleted)
+      .result
+      .head
+  }
+
+  private def execCreate(data: ProductData): Future[Unit] = db.run {
+    DBIO.seq(
+      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
+    )
+  }
+
+  private def execDelete(id: Long, soft: Boolean = true): Future[Int] = db.run {
+    if (soft) {
+      val query = for {p <- products if p.id === id} yield p.deleted
+      query.update(true)
+    } else {
+      products.filter(_.id === id).delete
+    }
   }
 }

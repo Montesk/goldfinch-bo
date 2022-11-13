@@ -24,6 +24,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "5.1.0" withSources(),
   "com.typesafe.play" %% "play-slick-evolutions" % "5.1.0" withSources(),
   "org.postgresql" % "postgresql" % "42.5.0" withSources(),
+  "io.circe" %% "circe-yaml" % "0.14.2" withSources(),
+  "io.circe" %% "circe-generic" % "0.14.3" withSources()
 )
 
 // Adds additional packages into Twirl

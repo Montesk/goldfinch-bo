@@ -3,9 +3,6 @@ package controllers
 import javax.inject._
 import com.google.common.io.{Files => helperFiles}
 
-import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
-
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -38,7 +35,7 @@ class ProductsController @Inject()(
         throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
-        Await.result(productsRepo.create(data = productData), Duration(10, SECONDS))
+        productsRepo.create(data = productData)
       }
     )
 
@@ -58,8 +55,6 @@ class ProductsController @Inject()(
         throw new Exception(s"Invalid data ${formWithErrors.toString}")
       },
       productData => {
-        Await.result(productsRepo.update(id = id, data = productData), Duration(10, SECONDS))
-
         val product = this.product(id)
 
         for (imageToDelete <- productData.deleteFiles) {
@@ -80,7 +75,7 @@ class ProductsController @Inject()(
   }
 
   def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Await.result(productsRepo.delete(id = id), Duration(10, SECONDS))
+    productsRepo.delete(id = id)
     Redirect(routes.ProductsController.index())
   }
 
@@ -96,7 +91,6 @@ class ProductsController @Inject()(
    */
   def upload(): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request =>
     val productUUID = request.getQueryString("uuid").get
-
     var uploaded: String = ""
 
     for (file <- request.body.files) {
@@ -108,7 +102,7 @@ class ProductsController @Inject()(
   }
 
   private def product(id: Long): DBProduct = {
-    Await.result(productsRepo.find(id), Duration(10, SECONDS))
+    productsRepo.find(id)
   }
 
   private def productsList(): Vector[DBProduct] = {

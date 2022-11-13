@@ -2,9 +2,6 @@ package controllers
 
 import javax.inject._
 
-import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
-
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
@@ -37,7 +34,7 @@ class DeliveriesController @Inject()(
         throw new Exception(s"Invalid data errors: ${formWithErrors.toString}")
       },
       newDeliveryData => {
-        Await.result(deliveriesRepo.create(newDeliveryData), Duration(10, SECONDS))
+        deliveriesRepo.create(newDeliveryData)
       }
     )
 

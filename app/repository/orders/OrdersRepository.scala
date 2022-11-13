@@ -4,14 +4,16 @@ import java.time._
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
+import scala.concurrent.duration.Duration
 
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
+import repository.Repository
+
 @Singleton
-class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
-  val DefaultDBTimeout: FiniteDuration = Duration(10, SECONDS)
+class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) extends Repository {
+  val DefaultDBTimeout: Duration = withDefaultTimeout(config.order)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 

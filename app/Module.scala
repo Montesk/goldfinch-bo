@@ -1,4 +1,5 @@
 import com.google.inject.AbstractModule
+import services.config.Config
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -10,7 +11,16 @@ import com.google.inject.AbstractModule
  * configuration file.
  */
 class Module extends AbstractModule {
-  override def configure() = {
+  override def configure(): Unit = {
+    println("Loading application configuration...")
+    val source = scala.io.Source.fromFile(AppSetting.ConfigPath)
+    val fileContents = try source.mkString finally source.close()
+    Config.readConfig(fileContents)
+    println("Application config loaded")
     println("Application start")
   }
+}
+
+object AppSetting {
+  val ConfigPath: String = "conf/config.yml"
 }

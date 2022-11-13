@@ -1,0 +1,5 @@
+repository:
+  defaults:
+    dbWaitTimeout: "5s"
+  delivery:
+    dbWaitTimeout: "7s"
