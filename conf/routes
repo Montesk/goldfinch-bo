@@ -22,5 +22,7 @@ GET         /warehouse/edit/:id          controllers.DeliveriesController.editVi
 POST        /warehouse/edit/:id          controllers.DeliveriesController.edit(id:  Long)
 POST        /warehouse/delete/:id        controllers.DeliveriesController.delete(id:  Long)
 
+POST        /settings/edit               controllers.SettingsController.edit()
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)

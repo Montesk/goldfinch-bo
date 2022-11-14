@@ -9,6 +9,7 @@ import io.circe.yaml.parser
 
 trait Config {
   val repositories: Repositories = Config.repositories()
+  val appSettings: AppSettings = Config.appSettings()
 
   def readConfig(contentYAML: String): Unit = Config.readConfig(contentYAML)
 }
@@ -36,6 +37,10 @@ object Config {
     parsed.get
   }
 
+  def appSettings(): AppSettings = {
+    AppSettings(theme = loaded.get.app.theme)
+  }
+
   private def repositoryWithDuration(repo: Option[ConfigRepository]): Option[Repository] = {
     if (repo.isEmpty) {
       return None
@@ -44,6 +49,8 @@ object Config {
     Option(Repository(dbWaitTimeout = Duration(repo.get.dbWaitTimeout)))
   }
 }
+
+case class AppSettings(theme: String)
 
 case class Repository(dbWaitTimeout: Duration)
 
@@ -57,7 +64,7 @@ case class Repositories(
 /**
  * Yaml field must match case classes listed below params
  */
-private[config] case class fromConfig(repository: ConfigRepositories) {}
+private[config] case class fromConfig(repository: ConfigRepositories, app: ConfigAppSettings) {}
 
 private[config] case class ConfigRepository(dbWaitTimeout: String)
 
@@ -68,3 +75,4 @@ private[config] case class ConfigRepositories(
                                                order: Option[ConfigRepository] = None,
                                              )
 
+private[config] case class ConfigAppSettings(theme: String)
