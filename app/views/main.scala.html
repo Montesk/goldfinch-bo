@@ -1,7 +1,7 @@
 @(title: String)(content: Html)
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
     <head>
         <title>@title</title>
 
@@ -12,9 +12,11 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap-datepicker/css/bootstrap-datepicker3.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/filepond/dist/filepond.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/Magnific-Popup/magnific-popup.css")">
+
+        <link rel="stylesheet" media="screen" id="bo-main-theme" href="@routes.Assets.versioned("stylesheets/themes/default.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
     </head>
-    <body>
+    <body class="h-100">
     @content
     </body>
 
@@ -24,5 +26,6 @@
     <script src="@routes.Assets.versioned("lib/filepond/dist/filepond.min.js")"></script>
     <script src="@routes.Assets.versioned("lib/Magnific-Popup/jquery.magnific-popup.min.js")" type="text/javascript"></script>
     <script src="@routes.Assets.versioned("lib/font-awesome/js/all.min.js")" type="text/javascript"></script>
+
     <script data-main="@routes.Assets.versioned("javascripts/main.js")" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
 </html>

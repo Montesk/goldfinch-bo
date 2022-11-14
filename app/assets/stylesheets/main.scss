@@ -1,0 +1,121 @@
+@import "variables";
+@import "grid";
+
+.bo-product-card {
+  min-height: 500px;
+}
+
+.bo-tech-text-10 {
+  font-size: 10px !important;
+}
+
+.bo-tech-text-70-pct {
+  font-size: 70% !important;
+}
+
+.bo-tech-text-60-pct {
+  font-size: 60% !important;
+}
+
+.bo-add {
+  font-size: 4rem;
+}
+
+.bo-add-small {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.bo-success-hover {
+  transition: background-color .15s ease-in-out;
+}
+
+.mfp-bg, .mfp-wrap {
+  z-index: 1100;
+}
+
+.bo-image-control {
+  opacity: 0.75;
+  transition: opacity .15s ease-in-out;
+}
+
+.bo-active {
+  opacity: 1 !important;
+}
+
+.bo-disabled {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.bo-multirows-item {
+  min-height: 300px;
+  min-width: 160px;
+}
+
+.bo-table-image-wrapper {
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.bg-primary {
+  background-color: var(--bo-success-color) !important;
+}
+
+nav a, .btn {
+  color: #fff !important;
+}
+
+a, .text-primary {
+  color: var(--bo-success-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--bo-success-color) !important;
+  border-color: var(--bo-success-color) !important;
+}
+
+.text-success {
+  color: var(--bo-success-color) !important;
+}
+
+/**
+Interpolated 'rgb' prevents calling css rgb() method - this is one of way to call native css 'rgb' without compile error
+The reason is css var is runtime while sass function is compile time executables
+ */
+.bo-success-hover:hover {
+  background-color: #{'rgb(var(--bo-success-color-rgb) / 0.25)'}
+}
+
+.bo-theme-switcher {
+  width: 100%;
+  height: 120px;
+  background-color: $gray-400;
+
+  .bo-theme-switch {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-bottom: 7px;
+    background-color: #ffffff;
+
+    &[data-theme="default"] {
+      background-color: $bo-theme-default-accent;
+    }
+
+    &[data-theme="green"] {
+      background-color: $bo-theme-green-accent;
+    }
+
+    &[data-theme="goldfinch"] {
+      background-color: $bo-theme-goldfinch-accent;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+@import "variables";
+
+.bo-content {
+  position: relative;
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.bo-setting-vertical-panel {
+  position: relative;
+  z-index: 1;
+  min-width: 60px;
+  margin-left: -15px;
+  background-color: $gray-200;
+}
+
+.bo-content-with-left-settings-panel {
+  margin-left: -45px;
+}

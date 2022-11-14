@@ -8,43 +8,72 @@
         delivery: Option[Delivery],
 )(implicit request: Request[AnyContent])
 
-<div class="container-fluid">
-    <div class="row justify-content-end">
-        <div class="col-3">
-            <div class="text-right pt-2">
-                <div class="bo-control-icon d-inline-block mr-1 @if(Products.isTableView(req = request)) { text-primary } ">
-                    <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.tableView}"))">
-                        <i class="fa-solid fa-table-list h4" role="button" title="Режим таблицы"></i>
-                    </a>
+<div class="container-fluid h-100 bo-content">
+    <div class="row no-gutters h-100 flex-nowrap">
+
+        <div class="h-100 bo-setting-vertical-panel">
+            <div class="row no-gutters align-items-end h-100">
+                <div class="bo-theme-switcher row no-gutters align-items-center justify-content-center flex-column">
+                    <div class="bo-theme-switch" data-theme="default" title="Тема по-умолчанию"></div>
+                    <div class="bo-theme-switch" data-theme="green" title="Зелёная тема"></div>
+                    <div class="bo-theme-switch" data-theme="goldfinch" title="Тема Щегол&#8482;"></div>
                 </div>
-                <div class="bo-control-icon d-inline @if(Products.isAlbumView(req = request)) { text-primary } ">
-                    <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.albumView}"))">
-                        <i class="fa-solid fa-grip h4" role="button" title="Режим альбома"></i>
-                    </a>
+            </div>
+        </div>
+
+        <div class="col-12 bo-content-with-left-settings-panel">
+            <div class="container-fluid">
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        <div class="text-right pt-2">
+                            <div class="bo-control-icon d-inline-block mr-1 @if(Products.isTableView(req = request)) { text-primary } ">
+                                <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.tableView}"))">
+                                    <i class="fa-solid fa-table-list h4" role="button" title="Режим таблицы"></i>
+                                </a>
+                            </div>
+                            <div class="bo-control-icon d-inline @if(Products.isAlbumView(req = request)) { text-primary } ">
+                                <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.albumView}"))">
+                                    <i class="fa-solid fa-grip h4" role="button" title="Режим альбома"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                @{
+                    if(request.path == Routes.OrdersPath) {
+                        orders.content(data = ordersData)
+                    } else if(request.path == Routes.ProductsPath) {
+                        products.content(data = productsData)
+                    } else if(request.path.contains("product/edit")) {
+                        products.edit(data = productsData, product.get)
+                    } else if(request.path.contains("product/create")) {
+                        products.create(data = productsData, product.get)
+                    } else if(request.path.contains("warehouse/create")) {
+                        deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
+                    } else if(request.path == Routes.DeliveriesPath) {
+                        deliveries.content(data = deliveriesData)
+                    } else {
+                        dashboard.content()
+                    }
+                }
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
-    <div class="row">
-    @{
-        if(request.path == Routes.OrdersPath) {
-            orders.content(data = ordersData)
-        } else if(request.path == Routes.ProductsPath) {
-            products.content(data = productsData)
-        } else if(request.path.contains("product/edit")) {
-            products.edit(data = productsData, product.get)
-        } else if(request.path.contains("product/create")) {
-            products.create(data = productsData, product.get)
-        } else if(request.path.contains("warehouse/create")) {
-            deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
-        } else if(request.path == Routes.DeliveriesPath) {
-            deliveries.content(data = deliveriesData)
-        } else {
-            dashboard.content()
-        }
-    }
-    </div>
-</div>
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $("[data-theme]").each(function () {
+                $(this).click(function () {
+                    const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
+                    const theme = themePrefix + $(this).data('theme') + ".css";
+                    $('#bo-main-theme').attr('href', theme)
+                })
+            })
+        })
+</script>
