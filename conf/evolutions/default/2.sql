@@ -1,3 +1,5 @@
+-- >Role create_products_orders
+
 -- !Ups
 CREATE TABLE IF NOT EXISTS products
 (

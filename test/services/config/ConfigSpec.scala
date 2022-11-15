@@ -10,6 +10,8 @@ class ConfigSpec extends PlaySpec {
     "read all repositories settings from YAML config - ok" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -38,6 +40,8 @@ class ConfigSpec extends PlaySpec {
     "read some repositories settings from YAML config - ok" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -60,6 +64,8 @@ class ConfigSpec extends PlaySpec {
     "read only required field from YAML config - ok" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "5s"
@@ -92,6 +98,8 @@ class ConfigSpec extends PlaySpec {
     "missing only required field - fail" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  defaults:
           |    # dbWaitTimeout: "12s"
@@ -111,6 +119,8 @@ class ConfigSpec extends PlaySpec {
     "missing only required field and object - fail" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  product:
           |    dbWaitTimeout: "13s"
@@ -128,6 +138,8 @@ class ConfigSpec extends PlaySpec {
     "invalid format for required config field - fail" in {
       val ymlString =
         """
+          |app:
+          |  theme: "green"
           |repository:
           |  defaults:
           |    dbWaitTimeout: 13

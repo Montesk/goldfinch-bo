@@ -1,3 +1,5 @@
+-- >Role add_columns_uuid_description_to_products_table
+
 -- !Ups
 ALTER TABLE products
     ADD COLUMN IF NOT EXISTS uuid UUID NOT NULL UNIQUE DEFAULT gen_random_uuid();

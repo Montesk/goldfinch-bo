@@ -1,5 +1,6 @@
 import com.google.inject.AbstractModule
 import services.config.Config
+import services.migrations.Migrations
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -17,6 +18,11 @@ class Module extends AbstractModule {
     val fileContents = try source.mkString finally source.close()
     Config.readConfig(fileContents)
     println("Application config loaded")
+
+    println("Generating migrations info...")
+    Migrations.generateInfo()
+    println("Application migrations info generated")
+
     println("Application start")
   }
 }

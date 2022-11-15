@@ -119,3 +119,8 @@ The reason is css var is runtime while sass function is compile time executables
     }
   }
 }
+
+.bo-navigation {
+  position: relative;
+  z-index: 1;
+}

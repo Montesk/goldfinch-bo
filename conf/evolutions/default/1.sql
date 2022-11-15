@@ -1,3 +1,5 @@
+-- >Role create_table_orders
+
 -- !Ups
 CREATE TABLE IF NOT EXISTS orders (
     id bigserial primary key unique,

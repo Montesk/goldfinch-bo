@@ -1,3 +1,5 @@
+-- >Role create_table_deliveries
+
 -- !Ups
 CREATE TABLE IF NOT EXISTS deliveries
 (

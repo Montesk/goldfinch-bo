@@ -7,14 +7,20 @@
 
 Run the application `sbt run` -> runs the application on `9000` port
 
+### Run tests
+
+`sbt test`
+`sbt testQuick`
+`sbt testOnly services.migrations.MigrationsSpec`
+
 ### Troubleshooting
 
 #### No sources attached
 
 Run (sbt console)
 
-`update-classifiers`
-`update-sbt-classifiers`
+`sbt updateClassifiers`
+`sbt updateSbtClassifiers`
 
 * Might be helpful to invalidate idea indexes after that
 
