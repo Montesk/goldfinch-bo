@@ -24,5 +24,14 @@ POST        /warehouse/delete/:id        controllers.DeliveriesController.delete
 
 POST        /settings/edit               controllers.SettingsController.edit()
 
+# Auth
+#GET        /authenticated         controllers.Application.authenticated
+#GET        /authenticatedGroup    controllers.Application.authenticatedAndInGroup
+#
+#GET        /login                 controllers.Login.login
+#GET        /loginAction           controllers.Login.loginAction
+#GET        /oauth2callback        controllers.Login.oauth2Callback
+#GET        /logout                controllers.Login.logout
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
