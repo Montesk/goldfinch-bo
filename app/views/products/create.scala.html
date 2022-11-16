@@ -3,13 +3,13 @@
 
 @(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
 
-@products.content(data)
+    @products.content(data)
 
-@components.modal.modal(
-    bodyContent = createform(product),
-    title = "Добавить новый товар",
-    modalId = "create-product",
-    static = false,
-    showOnLoad = true,
-    redirectUrlOnClose = Option[String](Routes.ProductsPath)
-)
+    @components.modal.modal(
+        bodyContent = createform(product),
+        title = "Добавить новый товар",
+        modalId = "create-product",
+        static = false,
+        showOnLoad = true,
+        redirectUrlOnClose = Option[String](Routes.productsPath)
+    )

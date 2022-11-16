@@ -20,19 +20,19 @@ class ProductsSpec extends PlaySpec {
       Products.isTableView(req) mustBe (true)
     }
     "request products with query table view" in {
-      val expect = s"${Products.ProductsPath}?view=${Products.tableView}"
-      Products.withQuery(Products.ProductsPath, Some(s"view=${Products.tableView}")) mustBe expect
+      val expect = s"${Products.productsPath}?view=${Products.tableView}"
+      Products.withQuery(Products.productsPath, Some(s"view=${Products.tableView}")) mustBe expect
     }
     "request products with query album view" in {
-      val expect = s"${Products.ProductsPath}?view=${Products.albumView}"
-      Products.withQuery(Products.ProductsPath, Some(s"view=${Products.albumView}")) mustBe expect
+      val expect = s"${Products.productsPath}?view=${Products.albumView}"
+      Products.withQuery(Products.productsPath, Some(s"view=${Products.albumView}")) mustBe expect
     }
     "request product with some query" in {
-      val expect = s"${Products.ProductsPath}?key=value"
-      Products.withQuery(Products.ProductsPath, Some("key=value")) mustBe expect
+      val expect = s"${Products.productsPath}?key=value"
+      Products.withQuery(Products.productsPath, Some("key=value")) mustBe expect
     }
     "request preserves the query" in {
-      val expect = s"${Products.ProductsPath}?key=value"
+      val expect = s"${Products.productsPath}?key=value"
       val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some("key=value")).toString())
       Products.saveQuery(req) mustBe expect
     }

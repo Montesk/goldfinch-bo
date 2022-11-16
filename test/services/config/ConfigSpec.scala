@@ -91,7 +91,6 @@ class ConfigSpec extends PlaySpec {
           |""".stripMargin
 
       val expectException = a[DecodingFailure]
-
       expectException mustBe thrownBy(Config.readConfig(ymlString))
     }
 

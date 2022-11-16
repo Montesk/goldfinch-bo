@@ -15,7 +15,7 @@ object Products extends Linker {
   }
 
   def uri(): String = {
-    Uri.from(path = ProductsPath).toString()
+    Uri.from(path = productsPath).toString()
   }
 
   def isTableView(req: Request[AnyContent]): Boolean = {

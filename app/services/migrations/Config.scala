@@ -1,7 +1,5 @@
 package services.migrations
 
-import scala.annotation.tailrec
-
 trait Config {
   val migrationDirPath: String = Config.migrationsDirPath
   val roleCommentPattern: String = Config.roleCommentPatter

@@ -33,7 +33,7 @@
                 @for(delivery <- data) {
                     <tr>
                         <td class="align-middle">@delivery.id</td>
-                        <td class="align-middle"><a href="@Routes.ProductPath(delivery.product.id)">@delivery.product.name</a></td>
+                        <td class="align-middle"><a href="@Routes.productPath(delivery.product.id)">@delivery.product.name</a></td>
                         <td class="align-middle">@delivery.quantity</td>
                         <td class="align-middle">@delivery.created_at</td>
                         <td class="align-middle">@delivery.updated_at</td>
@@ -48,12 +48,12 @@
                                             {
                                                 triggerElemId: 'delivery-id-@delivery.id',
                                                 confirmMessage: 'Вы действительно хотите удалить поставку # @delivery.id ?',
-                                                deleteUri: '@Routes.DeliveryDeletePath(delivery.id)',
+                                                deleteUri: '@Routes.deliveryDeletePath(delivery.id)',
                                                 token: {
                                                     name: '@CSRF.getToken.name',
                                                     value: '@CSRF.getToken.value'
                                                 },
-                                                onDoneRedirectTo: '@Routes.DeliveriesPath',
+                                                onDoneRedirectTo: '@Routes.deliveriesPath',
                                             },
                                     );
                                 })

@@ -2,13 +2,13 @@
 
 @(deliveriesData: Vector[Delivery] = Vector(), productsData: Vector[Product], delivery: Delivery)(implicit request: Request[AnyContent])
 
-@deliveries.content(deliveriesData)
+    @deliveries.content(deliveriesData)
 
-@components.modal.modal(
-    bodyContent = deliveries.createform(delivery, productsData),
-    title = "Добавить новую поставку",
-    modalId = "create-delivery",
-    static = false,
-    showOnLoad = true,
-    redirectUrlOnClose = Option[String](Routes.DeliveriesPath)
-)
+    @components.modal.modal(
+        bodyContent = deliveries.createform(delivery, productsData),
+        title = "Добавить новую поставку",
+        modalId = "create-delivery",
+        static = false,
+        showOnLoad = true,
+        redirectUrlOnClose = Option[String](Routes.deliveriesPath)
+    )

@@ -2,7 +2,7 @@
 @import view.{Product, Routes}
 @(product: Product)(implicit request: Request[AnyContent])
 
-<form method="POST" action="@Routes.ProductCreatePath">
+<form method="POST" action="@Routes.productCreatePath">
     <div class="form-group">
     @components.form.components.input(name = "name", value = "Новый товар", label = "Имя", required = true)
     </div>

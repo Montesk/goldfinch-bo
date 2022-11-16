@@ -15,8 +15,8 @@ trait Config {
 }
 
 object Config {
-  var loaded: Option[fromConfig] = None
-  var parsed: Option[Repositories] = None
+  private var loaded: Option[fromConfig] = None
+  private var parsed: Option[Repositories] = None
 
   def readConfig(contentYAML: String): Unit = {
     val json: Either[ParsingFailure, Json] = parser.parse(contentYAML)

@@ -1,3 +1,4 @@
+@import helper._
 @import view.{Order, Product, Routes, Delivery, Products}
 
 @(
@@ -44,9 +45,9 @@
             <div class="container">
                 <div class="row">
                 @{
-                    if(request.path == Routes.OrdersPath) {
+                    if(request.path == Routes.ordersPath) {
                         orders.content(data = ordersData)
-                    } else if(request.path == Routes.ProductsPath) {
+                    } else if(request.path == Routes.productsPath) {
                         products.content(data = productsData)
                     } else if(request.path.contains("product/edit")) {
                         products.edit(data = productsData, product.get)
@@ -54,7 +55,7 @@
                         products.create(data = productsData, product.get)
                     } else if(request.path.contains("warehouse/create")) {
                         deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
-                    } else if(request.path == Routes.DeliveriesPath) {
+                    } else if(request.path == Routes.deliveriesPath) {
                         deliveries.content(data = deliveriesData)
                     } else {
                         dashboard.content()
@@ -68,11 +69,28 @@
 
 <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const token = {
+                name: '@CSRF.getToken.name',
+                value: '@CSRF.getToken.value',
+            }
+
             $("[data-theme]").each(function () {
                 $(this).click(function () {
                     const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
                     const theme = themePrefix + $(this).data('theme') + ".css";
                     $('#bo-main-theme').attr('href', theme)
+
+                    $.ajax({
+                        url: '@Routes.settingsUpdatePath',
+                        method: 'POST',
+                        data: {
+                            [token.name]: token.value,
+                            key: 'theme',
+                            value: $(this).data('theme')
+                        },
+                    }).done(function (response) {
+                        console.warn("settings updated. status", response.status)
+                    })
                 })
             })
         })

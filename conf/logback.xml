@@ -31,7 +31,7 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
-    <logger name="play" level="INFO"/>
+    <logger name="play" level="DEBUG"/>
     <logger name="application" level="DEBUG"/>
     <logger name="slick.jdbc.JdbcBackend.statementAndParameter" level="DEBUG"/>
     <logger name="slick.jdbc.JdbcBackend.benchmark" level="DEBUG"/>
@@ -39,7 +39,7 @@
     <logger name="org.jdbcdslog.StatementLogger" level="DEBUG"/>
     <logger name="org.jdbcdslog.ResultSetLogger" level="DEBUG"/>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="ASYNCFILE"/>
         <appender-ref ref="ASYNCSTDOUT"/>
     </root>

@@ -1,6 +1,9 @@
 import com.google.inject.AbstractModule
+
+import play.api.Logging
+
 import services.config.Config
-import services.migrations.{DefaultConfig => MigrationsConfig, Migrations}
+import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -11,22 +14,22 @@ import services.migrations.{DefaultConfig => MigrationsConfig, Migrations}
  * adding `play.modules.enabled` settings to the `application.conf`
  * configuration file.
  */
-class Module extends AbstractModule {
+class Module extends AbstractModule with Logging {
   override def configure(): Unit = {
-    println("Loading application configuration...")
-    val source = scala.io.Source.fromFile(AppSetting.ConfigPath)
+    logger.info("Loading application configuration")
+    val source = scala.io.Source.fromFile(AppSettings.ConfigPath)
     val fileContents = try source.mkString finally source.close()
     Config.readConfig(fileContents)
-    println("Application config loaded")
+    logger.info("Application config loaded")
 
-    println("Generating migrations info...")
+    logger.info("Generating migrations info...")
     new Migrations(MigrationsConfig()).generateInfo()
-    println("Application migrations info generated")
+    logger.info("Application migrations info generated")
 
-    println("Application start")
+    logger.info("Application started")
   }
 }
 
-object AppSetting {
+private object AppSettings {
   val ConfigPath: String = "conf/config.yml"
 }

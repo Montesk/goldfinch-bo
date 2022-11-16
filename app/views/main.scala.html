@@ -1,4 +1,4 @@
-@import services.config.Config
+@import services.cache.Cache
 
 @(title: String)(content: Html)
 
@@ -15,7 +15,7 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/filepond/dist/filepond.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/Magnific-Popup/magnific-popup.css")">
 
-        <link rel="stylesheet" media="screen" id="bo-main-theme" href="@routes.Assets.versioned(s"stylesheets/themes/${Config.appSettings().theme}.css")">
+        <link rel="stylesheet" media="screen" id="bo-main-theme" href="@routes.Assets.versioned(s"stylesheets/themes/${Cache.config().theme}.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
     </head>
     <body class="h-100">

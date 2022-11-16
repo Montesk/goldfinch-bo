@@ -20,7 +20,7 @@ object Delivery extends DynamicLinker {
   type B = Int
 
   override def uriTo[A <: B](identifier: A): String = {
-    DeliveryPath(identifier.toLong)
+    deliveryPath(identifier.toLong)
   }
 
   def fromDB(delivery: DBDelivery, product: DBProduct): Delivery = {

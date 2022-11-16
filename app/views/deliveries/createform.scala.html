@@ -4,7 +4,7 @@
 
 @(delivery: Delivery, productsData: Vector[Product])(implicit request: Request[AnyContent])
 
-<form method="POST" action="@Routes.DeliveryCreatePath">
+<form method="POST" action="@Routes.deliveryCreatePath">
     <div class="form-group">
     @components.form.components.select(
         name = "product_id",

@@ -31,7 +31,7 @@ class DeliveriesController @Inject()(
   def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     deliveryCreateForm.bindFromRequest.fold(
       formWithErrors => {
-        throw new Exception(s"Invalid data errors: ${formWithErrors.toString}")
+        throw new Exception(s"Invalid data -> errors: ${formWithErrors.toString}")
       },
       newDeliveryData => {
         deliveriesRepo.create(newDeliveryData)
