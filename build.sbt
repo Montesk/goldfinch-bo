@@ -9,6 +9,8 @@ pipelineStages := Seq(rjs)
 
 scalaVersion := "2.13.8"
 
+Test / javaOptions += "-Dconfig.file=conf/application.test.conf"
+
 libraryDependencies ++= Seq(
   guice,
   filters,
