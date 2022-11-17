@@ -1,3 +1,8 @@
+### Requirements
+
+* Java 8
+* Scala 2.13.8
+
 ### Infrastructure up
 
 `cd infrastructure/database`  

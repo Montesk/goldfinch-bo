@@ -57,7 +57,6 @@
   width: 80px;
   height: 80px;
   overflow: hidden;
-  border-radius: 50%;
 }
 
 .bg-primary {
@@ -118,9 +117,4 @@ The reason is css var is runtime while sass function is compile time executables
       margin-bottom: 0;
     }
   }
-}
-
-.bo-navigation {
-  position: relative;
-  z-index: 1;
 }

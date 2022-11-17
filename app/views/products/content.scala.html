@@ -3,7 +3,7 @@
 
 @(data: Vector[Product] = Vector())(implicit request: Request[AnyContent])
 
-<div class="mt-5 col-12">
+<div class="mt-2 col-12">
     @if(Products.isAlbumView(request)) {
         @products.album(data = data)
     }

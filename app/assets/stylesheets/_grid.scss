@@ -2,12 +2,13 @@
 
 .bo-content {
   position: relative;
-  padding-top: 56px;
-  margin-top: -56px;
 }
 
 .bo-setting-vertical-panel {
+  display: flex;
+  flex-direction: column;
   position: relative;
+  justify-content: flex-end;
   z-index: 1;
   min-width: 60px;
   margin-left: -15px;
@@ -15,5 +16,11 @@
 }
 
 .bo-content-with-left-settings-panel {
-  margin-left: -45px;
+  margin-left: -45px !important;
+  padding-left: 65px !important;
+}
+
+.bo-navigation {
+  position: relative;
+  z-index: 2;
 }
