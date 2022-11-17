@@ -25,12 +25,15 @@ object Config {
 
     loaded = Option(raw)
 
-    parsed = Option(Repositories(
-      defaults = repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
-      delivery = repositoryWithDuration(loaded.get.repository.delivery),
-      product = repositoryWithDuration(loaded.get.repository.product),
-      order = repositoryWithDuration(loaded.get.repository.order),
-    ))
+    parsed = Option(
+      Repositories(
+        defaults =
+          repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
+        delivery = repositoryWithDuration(loaded.get.repository.delivery),
+        product = repositoryWithDuration(loaded.get.repository.product),
+        order = repositoryWithDuration(loaded.get.repository.order)
+      )
+    )
   }
 
   def repositories(): Repositories = {
@@ -41,7 +44,9 @@ object Config {
     AppSettings(theme = loaded.get.app.theme)
   }
 
-  private def repositoryWithDuration(repo: Option[ConfigRepository]): Option[Repository] = {
+  private def repositoryWithDuration(
+      repo: Option[ConfigRepository]
+  ): Option[Repository] = {
     if (repo.isEmpty) {
       return None
     }
@@ -55,24 +60,26 @@ case class AppSettings(theme: String)
 case class Repository(dbWaitTimeout: Duration)
 
 case class Repositories(
-                         defaults: Repository,
-                         delivery: Option[Repository] = None,
-                         product: Option[Repository] = None,
-                         order: Option[Repository] = None,
-                       )
+    defaults: Repository,
+    delivery: Option[Repository] = None,
+    product: Option[Repository] = None,
+    order: Option[Repository] = None
+)
 
-/**
- * Yaml field must match case classes listed below params
- */
-private[config] case class fromConfig(repository: ConfigRepositories, app: ConfigAppSettings) {}
+/** Yaml field must match case classes listed below params
+  */
+private[config] case class fromConfig(
+    repository: ConfigRepositories,
+    app: ConfigAppSettings
+) {}
 
 private[config] case class ConfigRepository(dbWaitTimeout: String)
 
 private[config] case class ConfigRepositories(
-                                               defaults: ConfigRepository,
-                                               delivery: Option[ConfigRepository] = None,
-                                               product: Option[ConfigRepository] = None,
-                                               order: Option[ConfigRepository] = None,
-                                             )
+    defaults: ConfigRepository,
+    delivery: Option[ConfigRepository] = None,
+    product: Option[ConfigRepository] = None,
+    order: Option[ConfigRepository] = None
+)
 
 private[config] case class ConfigAppSettings(theme: String)

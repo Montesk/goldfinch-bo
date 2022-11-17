@@ -9,31 +9,34 @@ import play.api.mvc._
 import services.cache.Cache
 
 case class SettingsUpdateData(
-                               key: String,
-                               value: String,
-                             )
+    key: String,
+    value: String
+)
 
 @Singleton
-class SettingsController @Inject()(
-                                    val controllerComponents: ControllerComponents,
-                                  ) extends BaseController {
-  def edit(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    settingsUpdateForm.bindFromRequest.fold(
-      formWithErrors => {
-        throw new Exception(s"Invalid data -> errors: ${formWithErrors.toString}")
-      },
-      updateData => {
-        Cache.update(updateData.key, updateData.value)
-      }
-    )
+class SettingsController @Inject() (
+    val controllerComponents: ControllerComponents
+) extends BaseController {
+  def edit(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      settingsUpdateForm.bindFromRequest.fold(
+        formWithErrors => {
+          throw new Exception(
+            s"Invalid data -> errors: ${formWithErrors.toString}"
+          )
+        },
+        updateData => {
+          Cache.update(updateData.key, updateData.value)
+        }
+      )
 
-    Ok
+      Ok
   }
 
   private val settingsUpdateForm: Form[SettingsUpdateData] = Form(
     mapping(
       "key" -> text,
-      "value" -> text,
+      "value" -> text
     )(SettingsUpdateData.apply)(SettingsUpdateData.unapply)
   )
 }

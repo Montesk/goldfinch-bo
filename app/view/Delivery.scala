@@ -6,13 +6,13 @@ import repository.deliveries.{Delivery => DBDelivery}
 import repository.products.{Product => DBProduct}
 
 final case class Delivery(
-                           id: Int,
-                           product_id: Int,
-                           product: Product,
-                           quantity: Int,
-                           created_at: String,
-                           updated_at: String,
-                         ) {}
+    id: Int,
+    product_id: Int,
+    product: Product,
+    quantity: Int,
+    created_at: String,
+    updated_at: String
+) {}
 
 object Delivery extends DynamicLinker {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
@@ -29,8 +29,10 @@ object Delivery extends DynamicLinker {
       product_id = delivery.product_id.toInt,
       quantity = delivery.quantity,
       product = Product.fromDB(product),
-      created_at = delivery.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at = delivery.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      created_at =
+        delivery.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at =
+        delivery.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat))
     )
   }
 
@@ -47,7 +49,7 @@ object Delivery extends DynamicLinker {
       product = null,
       quantity = 0,
       created_at = "",
-      updated_at = "",
+      updated_at = ""
     )
   }
 }

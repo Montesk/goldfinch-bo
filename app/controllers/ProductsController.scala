@@ -8,107 +8,134 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.Files
 
-import repository.products.{ProductsRepository, ProductData, Product => DBProduct}
+import repository.products.{
+  ProductsRepository,
+  ProductData,
+  Product => DBProduct
+}
 import services.assets.Manager
 import view.Product
 
 @Singleton
-class ProductsController @Inject()(
-                                    val controllerComponents: ControllerComponents,
-                                    val productsRepo: ProductsRepository,
-                                    val assetsManager: Manager,
-                                  ) extends BaseController {
-  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(products = Product.listFromDB(productsList())))
+class ProductsController @Inject() (
+    val controllerComponents: ControllerComponents,
+    val productsRepo: ProductsRepository,
+    val assetsManager: Manager
+) extends BaseController {
+  def index(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(views.html.index(products = Product.listFromDB(productsList())))
   }
 
-  def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(
-      products = Product.listFromDB(productsList()),
-      product = Option[Product](Product.newProduct())
-    ))
+  def createView(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(
+        views.html.index(
+          products = Product.listFromDB(productsList()),
+          product = Option[Product](Product.newProduct())
+        )
+      )
   }
 
-  def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    var flashMsgData: ProductData = null
+  def create(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      var flashMsgData: ProductData = null
 
-    productEditForm.bindFromRequest.fold(
-      formWithErrors => {
-        throw new Exception(s"Invalid data ${formWithErrors.toString}")
-      },
-      productData => {
-        productsRepo.create(data = productData)
-        flashMsgData = productData
+      productEditForm.bindFromRequest.fold(
+        formWithErrors => {
+          throw new Exception(s"Invalid data ${formWithErrors.toString}")
+        },
+        productData => {
+          productsRepo.create(data = productData)
+          flashMsgData = productData
+        }
+      )
+
+      Redirect(routes.ProductsController.index())
+        .flashing("success" -> s"Товар ${flashMsgData.name} успешно добавлен")
+  }
+
+  def editView(id: Long): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      Ok(
+        views.html.index(
+          products = Product.listFromDB(productsList()),
+          product = Option[Product](Product.fromDB(product(id)))
+        )
+      )
+  }
+
+  def edit(id: Long): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      var flashMsgData: ProductData = null
+
+      productEditForm.bindFromRequest.fold(
+        formWithErrors => {
+          throw new Exception(s"Invalid data ${formWithErrors.toString}")
+        },
+        productData => {
+          flashMsgData = productData
+
+          val product = this.product(id)
+
+          productsRepo.update(id, productData)
+
+          for (imageToDelete <- productData.deleteFiles) {
+            deleteImage(product = product, image = imageToDelete)
+          }
+
+          for (image <- productData.files) {
+            persistImage(
+              product = product,
+              fileName = (lastImg(Product.fromDB(product).files) + 1).toString,
+              image = image
+            )
+          }
+
+          if (productData.titleImage.nonEmpty) {
+            persistImage(
+              product = product,
+              isMain = true,
+              image = productData.titleImage.getOrElse("")
+            )
+          }
+        }
+      )
+
+      Redirect(routes.ProductsController.index()).flashing(
+        "success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован"
+      )
+  }
+
+  def delete(id: Long): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      productsRepo.delete(id = id)
+      Redirect(routes.ProductsController.index())
+        .flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
+  }
+
+  /** Params: { <body> "files": [fileObj] // :WARNING: currently supported
+    * single file upload <query> "uuid": Option[UUID] // if not passed it is
+    * assumed it is the new product <query> "csrfTokenName": "csrfTokenValue" }
+    *
+    * @return
+    */
+  def upload(): Action[MultipartFormData[Files.TemporaryFile]] =
+    Action(parse.multipartFormData) { implicit request =>
+      val productUUID = request.getQueryString("uuid").get
+      var uploaded: String = ""
+
+      for (file <- request.body.files) {
+        assetsManager.saveTemporaryFile(
+          file = file.ref,
+          productUUID,
+          file.filename
+        )
+        uploaded = file.filename
       }
-    )
 
-    Redirect(routes.ProductsController.index()).flashing("success" -> s"Товар ${flashMsgData.name} успешно добавлен")
-  }
-
-  def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(
-      products = Product.listFromDB(productsList()),
-      product = Option[Product](Product.fromDB(product(id)))
-    ))
-  }
-
-  def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    var flashMsgData: ProductData = null
-
-    productEditForm.bindFromRequest.fold(
-      formWithErrors => {
-        throw new Exception(s"Invalid data ${formWithErrors.toString}")
-      },
-      productData => {
-        flashMsgData = productData
-        
-        val product = this.product(id)
-
-        productsRepo.update(id, productData)
-
-        for (imageToDelete <- productData.deleteFiles) {
-          deleteImage(product = product, image = imageToDelete)
-        }
-
-        for (image <- productData.files) {
-          persistImage(product = product, fileName = (lastImg(Product.fromDB(product).files) + 1).toString, image = image)
-        }
-
-        if (productData.titleImage.nonEmpty) {
-          persistImage(product = product, isMain = true, image = productData.titleImage.getOrElse(""))
-        }
-      }
-    )
-
-    Redirect(routes.ProductsController.index()).flashing("success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован")
-  }
-
-  def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    productsRepo.delete(id = id)
-    Redirect(routes.ProductsController.index()).flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
-  }
-
-  /**
-   *
-   * Params: {
-   * <body> "files": [fileObj] // :WARNING: currently supported single file upload
-   * <query> "uuid": Option[UUID] // if not passed it is assumed it is the new product
-   * <query> "csrfTokenName": "csrfTokenValue"
-   * }
-   *
-   * @return
-   */
-  def upload(): Action[MultipartFormData[Files.TemporaryFile]] = Action(parse.multipartFormData) { implicit request =>
-    val productUUID = request.getQueryString("uuid").get
-    var uploaded: String = ""
-
-    for (file <- request.body.files) {
-      assetsManager.saveTemporaryFile(file = file.ref, productUUID, file.filename)
-      uploaded = file.filename
+      Ok(uploaded)
     }
-
-    Ok(uploaded)
-  }
 
   private def product(id: Long): DBProduct = {
     productsRepo.find(id)
@@ -125,7 +152,7 @@ class ProductsController @Inject()(
       "price" -> number,
       "files" -> list(text),
       "title-image" -> optional(text),
-      "delete-files" -> list(text),
+      "delete-files" -> list(text)
     )(ProductData.apply)(ProductData.unapply)
   )
 
@@ -142,12 +169,25 @@ class ProductsController @Inject()(
     result
   }
 
-  private def persistImage(product: DBProduct, image: String, isMain: Boolean = false, fileName: String = ""): Unit = {
+  private def persistImage(
+      product: DBProduct,
+      image: String,
+      isMain: Boolean = false,
+      fileName: String = ""
+  ): Unit = {
     val extension = helperFiles.getFileExtension(image)
     if (isMain) {
-      assetsManager.persistTempFile(product.uuid.get.toString, image, Product.MainImageFileName + "." + extension)
+      assetsManager.persistTempFile(
+        product.uuid.get.toString,
+        image,
+        Product.MainImageFileName + "." + extension
+      )
     } else {
-      assetsManager.persistTempFile(product.uuid.get.toString, image, fileName + "." + extension)
+      assetsManager.persistTempFile(
+        product.uuid.get.toString,
+        image,
+        fileName + "." + extension
+      )
     }
   }
 

@@ -12,7 +12,8 @@ import slick.jdbc.JdbcProfile
 import repository.Repository
 
 @Singleton
-class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) extends Repository {
+class OrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+    extends Repository {
   val DefaultDBTimeout: Duration = withDefaultTimeout(config.order)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -32,7 +33,13 @@ class OrdersRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) exten
 
     def updated_at = column[LocalDateTime]("updated_at")
 
-    def * = (id, status, costumer_id, created_at, updated_at) <> ((Order.apply _).tupled, Order.unapply)
+    def * = (
+      id,
+      status,
+      costumer_id,
+      created_at,
+      updated_at
+    ) <> ((Order.apply _).tupled, Order.unapply)
   }
 
   private val orders = TableQuery[OrderTable]

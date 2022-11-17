@@ -16,11 +16,15 @@ trait Cache {
 }
 
 object Cache extends Logging with CacheKeys {
-  private val cache: mutable.WeakHashMap[String, Any] = mutable.WeakHashMap.empty
+  private val cache: mutable.WeakHashMap[String, Any] =
+    mutable.WeakHashMap.empty
 
   def config(): ApplicationConfig = {
     cache
-      .getOrElseUpdate(CacheKeys.config, ApplicationConfig(Config.appSettings().theme))
+      .getOrElseUpdate(
+        CacheKeys.config,
+        ApplicationConfig(Config.appSettings().theme)
+      )
       .asInstanceOf[ApplicationConfig]
   }
 
@@ -36,9 +40,8 @@ object Cache extends Logging with CacheKeys {
   }
 }
 
-/**
- * Public cache update keys
- */
+/** Public cache update keys
+  */
 trait CacheKeys {
   val cacheKeyTheme: String = "theme"
 }
@@ -46,4 +49,3 @@ trait CacheKeys {
 private[cache] object CacheKeys {
   val config: String = "config"
 }
-

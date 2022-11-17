@@ -1,6 +1,10 @@
 package repository
 
-import services.config.{Config, Repositories => ConfigRepositories, Repository => ConfigRepository}
+import services.config.{
+  Config,
+  Repositories => ConfigRepositories,
+  Repository => ConfigRepository
+}
 
 import scala.concurrent.duration.Duration
 

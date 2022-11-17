@@ -8,18 +8,18 @@ import services.assets.{Manager, Assets => AService}
 import controllers.routes
 
 final case class Product(
-                          id: Int,
-                          price: Int,
-                          name: String,
-                          stock: Int,
-                          uuid: String,
-                          description: Option[String],
-                          disabled: Boolean,
-                          created_at: String,
-                          updated_at: String,
-                          files: List[String] = List(),
-                          titleImage: String = ""
-                        ) {}
+    id: Int,
+    price: Int,
+    name: String,
+    stock: Int,
+    uuid: String,
+    description: Option[String],
+    disabled: Boolean,
+    created_at: String,
+    updated_at: String,
+    files: List[String] = List(),
+    titleImage: String = ""
+) {}
 
 object Product extends DynamicLinker {
   val TimeFormat: String = "dd-MM-yyyy HH:mm:ss"
@@ -42,10 +42,20 @@ object Product extends DynamicLinker {
       uuid = product.uuid.get.toString,
       description = product.description,
       disabled = product.disabled,
-      created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      files = assetsManager.getGroupAssets(product.uuid.get.toString, List(MainImageFileName)).map(file => buildAssetPath(product.uuid.get, file)),
-      titleImage = buildAssetPath(product.uuid.get, assetsManager.getFileByName(product.uuid.get.toString, MainImageFileName)),
+      created_at =
+        product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at =
+        product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      files = assetsManager
+        .getGroupAssets(product.uuid.get.toString, List(MainImageFileName))
+        .map(file => buildAssetPath(product.uuid.get, file)),
+      titleImage = buildAssetPath(
+        product.uuid.get,
+        assetsManager.getFileByName(
+          product.uuid.get.toString,
+          MainImageFileName
+        )
+      )
     )
   }
 
@@ -63,11 +73,15 @@ object Product extends DynamicLinker {
       description = None,
       disabled = false,
       created_at = "",
-      updated_at = "",
+      updated_at = ""
     )
   }
 
   private def buildAssetPath(group: UUID, fileName: String): String = {
-    routes.Assets.versioned(s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}").url
+    routes.Assets
+      .versioned(
+        s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}"
+      )
+      .url
   }
 }

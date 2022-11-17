@@ -29,11 +29,16 @@ trait Linker extends Routes {
 trait DynamicLinker extends Linker {
   type B
 
-  override def uri(): String = throw new Exception("unsupported static uri without params")
+  override def uri(): String = throw new Exception(
+    "unsupported static uri without params"
+  )
 
   def uriTo[A <: B](identifier: A): String
 
-  def saveQueryUriTo[A <: B](identifier: A, current: Request[AnyContent]): String = {
+  def saveQueryUriTo[A <: B](
+      identifier: A,
+      current: Request[AnyContent]
+  ): String = {
     val query = if (current.rawQueryString.nonEmpty) {
       Some(current.rawQueryString)
     } else {

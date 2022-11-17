@@ -9,15 +9,15 @@
         rows: Int = 3,
 )
 
-@if(label) {
-    <label for="@id">@label</label>
-}
+    @if(label) {
+        <label for="@id">@label</label>
+    }
 
-<textarea
-class="@cssClass"
-name="@name"
-id="@id"
-rows="@rows"
->
-@value
-</textarea>
+    <textarea
+    class="@cssClass"
+    name="@name"
+    id="@id"
+    rows="@rows"
+    >
+    @value
+    </textarea>

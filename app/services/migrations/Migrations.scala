@@ -8,8 +8,7 @@ class Migrations(cfg: Config) {
   def generateInfo(): Unit = {
     val file = new File(cfg.migrationDirPath)
 
-    val list = file
-      .listFiles
+    val list = file.listFiles
       .filter(_.isFile) // directory check
       .map(_.getPath)
       .toList
@@ -18,7 +17,9 @@ class Migrations(cfg: Config) {
 
     for (file <- list) {
       val source = scala.io.Source.fromFile(file)
-      val lines = try source.mkString finally source.close()
+      val lines =
+        try source.mkString
+        finally source.close()
 
       val formatted = lines.split("\r\n")
 
@@ -28,7 +29,10 @@ class Migrations(cfg: Config) {
       }
 
       val fileName = Paths.get(file).getFileName.toString
-      rows = rows :+ MigrationInfo(fileName = fileName, role = parsedName.getOrElse(cfg.undefinedRoleMessage).trim)
+      rows = rows :+ MigrationInfo(
+        fileName = fileName,
+        role = parsedName.getOrElse(cfg.undefinedRoleMessage).trim
+      )
     }
 
     writeInfo(rows)

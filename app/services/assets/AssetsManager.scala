@@ -14,16 +14,29 @@ trait Manager {
 
   def getTempPath: String
 
-  def saveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String = "", replace: Boolean = true, moveFile: Boolean = true): Path
+  def saveTemporaryFile(
+      file: Files.TemporaryFile,
+      group: String,
+      fileName: String = "",
+      replace: Boolean = true,
+      moveFile: Boolean = true
+  ): Path
 
-  def persistTempFile(group: String, srcFile: String, destFile: String, moveFile: Boolean = true): Path
+  def persistTempFile(
+      group: String,
+      srcFile: String,
+      destFile: String,
+      moveFile: Boolean = true
+  ): Path
 
-  def getGroupAssets(group: String, exclude: List[String] = List()): List[String]
+  def getGroupAssets(
+      group: String,
+      exclude: List[String] = List()
+  ): List[String]
 
-  /**
-   * Get file by name ignoring extension
-   * fileName param must be passed without extension
-   */
+  /** Get file by name ignoring extension fileName param must be passed without
+    * extension
+    */
   def getFileByName(group: String, fileName: String): String
 
   def deleteFile(group: String, fileName: String): Unit
@@ -35,22 +48,38 @@ object DefaultOptions {
   val assetsDirPath = "uploads/assets"
 }
 
-case class Options @Inject()(
-                              projectAssetsDir: String = "",
-                              tempDirPath: String = "",
-                              assetsDirPath: String = ""
-                            ) {}
+case class Options @Inject() (
+    projectAssetsDir: String = "",
+    tempDirPath: String = "",
+    assetsDirPath: String = ""
+) {}
 
-class Assets @Inject()(opts: Options = Options()) extends Manager {
-  private val projectDirPath: String = if (opts.projectAssetsDir.isEmpty) DefaultOptions.projectAssetsDir else opts.projectAssetsDir
-  private val tempDirPath: String = if (opts.tempDirPath.isEmpty) s"${DefaultOptions.projectAssetsDir}/${DefaultOptions.tempDirPath}" else s"${opts.projectAssetsDir}/${opts.tempDirPath}"
-  private val assetsDirPath: String = if (opts.assetsDirPath.isEmpty) s"${DefaultOptions.projectAssetsDir}/${DefaultOptions.assetsDirPath}" else s"${opts.projectAssetsDir}/${opts.assetsDirPath}"
+class Assets @Inject() (opts: Options = Options()) extends Manager {
+  private val projectDirPath: String =
+    if (opts.projectAssetsDir.isEmpty) DefaultOptions.projectAssetsDir
+    else opts.projectAssetsDir
+  private val tempDirPath: String =
+    if (opts.tempDirPath.isEmpty)
+      s"${DefaultOptions.projectAssetsDir}/${DefaultOptions.tempDirPath}"
+    else s"${opts.projectAssetsDir}/${opts.tempDirPath}"
+  private val assetsDirPath: String =
+    if (opts.assetsDirPath.isEmpty)
+      s"${DefaultOptions.projectAssetsDir}/${DefaultOptions.assetsDirPath}"
+    else s"${opts.projectAssetsDir}/${opts.assetsDirPath}"
 
-  override def getAssetsPath: String = assetsDirPath.replace(s"${projectDirPath}/", "")
+  override def getAssetsPath: String =
+    assetsDirPath.replace(s"${projectDirPath}/", "")
 
-  override def getTempPath: String = tempDirPath.replace(s"${projectDirPath}/", "")
+  override def getTempPath: String =
+    tempDirPath.replace(s"${projectDirPath}/", "")
 
-  override def saveTemporaryFile(file: Files.TemporaryFile, group: String, fileName: String, replace: Boolean = true, moveFile: Boolean = true): Path = {
+  override def saveTemporaryFile(
+      file: Files.TemporaryFile,
+      group: String,
+      fileName: String,
+      replace: Boolean = true,
+      moveFile: Boolean = true
+  ): Path = {
     val tmpFilePath = tempFile(group, fileName)
     mkDirAll(tmpFilePath.toString)
 
@@ -61,24 +90,38 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
     file.copyTo(tmpFilePath.toAbsolutePath, replace = replace)
   }
 
-  override def persistTempFile(group: String, srcFile: String, destFile: String, moveFile: Boolean = true): Path = {
+  override def persistTempFile(
+      group: String,
+      srcFile: String,
+      destFile: String,
+      moveFile: Boolean = true
+  ): Path = {
     mkDirAll(assetFile(group, destFile).toString)
 
     val temp = new File(tempFile(group, srcFile).toAbsolutePath.toString)
     val dest = new File(assetFile(group, destFile).toAbsolutePath.toString)
 
     if (moveFile) {
-      return ioFiles.move(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING)
+      return ioFiles.move(
+        temp.toPath,
+        dest.toPath,
+        StandardCopyOption.REPLACE_EXISTING
+      )
     }
 
     ioFiles.copy(temp.toPath, dest.toPath, StandardCopyOption.REPLACE_EXISTING)
   }
 
   // @param exclude supports only filenames without extension
-  override def getGroupAssets(group: String, exclude: List[String] = List()): List[String] = {
+  override def getGroupAssets(
+      group: String,
+      exclude: List[String] = List()
+  ): List[String] = {
     val result = new File(s"""${assetsDirPath}/${group}/""").list()
     if (result ne null) {
-      return result.toList.filter(r => !exclude.contains(helperFiles.getNameWithoutExtension(r)))
+      return result.toList.filter(r =>
+        !exclude.contains(helperFiles.getNameWithoutExtension(r))
+      )
     }
 
     List[String]()
@@ -87,7 +130,10 @@ class Assets @Inject()(opts: Options = Options()) extends Manager {
   override def getFileByName(group: String, fileName: String): String = {
     val allFiles = getGroupAssets(group)
     for (file <- allFiles) {
-      if (helperFiles.getNameWithoutExtension(file) == helperFiles.getNameWithoutExtension(fileName)) {
+      if (
+        helperFiles.getNameWithoutExtension(file) == helperFiles
+          .getNameWithoutExtension(fileName)
+      ) {
         return file
       }
     }

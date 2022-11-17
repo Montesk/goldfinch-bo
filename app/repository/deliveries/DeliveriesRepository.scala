@@ -14,9 +14,9 @@ import repository.Repository
 import repository.products.{Product, Products}
 
 case class DeliveryData(
-                         product_id: Long,
-                         quantity: Int,
-                       )
+    product_id: Long,
+    quantity: Int
+)
 
 class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -31,13 +31,23 @@ class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
 
   def updated_at = column[Option[LocalDateTime]]("updated_at")
 
-  def productsFk = foreignKey("deliveries_product_id_fkey", product_id, TableQuery[Products])(_.id)
+  def productsFk =
+    foreignKey("deliveries_product_id_fkey", product_id, TableQuery[Products])(
+      _.id
+    )
 
-  def * = (id, product_id, quantity, created_at, updated_at) <> ((Delivery.apply _).tupled, Delivery.unapply)
+  def * = (
+    id,
+    product_id,
+    quantity,
+    created_at,
+    updated_at
+  ) <> ((Delivery.apply _).tupled, Delivery.unapply)
 }
 
 @Singleton
-class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) extends Repository {
+class DeliveriesRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+    extends Repository {
   val DefaultDBTimeout: Duration = withDefaultTimeout(config.delivery)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -68,7 +78,9 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) e
 
   private def execSelect(): Future[Seq[(Delivery, Product)]] = db.run {
     val withJoin = for {
-      delivery <- deliveries.filter(_.deleted === false).sortBy(_.created_at.desc)
+      delivery <- deliveries
+        .filter(_.deleted === false)
+        .sortBy(_.created_at.desc)
       product <- delivery.productsFk
     } yield (delivery, product)
 
@@ -84,13 +96,15 @@ class DeliveriesRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) e
 
   private def execCreate(data: DeliveryData): Future[Unit] = db.run {
     DBIO.seq(
-      deliveries.map(p => (p.quantity, p.product_id)) += (data.quantity, data.product_id)
+      deliveries.map(p =>
+        (p.quantity, p.product_id)
+      ) += (data.quantity, data.product_id)
     )
   }
 
   private def execDelete(id: Long, soft: Boolean): Future[Int] = db.run {
     if (soft) {
-      val query = for {d <- deliveries if d.id === id} yield d.deleted
+      val query = for { d <- deliveries if d.id === id } yield d.deleted
       query.update(true)
     } else {
       deliveries.filter(_.id === id).delete

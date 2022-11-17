@@ -14,13 +14,13 @@ import play.api.db.slick.DatabaseConfigProvider
 import repository.Repository
 
 case class ProductData(
-                        name: String,
-                        description: String,
-                        price: Int,
-                        files: List[String] = List(),
-                        titleImage: Option[String] = Option[String](""),
-                        deleteFiles: List[String] = List(),
-                      )
+    name: String,
+    description: String,
+    price: Int,
+    files: List[String] = List(),
+    titleImage: Option[String] = Option[String](""),
+    deleteFiles: List[String] = List()
+)
 
 class Products(tag: Tag) extends Table[Product](tag, "products") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -43,11 +43,23 @@ class Products(tag: Tag) extends Table[Product](tag, "products") {
 
   def updated_at = column[Option[LocalDateTime]]("updated_at")
 
-  def * = (id, price, name, stock, uuid, description, disabled, deleted, created_at, updated_at) <> ((Product.apply _).tupled, Product.unapply)
+  def * = (
+    id,
+    price,
+    name,
+    stock,
+    uuid,
+    description,
+    disabled,
+    deleted,
+    created_at,
+    updated_at
+  ) <> ((Product.apply _).tupled, Product.unapply)
 }
 
 @Singleton
-class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) extends Repository {
+class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
+    extends Repository {
   val DefaultDBTimeout: Duration = withDefaultTimeout(config.product)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -84,7 +96,12 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) ext
   }
 
   private def execUpdate(id: Long, data: ProductData): Future[Int] = db.run {
-    val query = for {c <- products if c.id === id} yield (c.name, c.price, c.description)
+    val query =
+      for { c <- products if c.id === id } yield (
+        c.name,
+        c.price,
+        c.description
+      )
     query.update(data.name, data.price, Option[String](data.description))
   }
 
@@ -98,13 +115,15 @@ class ProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider) ext
 
   private def execCreate(data: ProductData): Future[Unit] = db.run {
     DBIO.seq(
-      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
+      products.map(p =>
+        (p.price, p.name, p.description)
+      ) += (data.price, data.name, Option[String](data.description))
     )
   }
 
   private def execDelete(id: Long, soft: Boolean = true): Future[Int] = db.run {
     if (soft) {
-      val query = for {p <- products if p.id === id} yield p.deleted
+      val query = for { p <- products if p.id === id } yield p.deleted
       query.update(true)
     } else {
       products.filter(_.id === id).delete

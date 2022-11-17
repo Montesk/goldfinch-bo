@@ -19,11 +19,14 @@ object Routes {
   val homePath: String = routes.HomeController.index().url
   val ordersPath: String = routes.OrdersController.index().url
   val productsPath: String = routes.ProductsController.index().url
-  val productPath: Long => String = (productId: Long) => routes.ProductsController.editView(productId: Long).url
+  val productPath: Long => String = (productId: Long) =>
+    routes.ProductsController.editView(productId: Long).url
   val productCreatePath: String = routes.ProductsController.create().url
   val deliveriesPath: String = routes.DeliveriesController.index().url
-  val deliveryPath: Long => String = (deliveryId: Long) => routes.DeliveriesController.editView(deliveryId: Long).url
+  val deliveryPath: Long => String = (deliveryId: Long) =>
+    routes.DeliveriesController.editView(deliveryId: Long).url
   val deliveryCreatePath: String = routes.DeliveriesController.create().url
-  val deliveryDeletePath: Long => String = (deliveryId: Long) => routes.DeliveriesController.delete(deliveryId: Long).url
+  val deliveryDeletePath: Long => String = (deliveryId: Long) =>
+    routes.DeliveriesController.delete(deliveryId: Long).url
   val settingsUpdatePath: String = routes.SettingsController.edit().url
 }
