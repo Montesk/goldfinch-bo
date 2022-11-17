@@ -31,10 +31,9 @@ class ConfigSpec extends PlaySpec {
       )
 
       Config.readConfig(ymlString)
-
       val got = Config.repositories()
 
-      got mustBe expect
+      got equals expect
     }
 
     "read some repositories settings from YAML config - ok" in {
@@ -55,10 +54,9 @@ class ConfigSpec extends PlaySpec {
       )
 
       Config.readConfig(ymlString)
-
       val got = Config.repositories()
 
-      got mustBe expect
+      got equals expect
     }
 
     "read only required field from YAML config - ok" in {
@@ -76,10 +74,9 @@ class ConfigSpec extends PlaySpec {
       )
 
       Config.readConfig(ymlString)
-
       val got = Config.repositories()
 
-      got mustBe expect
+      got equals expect
     }
 
     "missing required field - fail" in {
@@ -90,8 +87,7 @@ class ConfigSpec extends PlaySpec {
           |    # dbWaitTimeout: 0
           |""".stripMargin
 
-      val expectException = a[DecodingFailure]
-      expectException mustBe thrownBy(Config.readConfig(ymlString))
+      a[DecodingFailure] must be thrownBy Config.readConfig(ymlString)
     }
 
     "missing only required field - fail" in {
@@ -110,9 +106,7 @@ class ConfigSpec extends PlaySpec {
           |    dbWaitTimeout: "15s"
           |""".stripMargin
 
-      val expectException = a[DecodingFailure]
-
-      expectException mustBe thrownBy(Config.readConfig(ymlString))
+      a[DecodingFailure] must be thrownBy Config.readConfig(ymlString)
     }
 
     "missing only required field and object - fail" in {
@@ -129,9 +123,7 @@ class ConfigSpec extends PlaySpec {
           |    dbWaitTimeout: "15s"
           |""".stripMargin
 
-      val expectException = a[DecodingFailure]
-
-      expectException mustBe thrownBy(Config.readConfig(ymlString))
+      a[DecodingFailure] must be thrownBy Config.readConfig(ymlString)
     }
 
     "invalid format for required config field - fail" in {
@@ -144,9 +136,7 @@ class ConfigSpec extends PlaySpec {
           |    dbWaitTimeout: 13
           |""".stripMargin
 
-      val expectException = a[DecodingFailure]
-
-      expectException mustBe thrownBy(Config.readConfig(ymlString))
+      a[DecodingFailure] must be thrownBy Config.readConfig(ymlString)
     }
   }
 }

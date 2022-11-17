@@ -1,6 +1,7 @@
 package services.cache
 
 import scala.collection.mutable
+import scala.util.{Failure, Success, Try}
 import play.api.Logging
 import services.config.Config
 
@@ -23,12 +24,14 @@ object Cache extends Logging with CacheKeys {
       .asInstanceOf[ApplicationConfig]
   }
 
-  def update(key: String, value: String): Unit = {
+  def update(key: String, value: String): Try[Option[Exception]] = {
     key match {
-      case `cacheKeyTheme` => cache.update(CacheKeys.config, ApplicationConfig(value))
+      case `cacheKeyTheme` =>
+        cache.update(CacheKeys.config, ApplicationConfig(theme = value))
+        Success(None)
       case _ =>
-        logger.error(s"trying to update cache value: ${value} by key: ${key}")
-        throw UnsupportedUpdateOperation()
+        logger.warn(s"trying to update cache value: ${value} by key: ${key}")
+        Failure(UnsupportedUpdateOperation())
     }
   }
 }
