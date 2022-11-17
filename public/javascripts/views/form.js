@@ -96,5 +96,19 @@ define(function (require) {
                 )
             })
         },
+
+        /**
+         * @param postUri {string}
+         * @param data {Object}
+         */
+        postRequest: function (postUri, data) {
+            $.ajax({
+                url: postUri,
+                method: 'POST',
+                data: data,
+            }).done(function (response) {
+                console.warn("response", response)
+            })
+        },
     };
 })

@@ -3,7 +3,7 @@ package services.config
 import io.circe.DecodingFailure
 import org.scalatestplus.play.PlaySpec
 
-import scala.concurrent.duration.{Duration, FiniteDuration, SECONDS}
+import scala.concurrent.duration.{Duration, SECONDS}
 
 class ConfigSpec extends PlaySpec {
   "Config" must {

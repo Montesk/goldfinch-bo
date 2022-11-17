@@ -69,27 +69,23 @@
 
 <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const token = {
-                name: '@CSRF.getToken.name',
-                value: '@CSRF.getToken.value',
-            }
+            require(["views/form"], function (form) {
+                const token = {
+                    name: '@CSRF.getToken.name',
+                    value: '@CSRF.getToken.value',
+                }
 
-            $("[data-theme]").each(function () {
-                $(this).click(function () {
-                    const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
-                    const theme = themePrefix + $(this).data('theme') + ".css";
-                    $('#bo-main-theme').attr('href', theme)
+                $("[data-theme]").each(function () {
+                    $(this).click(function () {
+                        const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
+                        const theme = themePrefix + $(this).data('theme') + ".css";
+                        $('#bo-main-theme').attr('href', theme)
 
-                    $.ajax({
-                        url: '@Routes.settingsUpdatePath',
-                        method: 'POST',
-                        data: {
+                        form.postRequest('@Routes.settingsUpdatePath', {
                             [token.name]: token.value,
                             key: 'theme',
                             value: $(this).data('theme')
-                        },
-                    }).done(function (response) {
-                        console.warn("settings updated. status", response.status)
+                        })
                     })
                 })
             })
