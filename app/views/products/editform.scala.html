@@ -1,6 +1,5 @@
 @import helper._
-
-@import view.Product
+@import view.models.Product
 
 @(product: Product)(implicit request: Request[AnyContent])
 
@@ -79,7 +78,7 @@
                 form.imageUploadForm(
                         {
                             formGroupId: 'filepond-title-image',
-                            uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                            uploadUri: '@routes.ProductsController.upload()?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
                             outputOptions: {inputName: 'title-image', formGroupId: 'product-title-image'},
                         },
                 );
@@ -88,7 +87,7 @@
                 form.imageUploadForm(
                         {
                             formGroupId: 'filepond',
-                            uploadUri: '@routes.ProductsController.upload?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
+                            uploadUri: '@routes.ProductsController.upload()?@CSRF.getToken.name=@CSRF.getToken.value&uuid=@product.uuid',
                             outputOptions: {inputName: 'files[]', formGroupId: 'product-sub-files'},
                         },
                 );

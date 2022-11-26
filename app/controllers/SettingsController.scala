@@ -9,17 +9,17 @@ import play.api.mvc._
 import services.cache.Cache
 
 case class SettingsUpdateData(
-    key: String,
-    value: String
-)
+                               key: String,
+                               value: String
+                             )
 
 @Singleton
-class SettingsController @Inject() (
-    val controllerComponents: ControllerComponents
-) extends BaseController {
+class SettingsController @Inject()(
+                                    val controllerComponents: ControllerComponents
+                                  ) extends BaseController {
   def edit(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      settingsUpdateForm.bindFromRequest.fold(
+      settingsUpdateForm.bindFromRequest().fold(
         formWithErrors => {
           throw new Exception(
             s"Invalid data -> errors: ${formWithErrors.toString}"

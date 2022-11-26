@@ -63,7 +63,7 @@
   background-color: var(--bo-success-color) !important;
 }
 
-nav a, .btn {
+.bo-navigation a, .btn {
   color: #fff !important;
 }
 
@@ -78,6 +78,12 @@ a, .text-primary {
 
 .text-success {
   color: var(--bo-success-color) !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--bo-success-color) !important;
+  border-color: var(--bo-success-color) !important;
+  color: #ffffff !important;
 }
 
 /**

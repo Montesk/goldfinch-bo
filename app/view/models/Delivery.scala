@@ -1,9 +1,10 @@
-package view
+package view.models
 
 import java.time.format.DateTimeFormatter
 
 import repository.deliveries.{Delivery => DBDelivery}
 import repository.products.{Product => DBProduct}
+import view.routes.DynamicLinker
 
 final case class Delivery(
     id: Int,

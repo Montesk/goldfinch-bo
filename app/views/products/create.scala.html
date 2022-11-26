@@ -1,15 +1,15 @@
-@import view.{Product, Routes}
-@import views.html.products.createform
+@import view.models.Product
+@import view.routes.Routes
 
 @(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
 
-    @products.content(data)
+@products.content(data)
 
-    @components.modal.modal(
-        bodyContent = createform(product),
-        title = "Добавить новый товар",
-        modalId = "create-product",
-        static = false,
-        showOnLoad = true,
-        redirectUrlOnClose = Option[String](Routes.productsPath)
-    )
+@components.modal.modal(
+    bodyContent = products.createform(product),
+    title = "Добавить новый товар",
+    modalId = "create-product",
+    static = false,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](Routes.productsPath)
+)

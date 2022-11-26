@@ -1,8 +1,8 @@
-package view
+package view.models
 
 import akka.http.scaladsl.model.Uri
-
 import play.api.mvc.{AnyContent, Request}
+import view.routes.Linker
 
 object Products extends Linker {
   val tableView = "table"

@@ -5,20 +5,20 @@ import play.api.Logging
 import services.config.Config
 import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
 
-/** This class is a Guice module that tells Guice how to bind several different
-  * types. This Guice module is created when the Play application starts. Play
-  * will automatically use any class called `Module` that is in the root
-  * package. You can create modules in other locations by adding
-  * `play.modules.enabled` settings to the `application.conf` configuration
-  * file.
+/** This class is a Guice module that tells Guice how to bind several different types. This Guice module is created when
+  * the Play application starts. Play will automatically use any class called `Module` that is in the root package. You
+  * can create modules in other locations by adding `play.modules.enabled` settings to the `application.conf`
+  * configuration file.
   */
 class Module extends AbstractModule with Logging {
   override def configure(): Unit = {
     logger.info("Loading application configuration")
     val source = scala.io.Source.fromFile(AppSettings.ConfigPath)
+
     val fileContents =
       try source.mkString
       finally source.close()
+
     Config.readConfig(fileContents)
     logger.info("Application config loaded")
 
@@ -28,8 +28,8 @@ class Module extends AbstractModule with Logging {
 
     logger.info("Application started")
   }
-}
 
-private object AppSettings {
-  val ConfigPath: String = "conf/config.yml"
+  protected object AppSettings {
+    val ConfigPath: String = "conf/config.yml"
+  }
 }

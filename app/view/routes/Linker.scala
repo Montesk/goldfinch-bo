@@ -1,10 +1,9 @@
-package view
+package view.routes
 
 import akka.http.scaladsl.model.Uri
-
 import play.api.mvc.{AnyContent, Request}
 
-trait Linker extends Routes {
+private[view] trait Linker extends Routes {
   def uri(): String
 
   def withQuery(uri: String = "", queryString: Option[String]): String = {
@@ -26,7 +25,7 @@ trait Linker extends Routes {
   }
 }
 
-trait DynamicLinker extends Linker {
+private[view] trait DynamicLinker extends Linker {
   type B
 
   override def uri(): String = throw new Exception(

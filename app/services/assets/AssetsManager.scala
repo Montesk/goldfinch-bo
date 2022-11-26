@@ -34,8 +34,7 @@ trait Manager {
       exclude: List[String] = List()
   ): List[String]
 
-  /** Get file by name ignoring extension fileName param must be passed without
-    * extension
+  /** Get file by name ignoring extension fileName param must be passed without extension
     */
   def getFileByName(group: String, fileName: String): String
 
@@ -119,9 +118,7 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
   ): List[String] = {
     val result = new File(s"""${assetsDirPath}/${group}/""").list()
     if (result ne null) {
-      return result.toList.filter(r =>
-        !exclude.contains(helperFiles.getNameWithoutExtension(r))
-      )
+      return result.toList.filter(r => !exclude.contains(helperFiles.getNameWithoutExtension(r)))
     }
 
     List[String]()
@@ -141,7 +138,9 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
   }
 
   override def deleteFile(group: String, fileName: String): Unit = {
-    ioFiles.delete(assetFile(group, fileName))
+    ioFiles.delete(
+      assetFile(group, s"${helperFiles.getNameWithoutExtension(fileName)}.${helperFiles.getFileExtension(fileName)}")
+    )
   }
 
   private def mkDirAll(path: String): Unit = {

@@ -1,11 +1,12 @@
-package view
+package view.models
 
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+import controllers.routes
 import repository.products.{Product => DBProduct}
 import services.assets.{Manager, Assets => AService}
-import controllers.routes
+import view.routes.DynamicLinker
 
 final case class Product(
     id: Int,
@@ -30,7 +31,7 @@ object Product extends DynamicLinker {
   type B = Int
 
   override def uriTo[A <: B](identifier: A): String = {
-    productPath(identifier.toLong)
+    productEditPath(identifier.toLong)
   }
 
   def fromDB(product: DBProduct): Product = {

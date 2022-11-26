@@ -1,6 +1,7 @@
 @import helper._
-@import view.{Routes, Delivery, Product}
 @import view.form.components.SelectOption
+@import view.models.{Delivery, Product}
+@import view.routes.Routes
 
 @(delivery: Delivery, productsData: Vector[Product])(implicit request: Request[AnyContent])
 

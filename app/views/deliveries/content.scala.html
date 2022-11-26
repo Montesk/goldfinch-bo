@@ -1,5 +1,6 @@
 @import helper._
-@import view.{Routes, Delivery}
+@import view.models.Delivery
+@import view.routes.Routes
 
 @(data: Vector[Delivery] = Vector())(implicit request: Request[AnyContent])
 
@@ -33,7 +34,7 @@
                 @for(delivery <- data) {
                     <tr>
                         <td class="align-middle">@delivery.id</td>
-                        <td class="align-middle"><a href="@Routes.productPath(delivery.product.id)">@delivery.product.name</a></td>
+                        <td class="align-middle"><a href="@Routes.productEditPath(delivery.product.id)">@delivery.product.name</a></td>
                         <td class="align-middle">@delivery.quantity</td>
                         <td class="align-middle">@delivery.created_at</td>
                         <td class="align-middle">@delivery.updated_at</td>

@@ -1,4 +1,4 @@
-@import view.{Order, Product, Delivery}
+@import view.models.{Order, Product, Delivery}
 
 @(
         headerName: String = "Goldfinch",
@@ -11,5 +11,12 @@
 
 @main("Goldfinch") {
     @navigation(headerName)
-    @content(orders, products, product, deliveries, delivery)
+
+    @content(
+        ordersData = orders,
+        productsData = products,
+        deliveriesData = deliveries,
+        product = product,
+        delivery = delivery,
+    )
 }

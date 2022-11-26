@@ -1,52 +1,56 @@
 @import helper._
-@import view.{Order, Product, Routes, Delivery, Products}
+@import view.models._
+@import view.routes.{Routes, Matcher}
+
 @(
         ordersData: Vector[Order] = Vector(),
         productsData: Vector[Product] = Vector(),
-        product: Option[Product],
         deliveriesData: Vector[Delivery] = Vector(),
+        product: Option[Product],
         delivery: Option[Delivery],
 )(implicit request: Request[AnyContent])
 
-<div class="container-fluid min-vh-100 bo-content">
-    <div class="row no-gutters flex-nowrap min-vh-100">
+<div class="container-fluid position-relative flex-grow-1">
+    <div class="row no-gutters flex-nowrap h-100">
 
-        <div class="bo-setting-vertical-panel">
-            <div class="row no-gutters align-items-end min-vh-100">
-                <div class="bo-theme-switcher row no-gutters align-items-center justify-content-center flex-column">
-                    <div class="bo-theme-switch" data-theme="default" title="Тема по-умолчанию"></div>
-                    <div class="bo-theme-switch" data-theme="green" title="Зелёная тема"></div>
-                    <div class="bo-theme-switch" data-theme="goldfinch" title="Тема Щегол&#8482;"></div>
-                </div>
-            </div>
+        <div class="bo-setting-vertical-panel d-flex flex-column position-relative justify-content-end">
+            @components.settings.themeswitcher()
         </div>
 
         <div class="col-12 bo-content-with-left-settings-panel pt-4">
-            @if(request.path == Routes.productsPath) {
-                @products.controlpanel()
-            }
 
-        <div class="@if(request.path == Routes.productsPath && Products.isAlbumView(request)) { container } else { container-fluid }">
-            <div class="row">
-            @{
-                if(request.path == Routes.ordersPath) {
-                    orders.content(data = ordersData)
-                } else if(request.path == Routes.productsPath) {
-                    products.content(data = productsData)
-                } else if(request.path.contains("product/edit")) {
-                    products.edit(data = productsData, product.get)
-                } else if(request.path.contains("product/create")) {
-                    products.create(data = productsData, product.get)
-                } else if(request.path.contains("warehouse/create")) {
-                    deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
-                } else if(request.path == Routes.deliveriesPath) {
-                    deliveries.content(data = deliveriesData)
-                } else {
-                    dashboard.content()
+            <div class="container-fluid">
+                <div class="row justify-content-between">
+
+                @if(Matcher.isInProductGroupPage) {
+                    @products.controlpanel()
                 }
-            }
+
+                </div>
             </div>
-        </div>
+
+
+            <div class="@if(Matcher.isProductsPage && Products.isAlbumView(request)) { container } else { container-fluid }">
+                <div class="row">
+                @{
+                    if(Matcher.isOrdersPage) {
+                        orders.content(data = ordersData)
+                    } else if(Matcher.isProductsPage) {
+                        products.content(data = productsData)
+                    } else if(Matcher.isInProductEditGroupPage) {
+                        products.edit(data = productsData, product.get)
+                    } else if(Matcher.isProductCreatePage) {
+                        products.create(data = productsData, product.get)
+                    } else if(Matcher.isWarehouseCreatePage) {
+                        deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
+                    } else if(Matcher.isDeliveriesPage) {
+                        deliveries.content(data = deliveriesData)
+                    } else {
+                        dashboard.content()
+                    }
+                }
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -8,13 +8,9 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.Files
 
-import repository.products.{
-  ProductsRepository,
-  ProductData,
-  Product => DBProduct
-}
+import repository.products.{ProductsRepository, ProductData, Product => DBProduct}
 import services.assets.Manager
-import view.Product
+import view.models.Product
 
 @Singleton
 class ProductsController @Inject() (
@@ -22,26 +18,25 @@ class ProductsController @Inject() (
     val productsRepo: ProductsRepository,
     val assetsManager: Manager
 ) extends BaseController {
-  def index(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.index(products = Product.listFromDB(productsList())))
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(products = Product.listFromDB(productsList())))
   }
 
-  def createView(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(
-        views.html.index(
-          products = Product.listFromDB(productsList()),
-          product = Option[Product](Product.newProduct())
-        )
+  def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(
+      views.html.index(
+        products = Product.listFromDB(productsList()),
+        product = Option[Product](Product.newProduct())
       )
+    )
   }
 
-  def create(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      var flashMsgData: ProductData = null
+  def create(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    var flashMsgData: ProductData = null
 
-      productEditForm.bindFromRequest.fold(
+    productEditForm
+      .bindFromRequest()
+      .fold(
         formWithErrors => {
           throw new Exception(s"Invalid data ${formWithErrors.toString}")
         },
@@ -51,25 +46,25 @@ class ProductsController @Inject() (
         }
       )
 
-      Redirect(routes.ProductsController.index())
-        .flashing("success" -> s"Товар ${flashMsgData.name} успешно добавлен")
+    Redirect(routes.ProductsController.index())
+      .flashing("success" -> s"Товар ${flashMsgData.name} успешно добавлен")
   }
 
-  def editView(id: Long): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(
-        views.html.index(
-          products = Product.listFromDB(productsList()),
-          product = Option[Product](Product.fromDB(product(id)))
-        )
+  def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(
+      views.html.index(
+        products = Product.listFromDB(productsList()),
+        product = Option[Product](Product.fromDB(product(id)))
       )
+    )
   }
 
-  def edit(id: Long): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      var flashMsgData: ProductData = null
+  def edit(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    var flashMsgData: ProductData = null
 
-      productEditForm.bindFromRequest.fold(
+    productEditForm
+      .bindFromRequest()
+      .fold(
         formWithErrors => {
           throw new Exception(s"Invalid data ${formWithErrors.toString}")
         },
@@ -102,21 +97,19 @@ class ProductsController @Inject() (
         }
       )
 
-      Redirect(routes.ProductsController.index()).flashing(
-        "success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован"
-      )
+    Redirect(routes.ProductsController.index()).flashing(
+      "success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован"
+    )
   }
 
-  def delete(id: Long): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      productsRepo.delete(id = id)
-      Redirect(routes.ProductsController.index())
-        .flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
+  def delete(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    productsRepo.delete(id = id)
+    Redirect(routes.ProductsController.index())
+      .flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
   }
 
-  /** Params: { <body> "files": [fileObj] // :WARNING: currently supported
-    * single file upload <query> "uuid": Option[UUID] // if not passed it is
-    * assumed it is the new product <query> "csrfTokenName": "csrfTokenValue" }
+  /** Params: { <body> "files": [fileObj] // :WARNING: currently supported single file upload <query> "uuid":
+    * Option[UUID] // if not passed it is assumed it is the new product <query> "csrfTokenName": "csrfTokenValue" }
     *
     * @return
     */

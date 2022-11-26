@@ -12,7 +12,7 @@ import repository.deliveries.{
   Delivery => DBDelivery
 }
 import repository.products.{ProductsRepository, Product => DBProduct}
-import view.{Delivery, Product}
+import view.models.{Delivery, Product}
 
 @Singleton
 class DeliveriesController @Inject() (
@@ -38,16 +38,18 @@ class DeliveriesController @Inject() (
 
   def create(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      deliveryCreateForm.bindFromRequest.fold(
-        formWithErrors => {
-          throw new Exception(
-            s"Invalid data -> errors: ${formWithErrors.toString}"
-          )
-        },
-        newDeliveryData => {
-          deliveriesRepo.create(newDeliveryData)
-        }
-      )
+      deliveryCreateForm
+        .bindFromRequest()
+        .fold(
+          formWithErrors => {
+            throw new Exception(
+              s"Invalid data -> errors: ${formWithErrors.toString}"
+            )
+          },
+          newDeliveryData => {
+            deliveriesRepo.create(newDeliveryData)
+          }
+        )
 
       Redirect(routes.DeliveriesController.index())
         .flashing("success" -> s"Заказ успешно создан")

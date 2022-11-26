@@ -1,31 +1,47 @@
-package view
+package view.models
 
 import akka.http.scaladsl.model.Uri
-
 import org.scalatestplus.play.PlaySpec
 import play.api.test.FakeRequest
 
 class ProductsSpec extends PlaySpec {
   "ProductsView" must {
     "request with tableView query must return isTableView()" in {
-      val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some(s"view=${Products.tableView}")).toString())
+      val req = FakeRequest(
+        method = "GET",
+        path = Uri
+          .from(path = "/", queryString = Some(s"view=${Products.tableView}"))
+          .toString()
+      )
       Products.isTableView(req) mustBe (true)
     }
     "request with albumView query must return isAlbumView()" in {
-      val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some(s"view=${Products.albumView}")).toString())
+      val req = FakeRequest(
+        method = "GET",
+        path = Uri
+          .from(path = "/", queryString = Some(s"view=${Products.albumView}"))
+          .toString()
+      )
       Products.isAlbumView(req) mustBe (true)
     }
     "request with empty query must return default view" in {
-      val req = FakeRequest(method = "GET", path = Uri.from(path = "/").path.toString())
+      val req =
+        FakeRequest(method = "GET", path = Uri.from(path = "/").path.toString())
       Products.isTableView(req) mustBe (true)
     }
     "request products with query table view" in {
       val expect = s"${Products.productsPath}?view=${Products.tableView}"
-      Products.withQuery(Products.productsPath, Some(s"view=${Products.tableView}")) mustBe expect
+      Products.withQuery(
+        Products.productsPath,
+        Some(s"view=${Products.tableView}")
+      ) mustBe expect
     }
     "request products with query album view" in {
       val expect = s"${Products.productsPath}?view=${Products.albumView}"
-      Products.withQuery(Products.productsPath, Some(s"view=${Products.albumView}")) mustBe expect
+      Products.withQuery(
+        Products.productsPath,
+        Some(s"view=${Products.albumView}")
+      ) mustBe expect
     }
     "request product with some query" in {
       val expect = s"${Products.productsPath}?key=value"
@@ -33,12 +49,21 @@ class ProductsSpec extends PlaySpec {
     }
     "request preserves the query" in {
       val expect = s"${Products.productsPath}?key=value"
-      val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some("key=value")).toString())
+      val req = FakeRequest(
+        method = "GET",
+        path = Uri.from(path = "/", queryString = Some("key=value")).toString()
+      )
       Products.saveQuery(req) mustBe expect
     }
     "request with unsupported view query value must return exception" in {
-      val req = FakeRequest(method = "GET", path = Uri.from(path = "/", queryString = Some("view=undefined")).toString())
-      assertThrows[Products.UnsupportedViewException](Products.getViewFromRequest(req))
+      val req = FakeRequest(
+        method = "GET",
+        path =
+          Uri.from(path = "/", queryString = Some("view=undefined")).toString()
+      )
+      assertThrows[Products.UnsupportedViewException](
+        Products.getViewFromRequest(req)
+      )
     }
   }
 }

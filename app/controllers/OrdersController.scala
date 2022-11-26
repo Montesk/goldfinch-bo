@@ -5,7 +5,7 @@ import javax.inject._
 import play.api.mvc._
 
 import repository.orders.{OrdersRepository, Order => DBOrder}
-import view.Order
+import view.models.Order
 
 @Singleton
 class OrdersController @Inject() (

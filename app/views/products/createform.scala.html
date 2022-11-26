@@ -1,5 +1,7 @@
 @import helper._
-@import view.{Product, Routes}
+@import view.models.Product
+@import view.routes.Routes
+
 @(product: Product)(implicit request: Request[AnyContent])
 
 <form method="POST" action="@Routes.productCreatePath">
