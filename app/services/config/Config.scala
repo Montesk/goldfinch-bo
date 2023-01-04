@@ -27,8 +27,7 @@ object Config {
 
     parsed = Option(
       Repositories(
-        defaults =
-          repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
+        defaults = repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
         delivery = repositoryWithDuration(loaded.get.repository.delivery),
         product = repositoryWithDuration(loaded.get.repository.product),
         order = repositoryWithDuration(loaded.get.repository.order)
@@ -41,7 +40,7 @@ object Config {
   }
 
   def appSettings(): AppSettings = {
-    AppSettings(theme = loaded.get.app.theme)
+    AppSettings(theme = loaded.get.app.theme, loaded.get.app.settingsFilePath)
   }
 
   private def repositoryWithDuration(
@@ -55,7 +54,7 @@ object Config {
   }
 }
 
-case class AppSettings(theme: String)
+case class AppSettings(theme: String, settingsFilePath: String)
 
 case class Repository(dbWaitTimeout: Duration)
 
@@ -82,4 +81,4 @@ private[config] case class ConfigRepositories(
     order: Option[ConfigRepository] = None
 )
 
-private[config] case class ConfigAppSettings(theme: String)
+private[config] case class ConfigAppSettings(theme: String, settingsFilePath: String)

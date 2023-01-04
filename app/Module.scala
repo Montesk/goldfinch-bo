@@ -4,6 +4,7 @@ import play.api.Logging
 
 import services.config.Config
 import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
+import services.settings.Settings
 
 /** This class is a Guice module that tells Guice how to bind several different types. This Guice module is created when
   * the Play application starts. Play will automatically use any class called `Module` that is in the root package. You
@@ -21,6 +22,10 @@ class Module extends AbstractModule with Logging {
 
     Config.readConfig(fileContents)
     logger.info("Application config loaded")
+
+    logger.info("Loading application profile settings")
+    Settings.load(Config.appSettings())
+    logger.info("Application profile settings loaded")
 
     logger.info("Generating migrations info...")
     new Migrations(MigrationsConfig()).generateInfo()

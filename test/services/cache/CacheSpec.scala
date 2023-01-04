@@ -1,35 +1,40 @@
 package services.cache
 
 import org.scalatestplus.play.PlaySpec
-import services.config.Config
 
-class CacheSpec extends PlaySpec with CacheKeys {
-  val mockConfig: String =
-    """
-      |app:
-      |  theme: "green"
-      |repository:
-      |  defaults:
-      |    dbWaitTimeout: "12s"
-      |""".stripMargin
+case class SomeObject(value: Int)
 
+class CacheSpec extends PlaySpec {
   "Cache segments read and update" must {
-    "default app configuration must be loaded" in {
-      Config.readConfig(mockConfig)
-      Cache.config() equals ApplicationConfig(theme = Config.appSettings().theme)
+    "cache get existing key" in {
+      val ch = new Cache
+      ch.update("some_object", SomeObject(value = 18))
+      val got = ch.get[SomeObject]("some_object")
+      got.value mustEqual 18
     }
 
-    "default app configuration must be loaded, then updated, get cached results" in {
-      Config.readConfig(mockConfig)
-      Cache.update(cacheKeyTheme, "brown")
-      Cache.config() equals ApplicationConfig(theme = "brown")
+    "cache get or else existing key" in {
+      val ch = new Cache
+      ch.get("settings", SomeObject(value = 9)).value mustEqual SomeObject(value = 9).value
     }
 
-    "default app configuration must be loaded, then updated, unsupported update" in {
-      Config.readConfig(mockConfig)
-      val got = Cache.update("unsupported_cache_key", "violet")
-      assert(got.isFailure)
-      an[UnsupportedUpdateOperation] must be thrownBy got.get
+    "cache get or call" in {
+      val ch = new Cache
+      val got = ch.getOrCall("settings", () => SomeObject(value = 20))
+      got.value mustEqual 20
+    }
+
+    "cache updated" in {
+      val ch = new Cache
+      ch.get("settings", SomeObject(value = 9))
+      ch.update("settings", SomeObject(value = 10))
+
+      ch.get[SomeObject]("settings").value mustEqual 10
+    }
+
+    "throw exception (no data found by this key)" in {
+      val ch = new Cache
+      a[NoSuchElementException] must be thrownBy ch.get[SomeObject]("some_object")
     }
   }
 }

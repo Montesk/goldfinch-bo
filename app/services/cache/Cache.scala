@@ -1,51 +1,34 @@
 package services.cache
 
 import scala.collection.mutable
-import scala.util.{Failure, Success, Try}
-import play.api.Logging
-import services.config.Config
 
-case class ApplicationConfig(theme: String)
+class Cache {
+  private val cache: mutable.HashMap[String, Any] =
+    mutable.HashMap.empty
 
-final case class UnsupportedUpdateOperation() extends Exception {
-  new Exception(s"unsupported key to update")
-}
+  def get[T](key: String): T = {
+    cache(key).asInstanceOf[T]
+  }
 
-trait Cache {
-  def config: ApplicationConfig = Cache.config()
-}
-
-object Cache extends Logging with CacheKeys {
-  private val cache: mutable.WeakHashMap[String, Any] =
-    mutable.WeakHashMap.empty
-
-  def config(): ApplicationConfig = {
+  def get[T](key: String, orElse: T): T = {
     cache
       .getOrElseUpdate(
-        CacheKeys.config,
-        ApplicationConfig(Config.appSettings().theme)
+        key,
+        orElse
       )
-      .asInstanceOf[ApplicationConfig]
+      .asInstanceOf[T]
   }
 
-  def update(key: String, value: String): Try[Option[Exception]] = {
-    key match {
-      case `cacheKeyTheme` =>
-        cache.update(CacheKeys.config, ApplicationConfig(theme = value))
-        Success(None)
-      case _ =>
-        logger.warn(s"trying to update cache value: ${value} by key: ${key}")
-        Failure(UnsupportedUpdateOperation())
-    }
+  def getOrCall[T](key: String, orElseFn: () => T): T = {
+    cache
+      .getOrElseUpdate(
+        key,
+        orElseFn()
+      )
+      .asInstanceOf[T]
   }
-}
 
-/** Public cache update keys
-  */
-trait CacheKeys {
-  val cacheKeyTheme: String = "theme"
-}
-
-private[cache] object CacheKeys {
-  val config: String = "config"
+  def update[T](key: String, value: T): Unit = {
+    cache.update(key, value)
+  }
 }

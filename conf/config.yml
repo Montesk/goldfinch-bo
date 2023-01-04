@@ -1,5 +1,6 @@
 app:
   theme: "green"
+  settingsFilePath: "settings.xml"
 
 repository:
   defaults:

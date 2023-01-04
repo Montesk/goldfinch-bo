@@ -6,31 +6,32 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 
-import services.cache.Cache
+import services.settings.Settings
 
 case class SettingsUpdateData(
-                               key: String,
-                               value: String
-                             )
+    key: String,
+    value: String
+)
 
 @Singleton
-class SettingsController @Inject()(
-                                    val controllerComponents: ControllerComponents
-                                  ) extends BaseController {
-  def edit(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      settingsUpdateForm.bindFromRequest().fold(
+class SettingsController @Inject() (
+    val controllerComponents: ControllerComponents
+) extends BaseController {
+  def edit(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    settingsUpdateForm
+      .bindFromRequest()
+      .fold(
         formWithErrors => {
           throw new Exception(
             s"Invalid data -> errors: ${formWithErrors.toString}"
           )
         },
         updateData => {
-          Cache.update(updateData.key, updateData.value)
+          Settings.update(updateData.key, updateData.value)
         }
       )
 
-      Ok
+    Ok
   }
 
   private val settingsUpdateForm: Form[SettingsUpdateData] = Form(
