@@ -1,6 +1,7 @@
 package services.settings
 
 import java.io.FileNotFoundException
+
 import scala.xml.XML
 
 import play.api.Logging
@@ -10,6 +11,8 @@ import services.config.AppSettings
 
 case class ApplicationConfig(theme: String)
 
+case class MigrationsGenerateInfo(appliedAt: String, hash: String)
+
 trait Settings {
   def config(): ApplicationConfig
 }
@@ -17,17 +20,25 @@ trait Settings {
 object Settings extends Logging with SettingKeys with CacheKeys {
   val cache: Cache = new Cache
 
-  private val version = "0.0.1"
+  private val version = "0.0.2"
   private var filePath: String = ""
 
   def config(): ApplicationConfig = {
     cache.get(
-      "config",
+      configCacheKey,
       ApplicationConfig(theme = readTag(cache.getOrCall(fileContentsCacheKey, read), themeCacheKey))
     )
   }
 
-  def load(config: AppSettings): Unit = {
+  def migrationsInfoGenerated(): MigrationsGenerateInfo = {
+    val contents = cache.getOrCall(fileContentsCacheKey, read)
+    MigrationsGenerateInfo(
+      appliedAt = readTag(contents, appliedAtSettingsKey),
+      hash = readTag(contents, hashAtSettingsKey)
+    )
+  }
+
+  def load(config: AppSettings, appliedAt: String, hash: String): Unit = {
     filePath = config.settingsFilePath
     var contents: xml.Elem = null
 
@@ -36,40 +47,61 @@ object Settings extends Logging with SettingKeys with CacheKeys {
     } catch {
       case _: FileNotFoundException => {
         logger.info("application settings not found. creating new settings file...")
-        contents = createAppSettingsFile(config)
+        contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
         logger.info("application settings created")
       }
       case e: Throwable => throw e
+    }
+
+    val settingsVersion = readTag(contents, versionSettingsKey)
+
+    if (settingsVersion != version) {
+      logger.info(s"local application settings version outdated. expect ${version} got ${settingsVersion}")
+      logger.info("regenerating application settings...")
+      contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
+      logger.info(s"complete ${contents}")
     }
   }
 
   def updateTheme(theme: String): Unit = {
     val contents = cache.getOrCall(fileContentsCacheKey, read)
     val settingsXML = xmlContents(
-      {
-        readTag(contents, "version")
-      },
-      theme
+      version = readTag(contents, versionSettingsKey),
+      theme = theme,
+      appliedAt = readTag(contents, tagName = appliedAtSettingsKey),
+      hash = readTag(contents, tagName = hashAtSettingsKey)
     )
     write(settingsXML)
-    cache.update("config", ApplicationConfig(theme = theme))
+    cache.update(configCacheKey, ApplicationConfig(theme = theme))
   }
 
-  def update(key: String, value: String): Unit = {
+  def updateMigrationsGenerateInfo(info: MigrationsGenerateInfo): Unit = {
+    val contents = cache.getOrCall(fileContentsCacheKey, read)
+    val settingsXML = xmlContents(
+      version = readTag(contents, versionSettingsKey),
+      theme = readTag(contents, themeSettingsKey),
+      appliedAt = info.appliedAt,
+      hash = info.hash
+    )
+    write(settingsXML)
+  }
+
+  def update[T](key: String, value: T): Unit = {
     key match {
-      case `themeSettingKey` => updateTheme(value)
-      case _                 => logger.warn(s"unknown app setting $key")
+      case `themeSettingsKey`     => updateTheme(value.asInstanceOf[String])
+      case `migrationSettingsKey` => updateMigrationsGenerateInfo(value.asInstanceOf[MigrationsGenerateInfo])
+      case _                      => logger.warn(s"unknown app setting $key")
     }
   }
 
-  private def createAppSettingsFile(appConfig: AppSettings): xml.Elem = {
-    val settingsXML = xmlContents(version, appConfig.theme)
+  private def createAppSettingsFile(appConfig: AppSettings, appliedAt: String, hash: String): xml.Elem = {
+    val settingsXML = xmlContents(version = version, theme = appConfig.theme, appliedAt = appliedAt, hash = hash)
     logger.info(s"init application settings \n ${prettify(settingsXML)}")
     write(settingsXML)
     settingsXML
   }
 
-  private def xmlContents(version: String, theme: String): xml.Elem = {
+  private def xmlContents(version: String, theme: String, appliedAt: String, hash: String): xml.Elem = {
     <settings>
       <version>
         {version}
@@ -79,11 +111,25 @@ object Settings extends Logging with SettingKeys with CacheKeys {
           {theme}
         </theme>
       </app>
+      <system>
+        <migrations>
+          <appliedAt>
+            {appliedAt}
+          </appliedAt>
+          <hash>
+            {hash}
+          </hash>
+        </migrations>
+      </system>
     </settings>
   }
 
   private def read(): xml.Elem = {
-    XML.loadFile(filePath)
+    try {
+      XML.loadFile(filePath)
+    } catch {
+      case _: Throwable => <root></root>
+    }
   }
 
   private def write(contents: xml.Elem): Unit = {
@@ -98,15 +144,27 @@ object Settings extends Logging with SettingKeys with CacheKeys {
 
   private def readTag(contents: xml.Elem, tagName: String): String = {
     val res = contents \\ tagName
+    if (res.isEmpty) {
+      return ""
+    }
     res.head.text.trim
   }
 }
 
 trait SettingKeys {
-  val themeSettingKey: String = "theme"
+  // top-level
+  val versionSettingsKey: String = "version"
+  // app
+  val themeSettingsKey: String = "theme"
+  // system
+  val migrationSettingsKey: String = "migrations"
+  //// migrations
+  val appliedAtSettingsKey: String = "appliedAt"
+  val hashAtSettingsKey: String = "hash"
 }
 
 trait CacheKeys extends SettingKeys {
-  val themeCacheKey: String = themeSettingKey
+  val themeCacheKey: String = themeSettingsKey
   val fileContentsCacheKey: String = "settings"
+  val configCacheKey: String = "config"
 }

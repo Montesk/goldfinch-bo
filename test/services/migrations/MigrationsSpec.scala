@@ -9,7 +9,7 @@ class MigrationsSpec extends PlaySpec with MigrationSpecSuite {
     "1.sql" -> "create_table_users", // only role comment present
     "2.sql" -> "create_table_products", // contains other comments
     "3.sql" -> mockConfig().undefinedRoleMessage, // undefined role (random sql comment)
-    "4.sql" -> "create_table_products_v2", // comment in the end of file
+    "4.sql" -> "create_table_products_v2" // comment in the end of file
   )
 
   override def mockConfig(): Config = {
@@ -21,7 +21,7 @@ class MigrationsSpec extends PlaySpec with MigrationSpecSuite {
       val cfg = mockConfig()
 
       val m = new Migrations(cfg)
-      noException mustBe thrownBy(m.generateInfo())
+      noException mustBe thrownBy(m.writeInfo())
 
       cleanup(cfg.outputPath)
     }
@@ -30,7 +30,7 @@ class MigrationsSpec extends PlaySpec with MigrationSpecSuite {
       val cfg = mockConfig()
 
       val m = new Migrations(cfg)
-      noException mustBe thrownBy(m.generateInfo())
+      noException mustBe thrownBy(m.writeInfo())
 
       val got = readResult(cfg.outputPath)
 
@@ -56,7 +56,9 @@ protected sealed trait MigrationSpecSuite {
 
   def readResult(outputPath: String): String = {
     val source = scala.io.Source.fromFile(new File(outputPath))
-    val fileContents = try source.mkString finally source.close()
+    val fileContents =
+      try source.mkString
+      finally source.close()
     fileContents
   }
 }

@@ -5,6 +5,7 @@ trait Config {
   val roleCommentPattern: String = Config.roleCommentPatter
   val outputPath: String = Config.outputPath
   val undefinedRoleMessage: String = Config.undefinedRoleMessage
+  val evolutionsDBConfigPath: String = Config.evolutionsDBConfigPath
 }
 
 object Config {
@@ -12,6 +13,7 @@ object Config {
   val roleCommentPatter: String = "-- >Role"
   val outputPath: String = "conf/evolutions/migrations.md"
   val undefinedRoleMessage: String = "undefined role"
+  val evolutionsDBConfigPath: String = "slick.dbs.default"
 }
 
 case class DefaultConfig() extends Config {}

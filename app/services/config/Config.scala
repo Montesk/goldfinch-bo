@@ -1,7 +1,6 @@
 package services.config
 
-import scala.concurrent.duration.Duration
-
+import scala.concurrent.duration.{Duration, SECONDS}
 import cats.syntax.either._
 import io.circe.{Json, ParsingFailure}
 import io.circe.generic.auto._
@@ -36,7 +35,7 @@ object Config {
   }
 
   def repositories(): Repositories = {
-    parsed.get
+    parsed.getOrElse(Repositories(defaults = Repository(dbWaitTimeout = Duration(10, SECONDS))))
   }
 
   def appSettings(): AppSettings = {
