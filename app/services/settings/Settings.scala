@@ -17,7 +17,7 @@ trait Settings {
   def config(): ApplicationConfig
 }
 
-object Settings extends Logging with SettingKeys with CacheKeys {
+object Settings extends Logging with CacheKeys with SettingKeys {
   val cache: Cache = new Cache
 
   private val version = "0.0.2"
@@ -45,21 +45,20 @@ object Settings extends Logging with SettingKeys with CacheKeys {
     try {
       contents = XML.loadFile(filePath)
     } catch {
-      case _: FileNotFoundException => {
+      case _: FileNotFoundException =>
         logger.info("application settings not found. creating new settings file...")
         contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
         logger.info("application settings created")
-      }
       case e: Throwable => throw e
     }
 
     val settingsVersion = readTag(contents, versionSettingsKey)
 
     if (settingsVersion != version) {
-      logger.info(s"local application settings version outdated. expect ${version} got ${settingsVersion}")
+      logger.info(s"local application settings version outdated. expect $version got $settingsVersion")
       logger.info("regenerating application settings...")
       contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
-      logger.info(s"complete ${contents}")
+      logger.info(s"complete $contents")
     }
   }
 
@@ -128,7 +127,10 @@ object Settings extends Logging with SettingKeys with CacheKeys {
     try {
       XML.loadFile(filePath)
     } catch {
-      case _: Throwable => <root></root>
+      case e: Throwable =>
+        logger.error(s"read application settings exception: $e descr: ${e.toString}")
+        <root></root>
+
     }
   }
 
@@ -145,6 +147,7 @@ object Settings extends Logging with SettingKeys with CacheKeys {
   private def readTag(contents: xml.Elem, tagName: String): String = {
     val res = contents \\ tagName
     if (res.isEmpty) {
+      logger.error(s"tagName: $tagName not found in XML: $contents")
       return ""
     }
     res.head.text.trim
@@ -163,8 +166,8 @@ trait SettingKeys {
   val hashAtSettingsKey: String = "hash"
 }
 
-trait CacheKeys extends SettingKeys {
-  val themeCacheKey: String = themeSettingsKey
+trait CacheKeys {
+  val themeCacheKey: String = "theme"
   val fileContentsCacheKey: String = "settings"
   val configCacheKey: String = "config"
 }
