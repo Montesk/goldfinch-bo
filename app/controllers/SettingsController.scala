@@ -27,7 +27,10 @@ class SettingsController @Inject() (
           )
         },
         updateData => {
-          Settings.update(updateData.key, updateData.value)
+          if (updateData.key != "theme") {
+            throw new Exception(s"unsupported update operation for ${updateData.key}")
+          }
+          Settings.updateTheme(updateData.value)
         }
       )
 

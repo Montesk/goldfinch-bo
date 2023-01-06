@@ -9,11 +9,12 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
 import slick.basic.DatabaseConfig
 import slick.jdbc.JdbcProfile
+import play.api.Logging
 
-case class LastApplied(appliedAt: String, hash: String)
+import pkg.dto.{migrations => dto}
 
-class Migrations(config: Config) {
-  def lastApplied(): LastApplied = {
+class Migrations(config: Config) extends Logging {
+  def lastApplied(): dto.LastApplied = {
     import slick.jdbc.H2Profile.api._
 
     val dbConfig = DatabaseConfig.forConfig[JdbcProfile](config.evolutionsDBConfigPath)
@@ -24,15 +25,19 @@ class Migrations(config: Config) {
     var result: Vector[(String, String)] = Vector()
     try {
       result = Await.result(db.run(query), Duration(10, SECONDS))
+    } catch {
+      case e: Throwable =>
+        logger.error(s"exception on reading evolutions data ${e}")
+        return dto.LastApplied(appliedAt = "", hash = "")
     } finally {
       db.close()
     }
 
     if (result.isEmpty) {
-      return LastApplied(appliedAt = "", hash = "")
+      return dto.LastApplied(appliedAt = "", hash = "")
     }
 
-    LastApplied(appliedAt = result.head._1, hash = result.head._2)
+    dto.LastApplied(appliedAt = result.head._1, hash = result.head._2)
   }
 
   def writeInfo(): Unit = {
@@ -82,4 +87,4 @@ class Migrations(config: Config) {
   }
 }
 
-private case class MigrationInfo(fileName: String, role: String)
+private[migrations] case class MigrationInfo(fileName: String, role: String)

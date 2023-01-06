@@ -13,6 +13,7 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
+          |  settingsVersion: "0.0.2"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -43,6 +44,7 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
+          |  settingsVersion: "0.0.2"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -67,6 +69,7 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
+          |  settingsVersion: "0.0.2"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "5s"

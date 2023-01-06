@@ -1,6 +1,7 @@
 package services.config
 
 import scala.concurrent.duration.{Duration, SECONDS}
+
 import cats.syntax.either._
 import io.circe.{Json, ParsingFailure}
 import io.circe.generic.auto._
@@ -8,7 +9,7 @@ import io.circe.yaml.parser
 
 trait Config {
   val repositories: Repositories = Config.repositories()
-  val appSettings: AppSettings = Config.appSettings()
+  val appSettings: App = Config.appSettings()
 
   def readConfig(contentYAML: String): Unit = Config.readConfig(contentYAML)
 }
@@ -38,8 +39,12 @@ object Config {
     parsed.getOrElse(Repositories(defaults = Repository(dbWaitTimeout = Duration(10, SECONDS))))
   }
 
-  def appSettings(): AppSettings = {
-    AppSettings(theme = loaded.get.app.theme, loaded.get.app.settingsFilePath)
+  def appSettings(): App = {
+    App(
+      theme = loaded.get.app.theme,
+      loaded.get.app.settingsFilePath,
+      loaded.get.app.settingsVersion
+    )
   }
 
   private def repositoryWithDuration(
@@ -53,7 +58,7 @@ object Config {
   }
 }
 
-case class AppSettings(theme: String, settingsFilePath: String)
+case class App(theme: String, settingsFilePath: String, settingsVersion: String)
 
 case class Repository(dbWaitTimeout: Duration)
 
@@ -68,7 +73,7 @@ case class Repositories(
   */
 private[config] case class fromConfig(
     repository: ConfigRepositories,
-    app: ConfigAppSettings
+    app: ConfigApp
 ) {}
 
 private[config] case class ConfigRepository(dbWaitTimeout: String)
@@ -80,4 +85,4 @@ private[config] case class ConfigRepositories(
     order: Option[ConfigRepository] = None
 )
 
-private[config] case class ConfigAppSettings(theme: String, settingsFilePath: String)
+private[config] case class ConfigApp(theme: String, settingsFilePath: String, settingsVersion: String)

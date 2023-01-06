@@ -1,173 +1,194 @@
 package services.settings
 
-import java.io.FileNotFoundException
+import java.io.{File, FileNotFoundException}
+import java.nio.file.Paths
 
-import scala.xml.XML
+import scala.xml.{Elem, XML}
 
 import play.api.Logging
 
 import services.cache.Cache
-import services.config.AppSettings
+import pkg.dto.{settings => dto}
 
-case class ApplicationConfig(theme: String)
-
-case class MigrationsGenerateInfo(appliedAt: String, hash: String)
+case class Options(
+    systemSettingVersion: String,
+    settingsFilePath: String,
+    theme: String,
+    migrationsAppliedAt: String,
+    migrationsHash: String
+)
 
 trait Settings {
-  def config(): ApplicationConfig
+  def theme(): String
 }
 
-object Settings extends Logging with CacheKeys with SettingKeys {
+object Settings extends Logging with CacheKeys {
   val cache: Cache = new Cache
 
-  private val version = "0.0.2"
-  private var filePath: String = ""
+  var options: Option[Options] = None
 
-  def config(): ApplicationConfig = {
-    cache.get(
-      configCacheKey,
-      ApplicationConfig(theme = readTag(cache.getOrCall(fileContentsCacheKey, read), themeCacheKey))
-    )
-  }
+  def load(opts: Options): Unit = {
+    options = Option(opts)
 
-  def migrationsInfoGenerated(): MigrationsGenerateInfo = {
-    val contents = cache.getOrCall(fileContentsCacheKey, read)
-    MigrationsGenerateInfo(
-      appliedAt = readTag(contents, appliedAtSettingsKey),
-      hash = readTag(contents, hashAtSettingsKey)
-    )
-  }
-
-  def load(config: AppSettings, appliedAt: String, hash: String): Unit = {
-    filePath = config.settingsFilePath
     var contents: xml.Elem = null
 
     try {
-      contents = XML.loadFile(filePath)
+      contents = XML.loadFile(settingsFile)
     } catch {
       case _: FileNotFoundException =>
         logger.info("application settings not found. creating new settings file...")
-        contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
+        contents = createAppSettingsFile(opts)
         logger.info("application settings created")
       case e: Throwable => throw e
     }
 
-    val settingsVersion = readTag(contents, versionSettingsKey)
+    val settingsVersion = dto.Settings(contents).version.get.value
 
-    if (settingsVersion != version) {
-      logger.info(s"local application settings version outdated. expect $version got $settingsVersion")
+    if (settingsVersion != opts.systemSettingVersion) {
+      logger.info(
+        s"local application settings version outdated. expect ${opts.systemSettingVersion} got $settingsVersion"
+      )
       logger.info("regenerating application settings...")
-      contents = createAppSettingsFile(appConfig = config, appliedAt = appliedAt, hash = hash)
-      logger.info(s"complete $contents")
+      contents = updateSystemSettings(fromContents = contents, settingsVersion, opts)
+      logger.info("complete")
     }
+
+    save(dto.Settings(contents))
+  }
+
+  def settings(): dto.Settings = {
+    cache.getOrCall[dto.Settings](config, () => dto.Settings(read()))
+  }
+
+  def theme(): String = {
+    settings().app.get.theme.get.value
+  }
+
+  def appliedAt(): String = {
+    settings().system.get.migrations.get.appliedAt.get.value
+  }
+
+  def hash(): String = {
+    settings().system.get.migrations.get.hash.get.value
   }
 
   def updateTheme(theme: String): Unit = {
-    val contents = cache.getOrCall(fileContentsCacheKey, read)
-    val settingsXML = xmlContents(
-      version = readTag(contents, versionSettingsKey),
-      theme = theme,
-      appliedAt = readTag(contents, tagName = appliedAtSettingsKey),
-      hash = readTag(contents, tagName = hashAtSettingsKey)
+    val prev = settings()
+    val update = dto.Settings(
+      prev.version.get,
+      dto.App(dto.Theme(theme)),
+      prev.system.get
     )
-    write(settingsXML)
-    cache.update(configCacheKey, ApplicationConfig(theme = theme))
+    save(update)
   }
 
-  def updateMigrationsGenerateInfo(info: MigrationsGenerateInfo): Unit = {
-    val contents = cache.getOrCall(fileContentsCacheKey, read)
-    val settingsXML = xmlContents(
-      version = readTag(contents, versionSettingsKey),
-      theme = readTag(contents, themeSettingsKey),
-      appliedAt = info.appliedAt,
-      hash = info.hash
+  def updateMigrationsInfo(appliedAt: String, hash: String): Unit = {
+    val prev = settings()
+    val update = dto.Settings(
+      prev.version.get,
+      prev.app.get,
+      dto.System(
+        dto.Migrations(
+          dto.AppliedAt(appliedAt),
+          dto.Hash(hash)
+        )
+      )
     )
-    write(settingsXML)
+    save(update)
   }
 
-  def update[T](key: String, value: T): Unit = {
-    key match {
-      case `themeSettingsKey`     => updateTheme(value.asInstanceOf[String])
-      case `migrationSettingsKey` => updateMigrationsGenerateInfo(value.asInstanceOf[MigrationsGenerateInfo])
-      case _                      => logger.warn(s"unknown app setting $key")
+  private def createAppSettingsFile(opts: Options): xml.Elem = {
+    val create = settings(
+      version = opts.systemSettingVersion,
+      theme = opts.theme,
+      appliedAt = opts.migrationsAppliedAt,
+      hash = opts.migrationsHash
+    )
+
+    create.XML()
+  }
+
+  private def settings(version: String, theme: String, appliedAt: String, hash: String): dto.Settings = {
+    dto.Settings(
+      dto.Version(version),
+      dto.App(
+        dto.Theme(theme)
+      ),
+      dto.System(
+        dto.Migrations(
+          dto.AppliedAt(appliedAt),
+          dto.Hash(hash)
+        )
+      )
+    )
+  }
+
+  private def updateSystemSettings(fromContents: Elem, fromVersion: String, defaults: Options): Elem = {
+    var contents: Elem = null
+    try {
+      logger.info("trying to regenerate from old version")
+      contents = createAppSettingsFile(
+        optionsFromContent(fromContents, defaults.settingsFilePath, defaults.systemSettingVersion)
+      )
+    } catch {
+      case e: Throwable => {
+        logger.error(
+          s"failed to regenerate. settings versions v$fromVersion -> v${defaults.systemSettingVersion} are incompatible. exception ${e}"
+        )
+        logger.info("creating default settings file")
+        contents = createAppSettingsFile(defaults)
+      }
     }
+    logger.info(s"created \r\n ${prettify(contents)}")
+    contents
   }
 
-  private def createAppSettingsFile(appConfig: AppSettings, appliedAt: String, hash: String): xml.Elem = {
-    val settingsXML = xmlContents(version = version, theme = appConfig.theme, appliedAt = appliedAt, hash = hash)
-    logger.info(s"init application settings \n ${prettify(settingsXML)}")
-    write(settingsXML)
-    settingsXML
+  // Trying to restore some options from previous version of settings XML
+  // :NOTICE:
+  //  settings DTO and previous version of xml must be compatible (no exception)
+  //  its up to developer to check if settings is no more compatible or
+  //  taking into consideration that some fields will be NOT marshalled
+  private def optionsFromContent(oldContents: Elem, filePath: String, toVersion: String): Options = {
+    val restored = dto.Settings(oldContents)
+
+    Options(
+      systemSettingVersion = filePath,
+      settingsFilePath = toVersion,
+      theme = restored.app.get.theme.get.value,
+      migrationsAppliedAt = restored.system.get.migrations.get.appliedAt.get.value,
+      migrationsHash = restored.system.get.migrations.get.hash.get.value
+    )
   }
 
-  private def xmlContents(version: String, theme: String, appliedAt: String, hash: String): xml.Elem = {
-    <settings>
-      <version>
-        {version}
-      </version>
-      <app>
-        <theme>
-          {theme}
-        </theme>
-      </app>
-      <system>
-        <migrations>
-          <appliedAt>
-            {appliedAt}
-          </appliedAt>
-          <hash>
-            {hash}
-          </hash>
-        </migrations>
-      </system>
-    </settings>
+  private def save(settings: dto.Settings): Unit = {
+    write(settings.XML())
+    cache.update(config, settings)
+  }
+
+  private def write(contents: xml.Elem): Unit = {
+    XML.save(filename = settingsFile.toString, node = prettify(contents))
   }
 
   private def read(): xml.Elem = {
     try {
-      XML.loadFile(filePath)
+      XML.loadFile(settingsFile)
     } catch {
       case e: Throwable =>
         logger.error(s"read application settings exception: $e descr: ${e.toString}")
-        <root></root>
-
+        throw e
     }
   }
 
-  private def write(contents: xml.Elem): Unit = {
-    XML.save(filename = filePath, node = prettify(contents))
-    cache.update(fileContentsCacheKey, contents)
+  private def settingsFile: File = {
+    Paths.get(options.get.settingsFilePath).toFile
   }
 
   private def prettify(contents: xml.Elem): xml.Elem = {
     val printer = new scala.xml.PrettyPrinter(14, 4)
     XML.loadString(printer.format(contents))
   }
-
-  private def readTag(contents: xml.Elem, tagName: String): String = {
-    val res = contents \\ tagName
-    if (res.isEmpty) {
-      logger.error(s"tagName: $tagName not found in XML: $contents")
-      return ""
-    }
-    res.head.text.trim
-  }
-}
-
-trait SettingKeys {
-  // top-level
-  val versionSettingsKey: String = "version"
-  // app
-  val themeSettingsKey: String = "theme"
-  // system
-  val migrationSettingsKey: String = "migrations"
-  //// migrations
-  val appliedAtSettingsKey: String = "appliedAt"
-  val hashAtSettingsKey: String = "hash"
 }
 
 trait CacheKeys {
-  val themeCacheKey: String = "theme"
-  val fileContentsCacheKey: String = "settings"
-  val configCacheKey: String = "config"
+  val config: String = "config"
 }
