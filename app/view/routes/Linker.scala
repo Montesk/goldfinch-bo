@@ -1,17 +1,44 @@
 package view.routes
 
 import akka.http.scaladsl.model.Uri
+import akka.http.scaladsl.model.Uri.Query
+import scala.collection.mutable
+
 import play.api.mvc.{AnyContent, Request}
 
-private[view] trait Linker extends Routes {
+trait Linker extends Routes {
   def uri(): String
 
+  // Adds query to given or super uri
   def withQuery(uri: String = "", queryString: Option[String]): String = {
     if (uri.isEmpty) {
       return Uri.from(path = this.uri(), queryString = queryString).toString()
     }
 
     Uri.from(path = uri, queryString = queryString).toString()
+  }
+
+  // Adds query to request uri (preserves any existing query)
+  def withQuery(req: Request[AnyContent], queryString: Option[String]): String = {
+    if (req.rawQueryString.isEmpty) {
+      return Uri.from(path = this.uri(), queryString = queryString).toString()
+    }
+
+    val curr = Query(req.rawQueryString)
+    val next = Query(queryString.get)
+
+    val uniqueQuery: mutable.Map[String, String] = mutable.Map()
+    for (query <- curr) {
+      uniqueQuery(query._1) = query._2
+    }
+
+    for (query <- next) {
+      uniqueQuery(query._1) = query._2
+    }
+
+    val result = Query.apply(uniqueQuery.toMap).toString()
+
+    Uri.from(path = this.uri(), queryString = Option(result)).toString()
   }
 
   def saveQuery(current: Request[AnyContent]): String = {

@@ -1,13 +1,13 @@
-@import view.models.{Products, Product}
+@import view.models.Products
 
-@(data: Vector[Product] = Vector())(implicit request: Request[AnyContent])
+@(data: Products)(implicit request: Request[AnyContent])
 
 <div class="mt-2 col-12">
     @if(Products.isAlbumView(request)) {
-        @products.album(data = data)
+        @products.album(products = data)
     }
 
     @if(Products.isTableView(request)) {
-        @products.table(data = data)
+        @products.table(products = data)
     }
 </div>

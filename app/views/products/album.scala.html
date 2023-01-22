@@ -1,6 +1,6 @@
-@import view.models.Product
+@import view.models.{Product, Products}
 
-@(data: Vector[Product] = Vector())(implicit request: Request[AnyContent])
+@(products: Products)(implicit request: Request[AnyContent])
 
 <div class="row">
     <div class="col-3 mb-4">
@@ -14,7 +14,7 @@
             </div>
         </a>
     </div>
-    @for(product <- data) {
+    @for(product <- products.list) {
         <div class="col-3 mb-4">
             <div class="card h-100 bo-multirows-item">
                 @if(product.titleImage.nonEmpty) {

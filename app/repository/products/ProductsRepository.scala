@@ -58,8 +58,7 @@ class Products(tag: Tag) extends Table[Product](tag, "products") {
 }
 
 @Singleton
-class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
-    extends Repository {
+class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) extends Repository {
   val DefaultDBTimeout: Duration = withDefaultTimeout(config.product)
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
@@ -72,8 +71,8 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     Await.result(execFind(id), DefaultDBTimeout)
   }
 
-  def list(): Vector[Product] = {
-    Await.result(execSelect(), DefaultDBTimeout).toVector
+  def list(page: Int = 0, perPage: Int = 10000): Vector[Product] = {
+    Await.result(execSelect(page = page, perPage = perPage), DefaultDBTimeout).toVector
   }
 
   def create(data: ProductData): Unit = {
@@ -88,10 +87,24 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     Await.result(execDelete(id, soft), DefaultDBTimeout)
   }
 
-  private def execSelect(): Future[Seq[Product]] = db.run {
+  def count(): Int = {
+    Await.result(execCount(), DefaultDBTimeout)
+  }
+
+  private def execSelect(page: Int, perPage: Int): Future[Seq[Product]] = db.run {
+    var offset: Int = page
+
+    if (page <= 1) {
+      offset = 0
+    } else {
+      offset = perPage * (page - 1)
+    }
+
     products
-      .filter(!_.deleted)
+      .filter(_.deleted === false)
       .sortBy(_.id.desc)
+      .drop(offset)
+      .take(perPage)
       .result
   }
 
@@ -108,16 +121,14 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
   private def execFind(id: Long): Future[Product] = db.run {
     products
       .filter(_.id === id)
-      .filter(!_.deleted)
+      .filter(_.deleted === false)
       .result
       .head
   }
 
   private def execCreate(data: ProductData): Future[Unit] = db.run {
     DBIO.seq(
-      products.map(p =>
-        (p.price, p.name, p.description)
-      ) += (data.price, data.name, Option[String](data.description))
+      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
     )
   }
 
@@ -128,5 +139,12 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
     } else {
       products.filter(_.id === id).delete
     }
+  }
+
+  private def execCount(): Future[Int] = db.run {
+    products
+      .filter(_.deleted === false)
+      .length
+      .result
   }
 }

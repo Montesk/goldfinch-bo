@@ -1,6 +1,6 @@
-@import view.models.Product
+@import view.models.{Product, Products}
 
-@(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
+@(data: Products, product: Product)(implicit request: Request[AnyContent])
 
 @products.content(data)
 

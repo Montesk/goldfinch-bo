@@ -8,9 +8,10 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.Files
 
-import repository.products.{ProductsRepository, ProductData, Product => DBProduct}
+import repository.products.{ProductData, ProductsRepository, Product => DBProduct}
 import services.assets.Manager
-import view.models.Product
+import view.models.{Product, Products}
+import view.pagination.Pagination
 
 @Singleton
 class ProductsController @Inject() (
@@ -19,13 +20,13 @@ class ProductsController @Inject() (
     val assetsManager: Manager
 ) extends BaseController {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(products = Product.listFromDB(productsList())))
+    Ok(views.html.index(products = pageData))
   }
 
   def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(
       views.html.index(
-        products = Product.listFromDB(productsList()),
+        products = pageData,
         product = Option[Product](Product.newProduct())
       )
     )
@@ -53,7 +54,7 @@ class ProductsController @Inject() (
   def editView(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(
       views.html.index(
-        products = Product.listFromDB(productsList()),
+        products = pageData,
         product = Option[Product](Product.fromDB(product(id)))
       )
     )
@@ -134,8 +135,8 @@ class ProductsController @Inject() (
     productsRepo.find(id)
   }
 
-  private def productsList(): Vector[DBProduct] = {
-    productsRepo.list()
+  private def productsList(page: Int = 0, perPage: Int = 10000): Vector[DBProduct] = {
+    productsRepo.list(page = page, perPage = perPage)
   }
 
   private val productEditForm: Form[ProductData] = Form(
@@ -186,5 +187,17 @@ class ProductsController @Inject() (
 
   private def deleteImage(product: DBProduct, image: String): Unit = {
     assetsManager.deleteFile(product.uuid.get.toString, image)
+  }
+
+  private def pageData(implicit req: Request[AnyContent]): Products = {
+    val (page, perPage) = pagination
+    Products(list = Product.listFromDB(productsList(page, perPage)), productsRepo.count())
+  }
+
+  private def pagination(implicit req: Request[AnyContent]): (Int, Int) = {
+    val perPage = req.getQueryString("perPage").getOrElse(Pagination.defaultPerPage.toString).toInt
+    val page = req.getQueryString("page").getOrElse("1").toInt
+
+    (page, perPage)
   }
 }

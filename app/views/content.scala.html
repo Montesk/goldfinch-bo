@@ -4,7 +4,7 @@
 
 @(
         ordersData: Vector[Order] = Vector(),
-        productsData: Vector[Product] = Vector(),
+        productsData: Products,
         deliveriesData: Vector[Delivery] = Vector(),
         product: Option[Product],
         delivery: Option[Delivery],
@@ -42,7 +42,7 @@
                     } else if(Matcher.isProductCreatePage) {
                         products.create(data = productsData, product.get)
                     } else if(Matcher.isWarehouseCreatePage) {
-                        deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData)
+                        deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData.list)
                     } else if(Matcher.isDeliveriesPage) {
                         deliveries.content(data = deliveriesData)
                     } else {

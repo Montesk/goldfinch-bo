@@ -4,6 +4,8 @@ import akka.http.scaladsl.model.Uri
 import play.api.mvc.{AnyContent, Request}
 import view.routes.Linker
 
+case class Products(list: Vector[Product], total: Int = 0)
+
 object Products extends Linker {
   val tableView = "table"
   val albumView = "album"
@@ -34,7 +36,7 @@ object Products extends Linker {
     req.getQueryString("view").get match {
       case `tableView` => tableView
       case `albumView` => albumView
-      case _ => throw UnsupportedViewException(req.getQueryString("view").get)
+      case _           => throw UnsupportedViewException(req.getQueryString("view").get)
     }
   }
 }

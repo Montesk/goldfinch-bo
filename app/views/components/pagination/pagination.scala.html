@@ -1,0 +1,34 @@
+@import view.routes.Linker
+@import view.pagination.Pagination
+
+@(current: Int, perPage: Int, total: Int, linker: Linker)(implicit request: Request[AnyContent])
+
+<nav aria-label="Навигация">
+    <ul class="pagination justify-content-end">
+        @if(current > 1) {
+            <li class="page-item">
+                <a class="page-link" href="@linker.withQuery(req = request, queryString = Some(s"page=${current - 1}"))" aria-label="Назад">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Назад</span>
+                </a>
+            </li>
+        }
+
+        @for(page <- Seq.range(1, Pagination.pages(total = total, perPage = perPage) + 1)) {
+            @if(current == page) {
+                <li class="page-item active"><a class="page-link" href="@linker.withQuery(req = request, queryString = Some(s"page=${page}"))">@page</a></li>
+            } else {
+                <li class="page-item"><a class="page-link" href="@linker.withQuery(req = request, queryString = Some(s"page=${page}"))">@page</a></li>
+            }
+        }
+
+        @if(current < Pagination.pages(total = total, perPage = perPage)) {
+            <li class="page-item">
+                <a class="page-link" href="@linker.withQuery(req = request, queryString = Some(s"page=${current + 1}"))" aria-label="Далее">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Далее</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

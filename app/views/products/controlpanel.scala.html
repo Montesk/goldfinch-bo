@@ -1,22 +1,49 @@
 @import view.models.Products
+@import view.routes.Matcher
 
 @()(implicit request: Request[AnyContent])
 
 <div class="col-3">
     <div class="pt-2">
         <div class="bo-control-icon d-inline-block mr-1 @if(Products.isTableView(req = request)) { text-primary } ">
-            <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.tableView}"))">
+            <a class="text-reset" href="@Products.withQuery(req = request, queryString = Some(s"view=${Products.tableView}"))">
                 <i class="fa-solid fa-table-list h4" role="button" title="Режим таблицы"></i>
             </a>
         </div>
         <div class="bo-control-icon d-inline @if(Products.isAlbumView(req = request)) { text-primary } ">
-            <a class="text-reset" href="@Products.withQuery(queryString = Some(s"view=${Products.albumView}"))">
+            <a class="text-reset" href="@Products.withQuery(req = request, queryString = Some(s"view=${Products.albumView}"))">
                 <i class="fa-solid fa-grip h4" role="button" title="Режим альбома"></i>
             </a>
         </div>
     </div>
 </div>
 
-<div class="col-3">
-        <!-- TODO: кол-во записей на странице -->
+<div class="col-2">
+    <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-sm">На странице</span>
+        </div>
+        <input id="products_per_page" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" value="@Matcher.perPage">
+    </div>
 </div>
+
+<script>
+        const perPage = document.getElementById('products_per_page');
+
+        let prev = ""
+        perPage.addEventListener('focusin', (e) => {
+            prev = e.target.value
+        });
+
+        perPage.addEventListener('focusout', (e) => {
+            const nextVal = e.target.value
+
+            if (nextVal === prev) {
+                return
+            }
+
+            const sp = new URLSearchParams(window.location.search)
+            sp.set('perPage', nextVal)
+            window.location.search = sp.toString()
+        });
+</script>

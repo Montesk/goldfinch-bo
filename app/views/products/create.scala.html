@@ -1,7 +1,7 @@
-@import view.models.Product
+@import view.models.{Products, Product}
 @import view.routes.Routes
 
-@(data: Vector[Product] = Vector(), product: Product)(implicit request: Request[AnyContent])
+@(data: Products, product: Product)(implicit request: Request[AnyContent])
 
 @products.content(data)
 
