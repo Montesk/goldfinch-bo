@@ -1,6 +1,6 @@
 ### Requirements
 
-* Java 8
+* Java 11
 * Scala 2.13.8
 
 ### Infrastructure up
@@ -28,6 +28,10 @@ Run (sbt console)
 `sbt updateSbtClassifiers`
 
 * Might be helpful to invalidate idea indexes after that
+
+#### Run sbt with specified java version
+
+`sbt test --java-home "C:\Program Files\Java\jdk-11"`
 
 #### Windows
 
