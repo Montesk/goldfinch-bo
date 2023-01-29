@@ -15,7 +15,8 @@ class DeliveriesController @Inject() (
     val controllerComponents: ControllerComponents,
     val deliveriesRepo: DeliveriesRepository,
     val productsRepo: ProductsRepository
-) extends BaseController {
+) extends BaseController
+    with I18n {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(deliveries = Delivery.listFromDB(deliveriesList())))
   }

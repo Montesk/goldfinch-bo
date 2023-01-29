@@ -1,1 +1,15 @@
-# https://www.playframework.com/documentation/latest/ScalaI18N
+views.navigation.orders=Заказы
+views.navigation.products=Товары
+views.navigation.warehouse=Склад
+views.products.controlpanel.tableview=Режим таблицы
+views.products.controlpanel.albumview=Режим альбома
+views.products.controlpanel.perpage=На странице
+views.products.table.addproduct=Добавить новый товар
+views.products.table.editproduct=Редактировать
+views.products.table.th.image=Изображение
+views.products.table.th.id=ID
+views.products.table.th.name=Название
+views.products.table.th.price=Цена
+views.products.table.th.quantity=Кол-во
+views.products.table.th.uuid=Идентификатор
+views.products.table.th.actions=Действия

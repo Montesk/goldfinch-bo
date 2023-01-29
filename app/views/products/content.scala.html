@@ -1,6 +1,6 @@
 @import view.models.Products
 
-@(data: Products)(implicit request: Request[AnyContent])
+@(data: Products)(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="mt-2 col-12">
     @if(Products.isAlbumView(request)) {

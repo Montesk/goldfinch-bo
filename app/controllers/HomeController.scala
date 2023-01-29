@@ -7,9 +7,9 @@ import play.api.mvc._
 @Singleton
 class HomeController @Inject() (
     val controllerComponents: ControllerComponents
-) extends BaseController {
-  def index(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.index())
+) extends BaseController
+    with I18n {
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index())
   }
 }

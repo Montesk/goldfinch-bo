@@ -11,10 +11,10 @@ import view.models.Order
 class OrdersController @Inject() (
     val controllerComponents: ControllerComponents,
     val ordersRepo: OrdersRepository
-) extends BaseController {
-  def index(): Action[AnyContent] = Action {
-    implicit request: Request[AnyContent] =>
-      Ok(views.html.index(orders = Order.listFromDB(ordersList())))
+) extends BaseController
+    with I18n {
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(orders = Order.listFromDB(ordersList())))
   }
 
   private def ordersList(): Vector[DBOrder] = {

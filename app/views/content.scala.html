@@ -8,7 +8,7 @@
         deliveriesData: Vector[Delivery] = Vector(),
         product: Option[Product],
         delivery: Option[Delivery],
-)(implicit request: Request[AnyContent])
+)(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="container-fluid position-relative flex-grow-1">
     <div class="row no-gutters flex-nowrap h-100">

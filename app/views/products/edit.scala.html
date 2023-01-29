@@ -1,6 +1,6 @@
 @import view.models.{Product, Products}
 
-@(data: Products, product: Product)(implicit request: Request[AnyContent])
+@(data: Products, product: Product)(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 @products.content(data)
 

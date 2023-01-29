@@ -1,0 +1,15 @@
+views.navigation.orders=Orders
+views.navigation.products=Products
+views.navigation.warehouse=Warehouse
+views.products.controlpanel.tableview=Table view
+views.products.controlpanel.albumview=Album view
+views.products.controlpanel.perpage=Per page
+views.products.table.addproduct=Add new product
+views.products.table.editproduct=Edit
+views.products.table.th.image=Image
+views.products.table.th.id=ID
+views.products.table.th.name=Name
+views.products.table.th.price=Price
+views.products.table.th.quantity=Quantity
+views.products.table.th.uuid=UUID
+views.products.table.th.actions=Actions

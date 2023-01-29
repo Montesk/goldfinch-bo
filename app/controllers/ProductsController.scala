@@ -18,7 +18,9 @@ class ProductsController @Inject() (
     val controllerComponents: ControllerComponents,
     val productsRepo: ProductsRepository,
     val assetsManager: Manager
-) extends BaseController {
+) extends BaseController
+    with I18n {
+
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(products = pageData))
   }
