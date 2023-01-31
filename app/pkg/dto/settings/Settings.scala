@@ -7,13 +7,17 @@ object Settings {
   def apply(xml: Elem): Settings = {
     new Settings(
       Version((xml \ "version").head.text.trim),
-      App(Theme((xml \ "app" \ "theme").head.text.trim)),
+      App(
+        Theme((xml \ "app" \ "theme").head.text.trim),
+        Language((xml \ "app" \ "language").head.text.trim),
+        StartPage((xml \ "app" \ "startPage").head.text.trim),
+      ),
       System(
         Migrations(
           AppliedAt((xml \ "system" \ "migrations" \ "appliedAt").head.text.trim),
-          Hash((xml \ "system" \ "migrations" \ "hash").head.text.trim)
-        )
-      )
+          Hash((xml \ "system" \ "migrations" \ "hash").head.text.trim),
+        ),
+      ),
     )
   }
 }

@@ -1,6 +1,11 @@
+form.action.save=Save
+
+flash.controller.settings=Settings successfully updated
+
 views.navigation.orders=Orders
 views.navigation.products=Products
 views.navigation.warehouse=Warehouse
+views.navigation.settings=Settings
 views.products.controlpanel.tableview=Table view
 views.products.controlpanel.albumview=Album view
 views.products.controlpanel.perpage=Per page
@@ -13,3 +18,8 @@ views.products.table.th.price=Price
 views.products.table.th.quantity=Quantity
 views.products.table.th.uuid=UUID
 views.products.table.th.actions=Actions
+views.settings.tab.general=General
+views.settings.tab.appearance=Design and layout
+views.settings.general.label.language=Language
+views.settings.appearance.label.theme=Application theme
+views.settings.general.label.startPage=Starting page

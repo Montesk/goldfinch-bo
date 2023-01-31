@@ -1,6 +1,6 @@
-@import helper._
 @import view.models._
-@import view.routes.{Routes, Matcher}
+@import view.routes.Matcher
+@import services.config.Config
 
 @(
         ordersData: Vector[Order] = Vector(),
@@ -8,74 +8,53 @@
         deliveriesData: Vector[Delivery] = Vector(),
         product: Option[Product],
         delivery: Option[Delivery],
+        settingsData: Settings,
 )(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="container-fluid position-relative flex-grow-1">
     <div class="row no-gutters flex-nowrap h-100">
 
-        <div class="bo-setting-vertical-panel d-flex flex-column position-relative justify-content-end">
+        @if(Config.appSettings().demoMode) {
+            <div class="bo-setting-vertical-panel d-flex flex-column position-relative justify-content-end">
             @components.settings.themeswitcher()
-        </div>
-
-        <div class="col-12 bo-content-with-left-settings-panel pt-4">
-
-            <div class="container-fluid">
-                <div class="row justify-content-between">
-
-                @if(Matcher.isInProductGroupPage) {
-                    @products.controlpanel()
-                }
-
-                </div>
             </div>
+        }
 
+    <div class="col-12 bo-content-with-left-settings-panel pt-4">
+        <div class="container-fluid">
+            <div class="row justify-content-between">
 
-            <div class="@if(Matcher.isProductsPage && Products.isAlbumView(request)) { container } else { container-fluid }">
-                <div class="row">
-                @{
-                    if(Matcher.isOrdersPage) {
-                        orders.content(data = ordersData)
-                    } else if(Matcher.isProductsPage) {
-                        products.content(data = productsData)
-                    } else if(Matcher.isInProductEditGroupPage) {
-                        products.edit(data = productsData, product.get)
-                    } else if(Matcher.isProductCreatePage) {
-                        products.create(data = productsData, product.get)
-                    } else if(Matcher.isWarehouseCreatePage) {
-                        deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData.list)
-                    } else if(Matcher.isDeliveriesPage) {
-                        deliveries.content(data = deliveriesData)
-                    } else {
-                        dashboard.content()
-                    }
-                }
-                </div>
+            @if(Matcher.isInProductGroupPage) {
+                @products.controlpanel()
+            }
+
             </div>
         </div>
+
+
+        <div class="@if(Matcher.isProductsPage && Products.isAlbumView(request)) { container } else { container-fluid }">
+            <div class="row">
+            @{
+                if(Matcher.isOrdersPage) {
+                    orders.content(data = ordersData)
+                } else if(Matcher.isProductsPage) {
+                    products.content(data = productsData)
+                } else if(Matcher.isInProductEditGroupPage) {
+                    products.edit(data = productsData, product.get)
+                } else if(Matcher.isProductCreatePage) {
+                    products.create(data = productsData, product.get)
+                } else if(Matcher.isWarehouseCreatePage) {
+                    deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData.list)
+                } else if(Matcher.isDeliveriesPage) {
+                    deliveries.content(data = deliveriesData)
+                } else if(Matcher.isSettingsPage) {
+                    settings.content(data = settingsData)
+                } else {
+                    dashboard.content()
+                }
+            }
+    </div>
+    </div>
+    </div>
     </div>
 </div>
-
-<script>
-        document.addEventListener('DOMContentLoaded', function () {
-            require(["views/form"], function (form) {
-                const token = {
-                    name: '@CSRF.getToken.name',
-                    value: '@CSRF.getToken.value',
-                }
-
-                $("[data-theme]").each(function () {
-                    $(this).click(function () {
-                        const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
-                        const theme = themePrefix + $(this).data('theme') + ".css";
-                        $('#bo-main-theme').attr('href', theme)
-
-                        form.postRequest('@Routes.settingsUpdatePath', {
-                            [token.name]: token.value,
-                            key: 'theme',
-                            value: $(this).data('theme')
-                        })
-                    })
-                })
-            })
-        })
-</script>

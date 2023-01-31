@@ -2,6 +2,7 @@ package controllers
 
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
+import play.api.Play
 import play.api.Play.materializer
 import play.api.test._
 import play.api.test.Helpers._
@@ -12,6 +13,7 @@ import play.api.test.CSRFTokenHelper._
   * For more information, see https://www.playframework.com/documentation/latest/ScalaTestingWithScalaTest
   */
 class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
+  Play.routesCompilerMaybeApplication
   "HomeController GET" should {
     "render the index page from a new instance of controller" in {
       val controller = new HomeController(stubControllerComponents())
@@ -19,7 +21,7 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
       status(home) mustBe OK
       contentType(home) mustBe Some("text/html")
-      contentAsString(home) must include("Dashboard")
+      contentAsString(home) must include("Goldfinch")
     }
 
     "render the index page from the application" in {
@@ -28,16 +30,15 @@ class HomeControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
 
       status(home) mustBe OK
       contentType(home) mustBe Some("text/html")
-      contentAsString(home) must include("Dashboard")
+      contentAsString(home) must include("Goldfinch")
     }
 
-    "render the index page from the router" in {
-      val request = FakeRequest(GET, "/")
-      val home = route(app, request).get
+    "render the index page from the router (redirect for the first request)" in {
 
-      status(home) mustBe OK
-      contentType(home) mustBe Some("text/html")
-      contentAsString(home) must include("Dashboard")
+      val request = FakeRequest(GET, "/")
+      val redirect = route(app, request).get
+
+      status(redirect) mustBe SEE_OTHER
     }
   }
 }

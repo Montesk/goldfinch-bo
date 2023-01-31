@@ -30,8 +30,8 @@ object Config {
         defaults = repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
         delivery = repositoryWithDuration(loaded.get.repository.delivery),
         product = repositoryWithDuration(loaded.get.repository.product),
-        order = repositoryWithDuration(loaded.get.repository.order)
-      )
+        order = repositoryWithDuration(loaded.get.repository.order),
+      ),
     )
   }
 
@@ -42,13 +42,16 @@ object Config {
   def appSettings(): App = {
     App(
       theme = loaded.get.app.theme,
-      loaded.get.app.settingsFilePath,
-      loaded.get.app.settingsVersion
+      settingsFilePath = loaded.get.app.settingsFilePath,
+      settingsVersion = loaded.get.app.settingsVersion,
+      language = loaded.get.app.language,
+      demoMode = loaded.get.app.demoMode,
+      startPage = loaded.get.app.startPage,
     )
   }
 
   private def repositoryWithDuration(
-      repo: Option[ConfigRepository]
+      repo: Option[ConfigRepository],
   ): Option[Repository] = {
     if (repo.isEmpty) {
       return None
@@ -58,7 +61,14 @@ object Config {
   }
 }
 
-case class App(theme: String, settingsFilePath: String, settingsVersion: String)
+case class App(
+    theme: String,
+    settingsFilePath: String,
+    settingsVersion: String,
+    language: String,
+    demoMode: Boolean,
+    startPage: String,
+)
 
 case class Repository(dbWaitTimeout: Duration)
 
@@ -66,14 +76,14 @@ case class Repositories(
     defaults: Repository,
     delivery: Option[Repository] = None,
     product: Option[Repository] = None,
-    order: Option[Repository] = None
+    order: Option[Repository] = None,
 )
 
 /** Yaml field must match case classes listed below params
   */
 private[config] case class fromConfig(
     repository: ConfigRepositories,
-    app: ConfigApp
+    app: ConfigApp,
 ) {}
 
 private[config] case class ConfigRepository(dbWaitTimeout: String)
@@ -82,7 +92,14 @@ private[config] case class ConfigRepositories(
     defaults: ConfigRepository,
     delivery: Option[ConfigRepository] = None,
     product: Option[ConfigRepository] = None,
-    order: Option[ConfigRepository] = None
+    order: Option[ConfigRepository] = None,
 )
 
-private[config] case class ConfigApp(theme: String, settingsFilePath: String, settingsVersion: String)
+private[config] case class ConfigApp(
+    theme: String,
+    settingsFilePath: String,
+    settingsVersion: String,
+    language: String,
+    demoMode: Boolean,
+    startPage: String,
+)

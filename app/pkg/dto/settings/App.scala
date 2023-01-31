@@ -13,6 +13,8 @@ case class App(override val values: xml.Serializable*) extends xml.Serializable 
   protected val tag: String = "app"
 
   val theme: Option[Theme] = mapValue("theme", Theme.apply)
+  val language: Option[Language] = mapValue("language", Language.apply)
+  val startPage: Option[StartPage] = mapValue("startPage", StartPage.apply)
 
   override def XML(): Elem = {
     <app>

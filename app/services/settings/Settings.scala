@@ -15,12 +15,10 @@ case class Options(
     settingsFilePath: String,
     theme: String,
     migrationsAppliedAt: String,
-    migrationsHash: String
+    migrationsHash: String,
+    language: String,
+    startPage: String,
 )
-
-trait Settings {
-  def theme(): String
-}
 
 object Settings extends Logging with CacheKeys {
   val cache: Cache = new Cache
@@ -42,14 +40,25 @@ object Settings extends Logging with CacheKeys {
       case e: Throwable => throw e
     }
 
-    val settingsVersion = dto.Settings(contents).version.get.value
+    var currentVersion: String = ""
+    try {
+      currentVersion = dto.Settings(contents).version.get.value
+    } catch {
+      case e: Throwable => {
+        logger.error(s"failed to retrieve current settings version. exception: ${e}")
+        logger.info("create application settings...")
+        contents = createAppSettingsFile(opts)
+        currentVersion = dto.Settings(contents).version.get.value
+        logger.info("complete")
+      }
+    }
 
-    if (settingsVersion != opts.systemSettingVersion) {
+    if (currentVersion != opts.systemSettingVersion) {
       logger.info(
-        s"local application settings version outdated. expect ${opts.systemSettingVersion} got $settingsVersion"
+        s"local application settings version outdated. expect ${opts.systemSettingVersion} got $currentVersion",
       )
       logger.info("regenerating application settings...")
-      contents = updateSystemSettings(fromContents = contents, settingsVersion, opts)
+      contents = updateSystemSettings(fromContents = contents, fromVersion = currentVersion, defaults = opts)
       logger.info("complete")
     }
 
@@ -72,12 +81,38 @@ object Settings extends Logging with CacheKeys {
     settings().system.get.migrations.get.hash.get.value
   }
 
+  def language(): String = {
+    settings().app.get.language.get.value
+  }
+
+  def startPage(): String = {
+    settings().app.get.startPage.get.value
+  }
+
   def updateTheme(theme: String): Unit = {
     val prev = settings()
     val update = dto.Settings(
       prev.version.get,
-      dto.App(dto.Theme(theme)),
-      prev.system.get
+      dto.App(
+        dto.Theme(theme),
+        prev.app.get.language.get,
+        prev.app.get.startPage.get,
+      ),
+      prev.system.get,
+    )
+    save(update)
+  }
+
+  def updateLanguage(language: String): Unit = {
+    val prev = settings()
+    val update = dto.Settings(
+      prev.version.get,
+      dto.App(
+        prev.app.get.theme.get,
+        dto.Language(language),
+        prev.app.get.startPage.get,
+      ),
+      prev.system.get,
     )
     save(update)
   }
@@ -90,9 +125,23 @@ object Settings extends Logging with CacheKeys {
       dto.System(
         dto.Migrations(
           dto.AppliedAt(appliedAt),
-          dto.Hash(hash)
-        )
-      )
+          dto.Hash(hash),
+        ),
+      ),
+    )
+    save(update)
+  }
+
+  def updateStartPage(startPagePath: String): Unit = {
+    val prev = settings()
+    val update = dto.Settings(
+      prev.version.get,
+      dto.App(
+        prev.app.get.theme.get,
+        prev.app.get.language.get,
+        dto.StartPage(startPagePath),
+      ),
+      prev.system.get,
     )
     save(update)
   }
@@ -102,24 +151,35 @@ object Settings extends Logging with CacheKeys {
       version = opts.systemSettingVersion,
       theme = opts.theme,
       appliedAt = opts.migrationsAppliedAt,
-      hash = opts.migrationsHash
+      hash = opts.migrationsHash,
+      language = opts.language,
+      startPage = opts.startPage,
     )
 
     create.XML()
   }
 
-  private def settings(version: String, theme: String, appliedAt: String, hash: String): dto.Settings = {
+  private def settings(
+      version: String,
+      theme: String,
+      appliedAt: String,
+      hash: String,
+      language: String,
+      startPage: String,
+  ): dto.Settings = {
     dto.Settings(
       dto.Version(version),
       dto.App(
-        dto.Theme(theme)
+        dto.Theme(theme),
+        dto.Language(language),
+        dto.StartPage(startPage),
       ),
       dto.System(
         dto.Migrations(
           dto.AppliedAt(appliedAt),
-          dto.Hash(hash)
-        )
-      )
+          dto.Hash(hash),
+        ),
+      ),
     )
   }
 
@@ -128,12 +188,12 @@ object Settings extends Logging with CacheKeys {
     try {
       logger.info("trying to regenerate from old version")
       contents = createAppSettingsFile(
-        optionsFromContent(fromContents, defaults.settingsFilePath, defaults.systemSettingVersion)
+        optionsFromContent(fromContents, defaults.settingsFilePath, defaults.systemSettingVersion),
       )
     } catch {
       case e: Throwable => {
         logger.error(
-          s"failed to regenerate. settings versions v$fromVersion -> v${defaults.systemSettingVersion} are incompatible. exception ${e}"
+          s"failed to regenerate. settings versions v$fromVersion -> v${defaults.systemSettingVersion} are incompatible. exception ${e}",
         )
         logger.info("creating default settings file")
         contents = createAppSettingsFile(defaults)
@@ -156,13 +216,16 @@ object Settings extends Logging with CacheKeys {
       settingsFilePath = toVersion,
       theme = restored.app.get.theme.get.value,
       migrationsAppliedAt = restored.system.get.migrations.get.appliedAt.get.value,
-      migrationsHash = restored.system.get.migrations.get.hash.get.value
+      migrationsHash = restored.system.get.migrations.get.hash.get.value,
+      language = restored.app.get.language.get.value,
+      startPage = restored.app.get.startPage.get.value,
     )
   }
 
   private def save(settings: dto.Settings): Unit = {
     write(settings.XML())
     cache.update(config, settings)
+    logger.info("settings saved")
   }
 
   private def write(contents: xml.Elem): Unit = {

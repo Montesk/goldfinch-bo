@@ -1,11 +1,17 @@
 <settings>
     <version>
-        0.0.2
+        0.0.4
     </version>
     <app>
         <theme>
             green
         </theme>
+        <language>
+            en
+        </language>
+        <startPage>
+            /products
+        </startPage>
     </app>
     <system>
         <migrations>

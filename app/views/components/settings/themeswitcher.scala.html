@@ -1,9 +1,37 @@
-@()
+@import helper._
+@import view.routes.Routes
+
+@()(implicit request: Request[AnyContent])
 
 <div class="row no-gutters align-items-end">
     <div class="bo-theme-switcher row no-gutters align-items-center justify-content-center flex-column">
-        <div class="bo-theme-switch" data-theme="default" title="Тема по-умолчанию"></div>
-        <div class="bo-theme-switch" data-theme="green" title="Зелёная тема"></div>
-        <div class="bo-theme-switch" data-theme="goldfinch" title="Тема Щегол&#8482;"></div>
+        <div class="bo-theme-switch default" data-theme="default" title="Тема по-умолчанию"></div>
+        <div class="bo-theme-switch green" data-theme="green" title="Зелёная тема"></div>
+        <div class="bo-theme-switch goldfinch" data-theme="goldfinch" title="Тема Goldfinch&#8482;"></div>
     </div>
 </div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            require(["views/form"], function (form) {
+                const token = {
+                    name: '@CSRF.getToken.name',
+                    value: '@CSRF.getToken.value',
+                }
+
+                $("[data-theme]").each(function () {
+                    $(this).click(function () {
+                        const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
+                        const theme = themePrefix + $(this).data('theme') + ".css";
+                        $('#bo-main-theme').attr('href', theme)
+
+                        form.postRequest('@Routes.settingsUpdatePath', {
+                            [token.name]: token.value,
+                            key: 'theme',
+                            value: $(this).data('theme')
+                        })
+                    })
+                })
+            })
+        })
+</script>

@@ -1,7 +1,10 @@
 app:
   theme: "green"
   settingsFilePath: "settings.xml"
-  settingsVersion: "0.0.2"
+  language: "ru"
+  settingsVersion: "0.0.4"
+  demoMode: false
+  startPage: "/"
 
 repository:
   defaults:

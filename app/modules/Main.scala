@@ -1,10 +1,12 @@
 package modules
 
 import com.google.inject.AbstractModule
+
 import play.api.Logging
+
 import services.config.Config
 import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
-import services.settings.{Settings, Options => SettingsOptions}
+import services.settings.{Settings, Options => FromConfig}
 
 /** This class is a Guice module that tells Guice how to bind several different types. This Guice module is created when
   * the Play application starts. Play will automatically use any class called `Module` that is in the root package. You
@@ -28,13 +30,15 @@ class Main extends AbstractModule with Logging {
 
     logger.info("Loading application profile settings")
     Settings.load(
-      SettingsOptions(
+      FromConfig(
         systemSettingVersion = Config.appSettings().settingsVersion,
         settingsFilePath = Config.appSettings().settingsFilePath,
         theme = Config.appSettings().theme,
         migrationsAppliedAt = lastApplied.appliedAt,
-        migrationsHash = lastApplied.hash
-      )
+        migrationsHash = lastApplied.hash,
+        language = Config.appSettings().language,
+        startPage = Config.appSettings().startPage,
+      ),
     )
     logger.info("Application profile settings loaded")
 

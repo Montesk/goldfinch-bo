@@ -3,7 +3,7 @@ package view.routes
 import play.api.mvc.{AnyContent, Request}
 import view.pagination.Pagination
 
-object Matcher extends Routes {
+object Matcher extends Routes with Pagination {
   def isHomePage(implicit req: Request[AnyContent]): Boolean = {
     req.path == homePath
   }
@@ -36,11 +36,7 @@ object Matcher extends Routes {
     req.path == deliveriesPath
   }
 
-  def currentPage(implicit req: Request[AnyContent]): Int = {
-    req.getQueryString("page").getOrElse("1").toInt
-  }
-
-  def perPage(implicit req: Request[AnyContent]): Int = {
-    req.getQueryString("perPage").getOrElse(Pagination.defaultPerPage.toString).toInt
+  def isSettingsPage(implicit req: Request[AnyContent]): Boolean = {
+    req.path == settingsPath
   }
 }

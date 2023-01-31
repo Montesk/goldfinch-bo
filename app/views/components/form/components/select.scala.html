@@ -8,6 +8,7 @@
         label: String = "",
         cssClass: String = "form-control",
         required: Boolean = false,
+        selected: String = "",
 )
 
 @if(label) {
@@ -21,7 +22,10 @@ id="@id"
 @if(required) { required }>
 
 @for(opt <- options) {
-    <option value="@opt.value">@opt.displayName</option>
+    <option
+    value="@opt.value"
+    @if(selected == opt.value) { selected } >
+    @opt.displayName
+    </option>
 }
-
     </select>

@@ -13,7 +13,10 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
-          |  settingsVersion: "0.0.2"
+          |  settingsVersion: "0.0.4"
+          |  language: en
+          |  demoMode: true
+          |  startPage: "/"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -29,7 +32,7 @@ class ConfigSpec extends PlaySpec {
         defaults = Repository(Duration("12s")),
         product = Option(Repository(Duration("13s"))),
         delivery = Option(Repository(Duration("14s"))),
-        order = Option(Repository(Duration("15s")))
+        order = Option(Repository(Duration("15s"))),
       )
 
       Config.readConfig(ymlString)
@@ -44,7 +47,10 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
-          |  settingsVersion: "0.0.2"
+          |  settingsVersion: "0.0.4"
+          |  language: en
+          |  demoMode: false
+          |  startPage: "/"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "12s"
@@ -54,7 +60,7 @@ class ConfigSpec extends PlaySpec {
 
       val expect = Repositories(
         defaults = Repository(Duration(12, SECONDS)),
-        product = Option(Repository(Duration(13, SECONDS)))
+        product = Option(Repository(Duration(13, SECONDS))),
       )
 
       Config.readConfig(ymlString)
@@ -69,14 +75,17 @@ class ConfigSpec extends PlaySpec {
           |app:
           |  theme: "green"
           |  settingsFilePath: "settings.xml"
-          |  settingsVersion: "0.0.2"
+          |  settingsVersion: "0.0.4"
+          |  language: en
+          |  demoMode: false
+          |  startPage: "/"
           |repository:
           |  defaults:
           |    dbWaitTimeout: "5s"
           |""".stripMargin
 
       val expect = Repositories(
-        defaults = Repository(Duration(5, SECONDS))
+        defaults = Repository(Duration(5, SECONDS)),
       )
 
       Config.readConfig(ymlString)

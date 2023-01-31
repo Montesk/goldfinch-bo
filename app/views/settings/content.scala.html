@@ -1,0 +1,76 @@
+@import helper._
+
+@import view.routes.Routes
+@import view.form.components.SelectOption
+@import services.settings.Settings
+@import view.models.{Settings => SettingsData}
+
+@(data: SettingsData)(implicit request: Request[AnyContent], messages: MessagesProvider)
+
+<div class="col-12">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">
+                @Messages("views.settings.tab.general")</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="appearance-tab" data-toggle="tab" href="#appearance" role="tab" aria-controls="appearance" aria-selected="false">
+            @Messages("views.settings.tab.appearance")</a>
+        </li>
+    </ul>
+    <form id="applicationSettings" method="POST" action="@Routes.settingsUpdatePathV2">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                <div class="form-group mt-4 w-25">
+                @components.form.components.select(
+                    name = "language",
+                    options = Vector(
+                        SelectOption("ru", "Русский"),
+                        SelectOption("en", "English")
+                    ),
+                    label = Messages("views.settings.general.label.language"),
+                    selected = Settings.language()
+                )
+                </div>
+                <div class="form-group mt-4 w-25">
+                @components.form.components.select(
+                    name = "startPage",
+                    options = data.pages.map(page => SelectOption(page, page)),
+                    label = Messages("views.settings.general.label.startPage"),
+                    selected = Settings.startPage()
+                )
+                </div>
+            </div>
+            <div class="tab-pane fade" id="appearance" role="tabpanel" aria-labelledby="appearance-tab">
+                <div class="form-group mt-4 w-25">
+                    <label for="theme-switcher">@Messages("views.settings.appearance.label.theme")</label>
+                    <div class="bo-theme-switcher transparent row no-gutters justify-content-start">
+                        <div class="bo-theme-switch square default ml-2" data-switch-theme="default" title="Тема по-умолчанию"></div>
+                        <div class="bo-theme-switch square green ml-2" data-switch-theme="green" title="Зелёная тема"></div>
+                        <div class="bo-theme-switch square goldfinch ml-2" data-switch-theme="goldfinch" title="Тема Goldfinch&#8482;"></div>
+                        <input type="hidden" value="@Settings.theme()" name="theme" id="theme-switcher">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">@Messages("form.action.save")</button>
+        </div>
+        @CSRF.formField
+    </form>
+</div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $("[data-switch-theme]").each(function () {
+                $(this).click(function () {
+                    const themePrefix = '@routes.Assets.versioned("stylesheets/themes/")'
+                    const theme = $(this).data('switch-theme')
+                    const themePath = themePrefix + theme + ".css"
+
+                    $('#bo-main-theme').attr('href', themePath)
+                    $('#theme-switcher').attr('value', theme)
+                })
+            })
+        })
+</script>

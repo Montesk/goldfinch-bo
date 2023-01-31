@@ -1,6 +1,11 @@
+form.action.save=Сохранить
+
+flash.controller.settings=Настройки успешно обновлены
+
 views.navigation.orders=Заказы
 views.navigation.products=Товары
 views.navigation.warehouse=Склад
+views.navigation.settings=Настройки
 views.products.controlpanel.tableview=Режим таблицы
 views.products.controlpanel.albumview=Режим альбома
 views.products.controlpanel.perpage=На странице
@@ -13,3 +18,8 @@ views.products.table.th.price=Цена
 views.products.table.th.quantity=Кол-во
 views.products.table.th.uuid=Идентификатор
 views.products.table.th.actions=Действия
+views.settings.tab.general=Основные
+views.settings.tab.appearance=Дизайн и оформление
+views.settings.general.label.language=Язык
+views.settings.appearance.label.theme=Тема приложения
+views.settings.general.label.startPage=Начальная страница

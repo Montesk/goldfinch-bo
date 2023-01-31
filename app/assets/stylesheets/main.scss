@@ -99,6 +99,11 @@ The reason is css var is runtime while sass function is compile time executables
   height: 120px;
   background-color: $gray-400;
 
+  &.transparent {
+    background: none;
+    height: unset;
+  }
+
   .bo-theme-switch {
     width: 20px;
     height: 20px;
@@ -107,20 +112,29 @@ The reason is css var is runtime while sass function is compile time executables
     margin-bottom: 7px;
     background-color: #ffffff;
 
-    &[data-theme="default"] {
+    &.square {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    &.default {
       background-color: $bo-theme-default-accent;
     }
 
-    &[data-theme="green"] {
+    &.green {
       background-color: $bo-theme-green-accent;
     }
 
-    &[data-theme="goldfinch"] {
+    &.goldfinch {
       background-color: $bo-theme-goldfinch-accent;
     }
 
+    &:first-child {
+      margin-left: 0 !important;
+    }
+
     &:last-child {
-      margin-bottom: 0;
+      margin-bottom: 0 !important;
     }
   }
 }
