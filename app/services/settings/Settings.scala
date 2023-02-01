@@ -12,12 +12,13 @@ import pkg.dto.{settings => dto}
 
 case class Options(
     systemSettingVersion: String,
-    settingsFilePath: String,
-    theme: String,
-    migrationsAppliedAt: String,
-    migrationsHash: String,
-    language: String,
-    startPage: String,
+    readFilePath: String,
+    theme: String = "",
+    migrationsAppliedAt: String = "",
+    migrationsHash: String = "",
+    language: String = "",
+    startPage: String = "",
+    var writeFilePath: String = "", // default is loadFilePath
 )
 
 object Settings extends Logging with CacheKeys {
@@ -28,10 +29,17 @@ object Settings extends Logging with CacheKeys {
   def load(opts: Options): Unit = {
     options = Option(opts)
 
+    val loaded = options.get
+
+    if (loaded.writeFilePath.isEmpty) {
+      loaded.writeFilePath = loaded.readFilePath
+      options = Option(loaded)
+    }
+
     var contents: xml.Elem = null
 
     try {
-      contents = XML.loadFile(settingsFile)
+      contents = read()
     } catch {
       case _: FileNotFoundException =>
         logger.info("application settings not found. creating new settings file...")
@@ -91,58 +99,66 @@ object Settings extends Logging with CacheKeys {
 
   def updateTheme(theme: String): Unit = {
     val prev = settings()
+
     val update = dto.Settings(
       prev.version.get,
       dto.App(
-        dto.Theme(theme),
-        prev.app.get.language.get,
-        prev.app.get.startPage.get,
+        theme = theme,
+        language = language(),
+        startPage = startPage(),
       ),
       prev.system.get,
     )
+
     save(update)
   }
 
   def updateLanguage(language: String): Unit = {
     val prev = settings()
+
     val update = dto.Settings(
       prev.version.get,
       dto.App(
-        prev.app.get.theme.get,
-        dto.Language(language),
-        prev.app.get.startPage.get,
+        theme = theme(),
+        language = language,
+        startPage = startPage(),
       ),
       prev.system.get,
     )
+
     save(update)
   }
 
   def updateMigrationsInfo(appliedAt: String, hash: String): Unit = {
     val prev = settings()
+
     val update = dto.Settings(
       prev.version.get,
       prev.app.get,
       dto.System(
         dto.Migrations(
-          dto.AppliedAt(appliedAt),
-          dto.Hash(hash),
+          appliedAt = appliedAt,
+          hash = hash,
         ),
       ),
     )
+
     save(update)
   }
 
   def updateStartPage(startPagePath: String): Unit = {
     val prev = settings()
+
     val update = dto.Settings(
       prev.version.get,
       dto.App(
-        prev.app.get.theme.get,
-        prev.app.get.language.get,
-        dto.StartPage(startPagePath),
+        theme = theme(),
+        language = language(),
+        startPage = startPagePath,
       ),
       prev.system.get,
     )
+
     save(update)
   }
 
@@ -170,14 +186,14 @@ object Settings extends Logging with CacheKeys {
     dto.Settings(
       dto.Version(version),
       dto.App(
-        dto.Theme(theme),
-        dto.Language(language),
-        dto.StartPage(startPage),
+        theme = theme,
+        language = language,
+        startPage = startPage,
       ),
       dto.System(
         dto.Migrations(
-          dto.AppliedAt(appliedAt),
-          dto.Hash(hash),
+          appliedAt = appliedAt,
+          hash = hash,
         ),
       ),
     )
@@ -188,7 +204,7 @@ object Settings extends Logging with CacheKeys {
     try {
       logger.info("trying to regenerate from old version")
       contents = createAppSettingsFile(
-        optionsFromContent(fromContents, defaults.settingsFilePath, defaults.systemSettingVersion),
+        optionsFromContent(fromContents, defaults.readFilePath, defaults.systemSettingVersion),
       )
     } catch {
       case e: Throwable => {
@@ -212,8 +228,8 @@ object Settings extends Logging with CacheKeys {
     val restored = dto.Settings(oldContents)
 
     Options(
-      systemSettingVersion = filePath,
-      settingsFilePath = toVersion,
+      systemSettingVersion = toVersion,
+      readFilePath = filePath,
       theme = restored.app.get.theme.get.value,
       migrationsAppliedAt = restored.system.get.migrations.get.appliedAt.get.value,
       migrationsHash = restored.system.get.migrations.get.hash.get.value,
@@ -229,12 +245,12 @@ object Settings extends Logging with CacheKeys {
   }
 
   private def write(contents: xml.Elem): Unit = {
-    XML.save(filename = settingsFile.toString, node = prettify(contents))
+    XML.save(filename = writeSettingsFile.toString, node = prettify(contents))
   }
 
   private def read(): xml.Elem = {
     try {
-      XML.loadFile(settingsFile)
+      XML.loadFile(readSettingsFile)
     } catch {
       case e: Throwable =>
         logger.error(s"read application settings exception: $e descr: ${e.toString}")
@@ -242,8 +258,12 @@ object Settings extends Logging with CacheKeys {
     }
   }
 
-  private def settingsFile: File = {
-    Paths.get(options.get.settingsFilePath).toFile
+  private def readSettingsFile: File = {
+    Paths.get(options.get.readFilePath).toFile
+  }
+
+  private def writeSettingsFile: File = {
+    Paths.get(options.get.writeFilePath).toFile
   }
 
   private def prettify(contents: xml.Elem): xml.Elem = {

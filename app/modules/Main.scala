@@ -32,7 +32,7 @@ class Main extends AbstractModule with Logging {
     Settings.load(
       FromConfig(
         systemSettingVersion = Config.appSettings().settingsVersion,
-        settingsFilePath = Config.appSettings().settingsFilePath,
+        readFilePath = Config.appSettings().settingsFilePath,
         theme = Config.appSettings().theme,
         migrationsAppliedAt = lastApplied.appliedAt,
         migrationsHash = lastApplied.hash,

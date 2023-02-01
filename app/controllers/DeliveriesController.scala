@@ -14,7 +14,7 @@ import view.models.{Delivery, Product, Products}
 class DeliveriesController @Inject() (
     val controllerComponents: ControllerComponents,
     val deliveriesRepo: DeliveriesRepository,
-    val productsRepo: ProductsRepository
+    val productsRepo: ProductsRepository,
 ) extends BaseController
     with I18n {
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
@@ -26,8 +26,8 @@ class DeliveriesController @Inject() (
       views.html.index(
         deliveries = Delivery.listFromDB(deliveriesList()),
         delivery = Option(Delivery.newDelivery()),
-        products = Products(Product.listFromDB(productsList()))
-      )
+        products = Products(Product.listFromDB(productsList())),
+      ),
     )
   }
 
@@ -37,12 +37,12 @@ class DeliveriesController @Inject() (
       .fold(
         formWithErrors => {
           throw new Exception(
-            s"Invalid data -> errors: ${formWithErrors.toString}"
+            s"Invalid data -> errors: ${formWithErrors.toString}",
           )
         },
         newDeliveryData => {
           deliveriesRepo.create(newDeliveryData)
-        }
+        },
       )
 
     Redirect(routes.DeliveriesController.index())
@@ -66,8 +66,8 @@ class DeliveriesController @Inject() (
   private val deliveryCreateForm: Form[DeliveryData] = Form(
     mapping(
       "product_id" -> longNumber,
-      "quantity" -> number
-    )(DeliveryData.apply)(DeliveryData.unapply)
+      "quantity" -> number,
+    )(DeliveryData.apply)(DeliveryData.unapply),
   )
 
   private def deliveriesList(): Vector[(DBDelivery, DBProduct)] = {

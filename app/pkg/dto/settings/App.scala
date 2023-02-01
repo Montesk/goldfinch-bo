@@ -7,6 +7,14 @@ object App {
   def apply(nodes: xml.Serializable*): App = {
     new App(nodes: _*)
   }
+
+  def apply(theme: String, language: String, startPage: String): App = {
+    new App(
+      Theme(theme),
+      Language(language),
+      StartPage(startPage),
+    )
+  }
 }
 
 case class App(override val values: xml.Serializable*) extends xml.Serializable {

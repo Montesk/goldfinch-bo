@@ -7,6 +7,13 @@ object Migrations {
   def apply(nodes: xml.Serializable*): Migrations = {
     new Migrations(nodes: _*)
   }
+
+  def apply(appliedAt: String, hash: String): Migrations = {
+    new Migrations(
+      AppliedAt(appliedAt),
+      Hash(hash),
+    )
+  }
 }
 
 case class Migrations(override val values: xml.Serializable*) extends xml.Serializable {

@@ -8,10 +8,10 @@ trait Serializable extends {
 
   def XML(): Elem
 
-  protected def mapGroup[T1](tag: String, builder: Seq[Serializable] => T1): Option[T1] = {
+  protected def mapGroup[T1, T2](tag: String, builder: T2 => T1): Option[T1] = {
     for (v <- values) {
       if (v.tag == tag) {
-        return Option[T1](builder(v.values))
+        return Option[T1](builder(v.values.asInstanceOf[T2]))
       }
     }
     None
