@@ -1,7 +1,7 @@
 package pkg.dto.settings
 
 import scala.xml.{Elem, NodeSeq}
-import pkg.xml
+import pkg.xml.Serializable
 
 object Settings {
   def apply(xml: Elem): Settings = {
@@ -21,6 +21,67 @@ object Settings {
     )
   }
 
+  def apply(values: Serializable*): Settings = {
+    new Settings(values: _*)
+  }
+
+  /**
+   * Values constructor helper preserves standard settings xml form (field orders)
+   * @return
+   */
+  def apply(
+      version: String,
+      theme: String,
+      language: String,
+      startPage: String,
+      appliedAt: String,
+      hash: String,
+  ): Settings = {
+    new Settings(
+      Version(version),
+      App(
+        theme = theme,
+        language = language,
+        startPage = startPage,
+      ),
+      System(
+        Migrations(
+          appliedAt = appliedAt,
+          hash = hash,
+        ),
+      ),
+    )
+  }
+
+  /**
+   * Helper constructor with update values and fallback to base value Might be useful for "updates"
+   * @return
+   */
+  def apply(
+      version: Option[String] = None,
+      theme: Option[String] = None,
+      language: Option[String] = None,
+      startPage: Option[String] = None,
+      appliedAt: Option[String] = None,
+      hash: Option[String] = None,
+      base: Settings,
+  ): Settings = {
+    new Settings(
+      Version(version = version.getOrElse(base.version())),
+      App(
+        theme = theme.getOrElse(base.app().theme()),
+        language = language.getOrElse(base.app().language()),
+        startPage = startPage.getOrElse(base.app().startPage()),
+      ),
+      System(
+        Migrations(
+          appliedAt = appliedAt.getOrElse(base.system().migrations().appliedAt()),
+          hash = hash.getOrElse(base.system().migrations().hash()),
+        ),
+      ),
+    )
+  }
+
   private def requiredTag(node: NodeSeq): String = {
     node.head.text.trim
   }
@@ -33,7 +94,7 @@ object Settings {
   }
 }
 
-case class Settings(override val values: xml.Serializable*) extends xml.Serializable {
+sealed case class Settings(override val values: Serializable*) extends Serializable {
   protected val tag: String = "settings"
 
   private val mappedVersion: Option[Version] = mapValue("version", Version.apply)

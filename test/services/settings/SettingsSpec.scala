@@ -15,7 +15,7 @@ class SettingsSpec extends PlaySpec {
   val stubFilePath: String = "test/services/settings/stubs/settings.xml"
 
   "Settings" must {
-    "load must throw no exception" in {
+    "load throw no exception" in {
       try {
         noException must be thrownBy Settings.load(
           Options(
@@ -32,7 +32,30 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
+    "load all given from options fields" in {
+      try {
+        Settings.load(
+          Options(
+            systemSettingVersion = version,
+            readFilePath = stubFilePath,
+            theme = theme,
+            migrationsAppliedAt = appliedAt,
+            migrationsHash = hash,
+            language = language,
+            startPage = startPage,
+          ),
+        )
 
+        Settings.version() mustEqual version
+        Settings.theme() mustEqual theme
+        Settings.appliedAt() mustEqual appliedAt
+        Settings.hash() mustEqual hash
+        Settings.language() mustEqual language
+        Settings.startPage() mustEqual startPage
+      } finally {
+        testTearDown()
+      }
+    }
     "update theme" in {
       val expect = "yellow"
 
@@ -51,7 +74,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "update migrationsInfo" in {
       val expectAppliedAt = "2022-12-12 20:32:09.034"
       val expectHash = "new_hash"
@@ -72,7 +94,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "update language" in {
       val expect = "nl"
 
@@ -91,7 +112,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "update start page" in {
       val expect = "/deliveries"
 
@@ -110,7 +130,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "return settings theme" in {
       val expect = "goldfinch"
 
@@ -131,7 +150,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "return settings appliedAt" in {
       val expect = "2023-11-11 20:32:09.034"
 
@@ -152,7 +170,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "return settings hash" in {
       val expect = "stub_hash"
 
@@ -173,7 +190,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "return settings language" in {
       val expect = "gb"
 
@@ -193,7 +209,6 @@ class SettingsSpec extends PlaySpec {
         testTearDown()
       }
     }
-
     "return settings startPage" in {
       val expect = "/warehouse"
 
@@ -208,6 +223,25 @@ class SettingsSpec extends PlaySpec {
         )
 
         val got = Settings.startPage()
+        got mustEqual expect
+
+      } finally {
+        testTearDown()
+      }
+    }
+    "return settings version" in {
+      val expect = "0.0.4"
+
+      try {
+        Settings.load(
+          Options(
+            systemSettingVersion = expect,
+            readFilePath = "",
+            writeFilePath = stubFilePath,
+          ),
+        )
+
+        val got = Settings.version()
         got mustEqual expect
 
       } finally {

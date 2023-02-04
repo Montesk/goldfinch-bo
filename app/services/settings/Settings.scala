@@ -11,15 +11,15 @@ import services.cache.Cache
 import pkg.dto.{settings => dto}
 
 case class Options(
-    systemSettingVersion: String,
-    readFilePath: String,
-    theme: String = "",
-    migrationsAppliedAt: String = "",
-    migrationsHash: String = "",
-    language: String = "",
-    startPage: String = "",
-    var writeFilePath: String = "", // default is loadFilePath
-)
+                    systemSettingVersion: String,
+                    readFilePath: String,
+                    theme: String = "",
+                    migrationsAppliedAt: String = "",
+                    migrationsHash: String = "",
+                    language: String = "",
+                    startPage: String = "",
+                    var writeFilePath: String = "", // default is loadFilePath
+                  )
 
 object Settings extends Logging with CacheKeys {
   val cache: Cache = new Cache
@@ -77,6 +77,10 @@ object Settings extends Logging with CacheKeys {
     cache.getOrCall[dto.Settings](config, () => dto.Settings(read()))
   }
 
+  def version(): String = {
+    settings().version()
+  }
+
   def theme(): String = {
     settings().app().theme()
   }
@@ -98,72 +102,23 @@ object Settings extends Logging with CacheKeys {
   }
 
   def updateTheme(theme: String): Unit = {
-    val prev = settings()
-
-    val update = dto.Settings(
-      dto.Version(prev.version()),
-      dto.App(
-        theme = theme,
-        language = language(),
-        startPage = startPage(),
-      ),
-      prev.system(),
-    )
-
-    save(update)
+    update(theme = Option(theme))
   }
 
   def updateLanguage(language: String): Unit = {
-    val prev = settings()
-
-    val update = dto.Settings(
-      dto.Version(prev.version()),
-      dto.App(
-        theme = theme(),
-        language = language,
-        startPage = startPage(),
-      ),
-      prev.system(),
-    )
-
-    save(update)
-  }
-
-  def updateMigrationsInfo(appliedAt: String, hash: String): Unit = {
-    val prev = settings()
-
-    val update = dto.Settings(
-      dto.Version(prev.version()),
-      prev.app(),
-      dto.System(
-        dto.Migrations(
-          appliedAt = appliedAt,
-          hash = hash,
-        ),
-      ),
-    )
-
-    save(update)
+    update(language = Option(language))
   }
 
   def updateStartPage(startPagePath: String): Unit = {
-    val prev = settings()
+    update(startPage = Option(startPagePath))
+  }
 
-    val update = dto.Settings(
-      dto.Version(prev.version()),
-      dto.App(
-        theme = theme(),
-        language = language(),
-        startPage = startPagePath,
-      ),
-      prev.system(),
-    )
-
-    save(update)
+  def updateMigrationsInfo(appliedAt: String, hash: String): Unit = {
+    update(appliedAt = Option(appliedAt), hash = Option(hash))
   }
 
   private def createAppSettingsFile(opts: Options): xml.Elem = {
-    val create = settings(
+    val create = dto.Settings(
       version = opts.systemSettingVersion,
       theme = opts.theme,
       appliedAt = opts.migrationsAppliedAt,
@@ -173,30 +128,6 @@ object Settings extends Logging with CacheKeys {
     )
 
     create.XML()
-  }
-
-  private def settings(
-      version: String,
-      theme: String,
-      appliedAt: String,
-      hash: String,
-      language: String,
-      startPage: String,
-  ): dto.Settings = {
-    dto.Settings(
-      dto.Version(version),
-      dto.App(
-        theme = theme,
-        language = language,
-        startPage = startPage,
-      ),
-      dto.System(
-        dto.Migrations(
-          appliedAt = appliedAt,
-          hash = hash,
-        ),
-      ),
-    )
   }
 
   private def updateSystemSettings(fromContents: Elem, fromVersion: String, defaults: Options): Elem = {
@@ -236,6 +167,26 @@ object Settings extends Logging with CacheKeys {
       language = restored.app().language(),
       startPage = restored.app().startPage(),
     )
+  }
+
+  private def update(
+                      version: Option[String] = None,
+                      theme: Option[String] = None,
+                      language: Option[String] = None,
+                      startPage: Option[String] = None,
+                      appliedAt: Option[String] = None,
+                      hash: Option[String] = None,
+                    ): Unit = {
+    val update = dto.Settings(
+      version = version,
+      theme = theme,
+      language = language,
+      startPage = startPage,
+      appliedAt = appliedAt,
+      hash = hash,
+      base = settings(),
+    )
+    save(update)
   }
 
   private def save(settings: dto.Settings): Unit = {
