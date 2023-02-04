@@ -32,7 +32,12 @@ trait Updater extends Logging {
       ),
     )
 
-    val (success, updated) = logic.versionUpdate(currentSettings, defaults)
+    val (success, updated) =
+      try {
+        logic.versionUpdate(currentSettings, defaults)
+      } catch {
+        case e: Throwable => failedUpdate(logic.version, e)
+      }
 
     if (!success) {
       logger.error(s"failed to update from version ${currentVersion} to target: ${targetVersion}")
@@ -42,44 +47,29 @@ trait Updater extends Logging {
     update(logic.version, targetVersion, updated, defaults)
   }
 
-  def v0_0_3(prev: xml.Elem, defaults: Options): (Boolean, xml.Elem) = {
+  private[settings] def v0_0_3(prev: xml.Elem, defaults: Options): (Boolean, xml.Elem) = {
     val version = "0.0.3"
 
-    val result =
-      try {
-        val current = dto.Settings(prev)
-        val updated = dto.Settings(
-          version = Option(version),
-          language = Option(defaults.language),
-          base = current,
-        )
-
-        return (true, updated.XML())
-      } catch {
-        case e: Throwable => failedUpdate(version, e)
-      }
-
-    result
+    val current = dto.Settings(prev)
+    val updated = dto.Settings(
+      version = Option(version),
+      language = Option(defaults.language),
+      base = current,
+    )
+    (true, updated.XML())
   }
 
-  def v0_0_4(prev: xml.Elem, defaults: Options): (Boolean, xml.Elem) = {
+  private[settings] def v0_0_4(prev: xml.Elem, defaults: Options): (Boolean, xml.Elem) = {
     val version = "0.0.4"
 
-    val result =
-      try {
-        val current = dto.Settings(prev)
-        val updated = dto.Settings(
-          version = Option(version),
-          startPage = Option(defaults.startPage),
-          base = current,
-        )
+    val current = dto.Settings(prev)
+    val updated = dto.Settings(
+      version = Option(version),
+      startPage = Option(defaults.startPage),
+      base = current,
+    )
 
-        return (true, updated.XML())
-      } catch {
-        case e: Throwable => failedUpdate(version, e)
-      }
-
-    result
+    (true, updated.XML())
   }
 
   private def failedUpdate(target: String, e: Throwable): (Boolean, xml.Elem) = {
