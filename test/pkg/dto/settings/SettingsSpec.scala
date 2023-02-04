@@ -6,6 +6,7 @@ import scala.xml.XML
 
 class SettingsSpec extends PlaySpec {
   val defaultFilePath: String = "test/stubs/settings.xml"
+  val requiredFieldsFilePath: String = "test/stubs/required_settings.xml"
 
   // file values
   val version = "0.0.4"
@@ -16,7 +17,7 @@ class SettingsSpec extends PlaySpec {
   val hash = "8e48083b5b7638654cb5ec896884a5d28004c6b3"
 
   "Settings dto XML" must {
-    "load from stub file" in {
+    "load from stub file (all fields, default XML)" in {
       val expect = Settings(
         Version(version),
         App(
@@ -35,6 +36,24 @@ class SettingsSpec extends PlaySpec {
       val got = Settings(XML.loadFile(defaultFilePath))
 
       got mustEqual expect
+    }
+
+    "load from stub file (only required fields, required XML)" in {
+      val expect = Settings(
+        Version(version),
+        System(
+          Migrations(
+            appliedAt = appliedAt,
+            hash = hash,
+          ),
+        ),
+      )
+
+      val got = Settings(XML.loadFile(requiredFieldsFilePath))
+
+      got.version() mustEqual expect.version()
+      got.system().migrations().appliedAt() mustEqual expect.system().migrations().appliedAt()
+      got.system().migrations().hash() mustEqual expect.system().migrations().hash()
     }
   }
 }

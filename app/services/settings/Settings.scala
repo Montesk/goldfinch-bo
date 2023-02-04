@@ -50,13 +50,13 @@ object Settings extends Logging with CacheKeys {
 
     var currentVersion: String = ""
     try {
-      currentVersion = dto.Settings(contents).version.get.value
+      currentVersion = dto.Settings(contents).version()
     } catch {
       case e: Throwable => {
         logger.error(s"failed to retrieve current settings version. exception: ${e}")
         logger.info("create application settings...")
         contents = createAppSettingsFile(opts)
-        currentVersion = dto.Settings(contents).version.get.value
+        currentVersion = dto.Settings(contents).version()
         logger.info("complete")
       }
     }
@@ -78,36 +78,36 @@ object Settings extends Logging with CacheKeys {
   }
 
   def theme(): String = {
-    settings().app.get.theme.get.value
+    settings().app().theme()
   }
 
   def appliedAt(): String = {
-    settings().system.get.migrations.get.appliedAt.get.value
+    settings().system().migrations().appliedAt()
   }
 
   def hash(): String = {
-    settings().system.get.migrations.get.hash.get.value
+    settings().system().migrations().hash()
   }
 
   def language(): String = {
-    settings().app.get.language.get.value
+    settings().app().language()
   }
 
   def startPage(): String = {
-    settings().app.get.startPage.get.value
+    settings().app().startPage()
   }
 
   def updateTheme(theme: String): Unit = {
     val prev = settings()
 
     val update = dto.Settings(
-      prev.version.get,
+      dto.Version(prev.version()),
       dto.App(
         theme = theme,
         language = language(),
         startPage = startPage(),
       ),
-      prev.system.get,
+      prev.system(),
     )
 
     save(update)
@@ -117,13 +117,13 @@ object Settings extends Logging with CacheKeys {
     val prev = settings()
 
     val update = dto.Settings(
-      prev.version.get,
+      dto.Version(prev.version()),
       dto.App(
         theme = theme(),
         language = language,
         startPage = startPage(),
       ),
-      prev.system.get,
+      prev.system(),
     )
 
     save(update)
@@ -133,8 +133,8 @@ object Settings extends Logging with CacheKeys {
     val prev = settings()
 
     val update = dto.Settings(
-      prev.version.get,
-      prev.app.get,
+      dto.Version(prev.version()),
+      prev.app(),
       dto.System(
         dto.Migrations(
           appliedAt = appliedAt,
@@ -150,13 +150,13 @@ object Settings extends Logging with CacheKeys {
     val prev = settings()
 
     val update = dto.Settings(
-      prev.version.get,
+      dto.Version(prev.version()),
       dto.App(
         theme = theme(),
         language = language(),
         startPage = startPagePath,
       ),
-      prev.system.get,
+      prev.system(),
     )
 
     save(update)
@@ -230,11 +230,11 @@ object Settings extends Logging with CacheKeys {
     Options(
       systemSettingVersion = toVersion,
       readFilePath = filePath,
-      theme = restored.app.get.theme.get.value,
-      migrationsAppliedAt = restored.system.get.migrations.get.appliedAt.get.value,
-      migrationsHash = restored.system.get.migrations.get.hash.get.value,
-      language = restored.app.get.language.get.value,
-      startPage = restored.app.get.startPage.get.value,
+      theme = restored.app().theme(),
+      migrationsAppliedAt = restored.system().migrations().appliedAt(),
+      migrationsHash = restored.system().migrations().hash(),
+      language = restored.app().language(),
+      startPage = restored.app().startPage(),
     )
   }
 

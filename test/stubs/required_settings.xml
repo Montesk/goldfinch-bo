@@ -1,0 +1,17 @@
+<!-- Shared -->
+
+<settings>
+    <version>
+        0.0.4
+    </version>
+    <system>
+        <migrations>
+            <appliedAt>
+                2022-11-11 20:32:09.034
+            </appliedAt>
+            <hash>
+                8e48083b5b7638654cb5ec896884a5d28004c6b3
+            </hash>
+        </migrations>
+    </system>
+</settings>
