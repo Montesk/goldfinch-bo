@@ -21,7 +21,7 @@ case class Options(
                     var writeFilePath: String = "", // default is loadFilePath
                   )
 
-object Settings extends Logging with CacheKeys {
+object Settings extends Logging with CacheKeys with Updater {
   val cache: Cache = new Cache
 
   var options: Option[Options] = None
@@ -37,29 +37,21 @@ object Settings extends Logging with CacheKeys {
     }
 
     var contents: xml.Elem = null
+    var currentVersion: String = ""
 
     try {
       contents = read()
+      currentVersion = dto.Settings(contents).version()
     } catch {
       case _: FileNotFoundException =>
         logger.info("application settings not found. creating new settings file...")
         contents = createAppSettingsFile(opts)
+        currentVersion = dto.Settings(contents).version()
         logger.info("application settings created")
       case e: Throwable => throw e
     }
 
-    var currentVersion: String = ""
-    try {
-      currentVersion = dto.Settings(contents).version()
-    } catch {
-      case e: Throwable => {
-        logger.error(s"failed to retrieve current settings version. exception: ${e}")
-        logger.info("create application settings...")
-        contents = createAppSettingsFile(opts)
-        currentVersion = dto.Settings(contents).version()
-        logger.info("complete")
-      }
-    }
+    logger.info(s"current application settings version: ${currentVersion}")
 
     if (currentVersion != opts.systemSettingVersion) {
       logger.info(
@@ -117,6 +109,29 @@ object Settings extends Logging with CacheKeys {
     update(appliedAt = Option(appliedAt), hash = Option(hash))
   }
 
+  private def updateSystemSettings(fromContents: Elem, fromVersion: String, defaults: Options): Elem = {
+    var contents: Elem = null
+
+    val (success, updated) = update(
+      currentVersion = fromVersion,
+      targetVersion = defaults.systemSettingVersion,
+      currentSettings = fromContents,
+      defaults = defaults,
+    )
+
+    if (!success) {
+      logger.error(
+        s"failed to regenerate. settings versions v$fromVersion -> v${defaults.systemSettingVersion} are incompatible.",
+      )
+      logger.info("creating default settings file...")
+      return createAppSettingsFile(defaults)
+    }
+
+    logger.info("settings updated")
+
+    updated
+  }
+
   private def createAppSettingsFile(opts: Options): xml.Elem = {
     val create = dto.Settings(
       version = opts.systemSettingVersion,
@@ -127,46 +142,9 @@ object Settings extends Logging with CacheKeys {
       startPage = opts.startPage,
     )
 
+    logger.info(s"settings file created version: ${opts.systemSettingVersion}")
+
     create.XML()
-  }
-
-  private def updateSystemSettings(fromContents: Elem, fromVersion: String, defaults: Options): Elem = {
-    var contents: Elem = null
-    try {
-      logger.info("trying to regenerate from old version")
-      contents = createAppSettingsFile(
-        optionsFromContent(fromContents, defaults.readFilePath, defaults.systemSettingVersion),
-      )
-    } catch {
-      case e: Throwable => {
-        logger.error(
-          s"failed to regenerate. settings versions v$fromVersion -> v${defaults.systemSettingVersion} are incompatible. exception ${e}",
-        )
-        logger.info("creating default settings file")
-        contents = createAppSettingsFile(defaults)
-      }
-    }
-    logger.info(s"created \r\n ${prettify(contents)}")
-    contents
-  }
-
-  // Trying to restore some options from previous version of settings XML
-  // :NOTICE:
-  //  settings DTO and previous version of xml must be compatible (no exception)
-  //  its up to developer to check if settings is no more compatible or
-  //  taking into consideration that some fields will be NOT marshalled
-  private def optionsFromContent(oldContents: Elem, filePath: String, toVersion: String): Options = {
-    val restored = dto.Settings(oldContents)
-
-    Options(
-      systemSettingVersion = toVersion,
-      readFilePath = filePath,
-      theme = restored.app().theme(),
-      migrationsAppliedAt = restored.system().migrations().appliedAt(),
-      migrationsHash = restored.system().migrations().hash(),
-      language = restored.app().language(),
-      startPage = restored.app().startPage(),
-    )
   }
 
   private def update(

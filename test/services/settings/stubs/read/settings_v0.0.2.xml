@@ -1,0 +1,20 @@
+<settings>
+    <version>
+        0.0.2
+    </version>
+    <app>
+        <theme>
+            goldfinch
+        </theme>
+    </app>
+    <system>
+        <migrations>
+            <appliedAt>
+                2023-11-11 20:32:09.034
+            </appliedAt>
+            <hash>
+                8e48083b5b7638654cb5ec896884a5d28004c6b4
+            </hash>
+        </migrations>
+    </system>
+</settings>

@@ -6,7 +6,7 @@ import scala.xml.XML
 
 class SettingsSpec extends PlaySpec {
   val defaultFilePath: String = "test/stubs/settings.xml"
-  val requiredFieldsFilePath: String = "test/stubs/required_settings.xml"
+  val requiredFieldsFilePath: String = "test/pkg/dto/settings/stubs/read/required_settings.xml"
 
   // file values
   val version = "0.0.4"
