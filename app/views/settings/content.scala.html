@@ -17,6 +17,10 @@
             <a class="nav-link" id="appearance-tab" data-toggle="tab" href="#appearance" role="tab" aria-controls="appearance" aria-selected="false">
             @Messages("views.settings.tab.appearance")</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" id="module-products-tab" data-toggle="tab" href="#module-products" role="tab" aria-controls="module-products" aria-selected="false">
+            @Messages("views.settings.tab.moduleProducts")</a>
+        </li>
     </ul>
     <form id="applicationSettings" method="POST" action="@Routes.settingsUpdatePathV2">
         <div class="tab-content">
@@ -29,7 +33,7 @@
                         SelectOption("en", "English")
                     ),
                     label = Messages("views.settings.general.label.language"),
-                    selected = Settings.language()
+                    selected = Settings.appLanguage()
                 )
                 </div>
                 <div class="form-group mt-4 w-25">
@@ -37,7 +41,7 @@
                     name = "startPage",
                     options = data.pages.map(page => SelectOption(page, page)),
                     label = Messages("views.settings.general.label.startPage"),
-                    selected = Settings.startPage()
+                    selected = Settings.appStartPage()
                 )
                 </div>
             </div>
@@ -48,8 +52,18 @@
                         <div class="bo-theme-switch square default ml-2" data-switch-theme="default" title="Тема по-умолчанию"></div>
                         <div class="bo-theme-switch square green ml-2" data-switch-theme="green" title="Зелёная тема"></div>
                         <div class="bo-theme-switch square goldfinch ml-2" data-switch-theme="goldfinch" title="Тема Goldfinch&#8482;"></div>
-                        <input type="hidden" value="@Settings.theme()" name="theme" id="theme-switcher">
+                        <input type="hidden" value="@Settings.appTheme()" name="theme" id="theme-switcher">
                     </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="module-products" role="tabpanel" aria-labelledby="module-products-tab">
+                <div class="form-group mt-4 w-25">
+                @components.form.components.input(
+                    name = "moduleProductsPerPage",
+                    label = Messages("views.settings.moduleProducts.label.perPage"),
+                    value = Settings.moduleProductsPerPage().toString,
+                    required = true,
+                )
                 </div>
             </div>
         </div>

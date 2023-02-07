@@ -8,11 +8,12 @@ import services.config.Config
 import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
 import services.settings.{Settings, Options => FromConfig}
 
-/** This class is a Guice module that tells Guice how to bind several different types. This Guice module is created when
-  * the Play application starts. Play will automatically use any class called `Module` that is in the root package. You
-  * can create modules in other locations by adding `play.modules.enabled` settings to the `application.conf`
-  * configuration file.
-  */
+/**
+ * This class is a Guice module that tells Guice how to bind several different types. This Guice module is created when
+ * the Play application starts. Play will automatically use any class called `Module` that is in the root package. You
+ * can create modules in other locations by adding `play.modules.enabled` settings to the `application.conf`
+ * configuration file.
+ */
 class Main extends AbstractModule with Logging {
   override def configure(): Unit = {
     logger.info("Loading application configuration")
@@ -22,7 +23,7 @@ class Main extends AbstractModule with Logging {
       try source.mkString
       finally source.close()
 
-    Config.readConfig(fileContents)
+    Config.load(fileContents)
     logger.info("Application config loaded")
 
     val migrationService = new Migrations(MigrationsConfig())
@@ -31,24 +32,29 @@ class Main extends AbstractModule with Logging {
     logger.info("Loading application profile settings")
     Settings.load(
       FromConfig(
-        systemSettingVersion = Config.appSettings().settingsVersion,
-        readFilePath = Config.appSettings().settingsFilePath,
-        theme = Config.appSettings().theme,
-        migrationsAppliedAt = lastApplied.appliedAt,
-        migrationsHash = lastApplied.hash,
-        language = Config.appSettings().language,
-        startPage = Config.appSettings().startPage,
+        appSettingsVersion = Config.appSettingsVersion(),
+        appTheme = Config.appTheme(),
+        appLanguage = Config.appLanguage(),
+        appStartPage = Config.appStartPage(),
+        systemMigrationsAppliedAt = lastApplied.appliedAt,
+        systemMigrationsHash = lastApplied.hash,
+        moduleProductsPerPage = Config.modulesProductPerPage(),
+        moduleProductsView = Config.modulesProductView(),
+        readFilePath = Config.appSettingsFilePath(),
       ),
     )
     logger.info("Application profile settings loaded")
 
-    if (Settings.hash() != lastApplied.hash || Settings.appliedAt() != lastApplied.appliedAt) {
+    if (
+      Settings.systemMigrationsHash() != lastApplied.hash || Settings
+        .systemMigrationsAppliedAt() != lastApplied.appliedAt
+    ) {
       logger.warn("Generated migration info is outdated")
       logger.info("Generating migrations info...")
       migrationService.writeInfo()
       logger.info("Application migrations info generated")
 
-      Settings.updateMigrationsInfo(appliedAt = lastApplied.appliedAt, hash = lastApplied.hash)
+      Settings.updateAppMigrationsInfo(appliedAt = lastApplied.appliedAt, hash = lastApplied.hash)
     }
 
     logger.info("Application started")

@@ -9,12 +9,11 @@ import scala.concurrent.duration.Duration
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
-import repository.Repository
+import services.config.Config
 
 @Singleton
-class OrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
-    extends Repository {
-  val DefaultDBTimeout: Duration = withDefaultTimeout(config.order)
+class OrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) {
+  val DefaultDBTimeout: Duration = Config.repositoriesOrderDbWaitTimeout()
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -38,7 +37,7 @@ class OrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
       status,
       costumer_id,
       created_at,
-      updated_at
+      updated_at,
     ) <> ((Order.apply _).tupled, Order.unapply)
   }
 

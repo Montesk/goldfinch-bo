@@ -1,0 +1,26 @@
+# All fields
+
+app:
+  settingsVersion: "0.2.14"
+  theme: "goldfinch"
+  settingsFilePath: "test/settings.xml"
+  language: "nl"
+  demoMode: true
+  startPage: "/warehouse"
+
+repositories:
+  default:
+    dbWaitTimeout: "10s"
+  delivery:
+    dbWaitTimeout: "15s"
+  product:
+    dbWaitTimeout: "3s"
+  order:
+    dbWaitTimeout: "5s"
+
+modules:
+  default:
+    perPage: 20
+  product:
+    perPage: 7
+    view: "album"

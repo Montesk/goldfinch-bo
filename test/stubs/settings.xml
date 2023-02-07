@@ -1,6 +1,6 @@
 <settings>
     <version>
-        0.0.4
+        0.0.5
     </version>
     <app>
         <theme>
@@ -10,9 +10,19 @@
             en
         </language>
         <startPage>
-            /products
+            /
         </startPage>
     </app>
+    <modules>
+        <products>
+            <perPage>
+                5
+            </perPage>
+            <view>
+                table
+            </view>
+        </products>
+    </modules>
     <system>
         <migrations>
             <appliedAt>

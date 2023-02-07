@@ -14,7 +14,7 @@
 <div class="container-fluid position-relative flex-grow-1">
     <div class="row no-gutters flex-nowrap h-100">
 
-        @if(Config.appSettings().demoMode) {
+        @if(Config.appDemoMode()) {
             <div class="bo-setting-vertical-panel d-flex flex-column position-relative justify-content-end">
             @components.settings.themeswitcher()
             </div>

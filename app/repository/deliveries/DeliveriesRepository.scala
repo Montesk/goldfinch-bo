@@ -10,12 +10,12 @@ import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.DatabaseConfigProvider
 
-import repository.Repository
 import repository.products.{Product, Products}
+import services.config.Config
 
 case class DeliveryData(
     product_id: Long,
-    quantity: Int
+    quantity: Int,
 )
 
 class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
@@ -33,7 +33,7 @@ class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
 
   def productsFk =
     foreignKey("deliveries_product_id_fkey", product_id, TableQuery[Products])(
-      _.id
+      _.id,
     )
 
   def * = (
@@ -41,14 +41,13 @@ class Deliveries(tag: Tag) extends Table[Delivery](tag, "deliveries") {
     product_id,
     quantity,
     created_at,
-    updated_at
+    updated_at,
   ) <> ((Delivery.apply _).tupled, Delivery.unapply)
 }
 
 @Singleton
-class DeliveriesRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
-    extends Repository {
-  val DefaultDBTimeout: Duration = withDefaultTimeout(config.delivery)
+class DeliveriesRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) {
+  val DefaultDBTimeout: Duration = Config.repositoriesDeliveryDbWaitTimeout()
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -96,9 +95,7 @@ class DeliveriesRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)
 
   private def execCreate(data: DeliveryData): Future[Unit] = db.run {
     DBIO.seq(
-      deliveries.map(p =>
-        (p.quantity, p.product_id)
-      ) += (data.quantity, data.product_id)
+      deliveries.map(p => (p.quantity, p.product_id)) += (data.quantity, data.product_id),
     )
   }
 

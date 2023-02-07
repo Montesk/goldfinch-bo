@@ -22,6 +22,7 @@ case class SettingsUpdateDataV2(
     language: String,
     theme: String,
     startPage: String,
+    moduleProductsPerPage: String,
 )
 
 @Singleton
@@ -49,7 +50,7 @@ class SettingsController @Inject() (
           if (updateData.key != "theme") {
             throw new Exception(s"unsupported update operation for ${updateData.key}")
           }
-          Settings.updateTheme(updateData.value)
+          Settings.updateAppTheme(updateData.value)
         },
       )
 
@@ -66,21 +67,25 @@ class SettingsController @Inject() (
           )
         },
         updateData => {
-          if (updateData.language != Settings.language()) {
-            Settings.updateLanguage(updateData.language)
+          if (updateData.language != Settings.appLanguage()) {
+            Settings.updateAppLanguage(updateData.language)
           }
 
-          if (updateData.theme != Settings.theme()) {
-            Settings.updateTheme(updateData.theme)
+          if (updateData.theme != Settings.appTheme()) {
+            Settings.updateAppTheme(updateData.theme)
           }
 
-          if (updateData.startPage != Settings.startPage()) {
-            Settings.updateStartPage(updateData.startPage)
+          if (updateData.startPage != Settings.appStartPage()) {
+            Settings.updateAppStartPage(updateData.startPage)
+          }
+
+          if (updateData.moduleProductsPerPage.toInt != Settings.moduleProductsPerPage()) {
+            Settings.updateModuleProductsPerPage(updateData.moduleProductsPerPage.toInt)
           }
         },
       )
 
-    val messages: Messages = lang2Messages(Lang(Settings.language()))
+    val messages: Messages = lang2Messages(Lang(Settings.appLanguage()))
     Redirect(routes.SettingsController.index()).flashing("success" -> Messages("flash.controller.settings")(messages))
   }
 
@@ -108,6 +113,7 @@ class SettingsController @Inject() (
       "language" -> text,
       "theme" -> text,
       "startPage" -> text,
+      "moduleProductsPerPage" -> text,
     )(SettingsUpdateDataV2.apply)(SettingsUpdateDataV2.unapply),
   )
 }

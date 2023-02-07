@@ -1,67 +1,69 @@
 package services.config
 
-import scala.concurrent.duration.{Duration, SECONDS}
-
-import cats.syntax.either._
-import io.circe.{Json, ParsingFailure}
-import io.circe.generic.auto._
-import io.circe.yaml.parser
-
-trait Config {
-  val repositories: Repositories = Config.repositories()
-  val appSettings: App = Config.appSettings()
-
-  def readConfig(contentYAML: String): Unit = Config.readConfig(contentYAML)
-}
+import pkg.dto.{config => dto}
+import scala.concurrent.duration.Duration
 
 object Config {
-  private var loaded: Option[fromConfig] = None
-  private var parsed: Option[Repositories] = None
+  var loaded: Option[dto.Config] = None
 
-  def readConfig(contentYAML: String): Unit = {
-    val json: Either[ParsingFailure, Json] = parser.parse(contentYAML)
-
-    val raw = json.flatMap(_.as[fromConfig]).valueOr(throw _)
-
-    loaded = Option(raw)
-
-    parsed = Option(
-      Repositories(
-        defaults = repositoryWithDuration(Option(loaded.get.repository.defaults)).get,
-        delivery = repositoryWithDuration(loaded.get.repository.delivery),
-        product = repositoryWithDuration(loaded.get.repository.product),
-        order = repositoryWithDuration(loaded.get.repository.order),
-      ),
-    )
+  def load(yaml: String): Unit = {
+    loaded = Option(dto.Config(yaml).withDefaults())
   }
 
-  def repositories(): Repositories = {
-    parsed.getOrElse(Repositories(defaults = Repository(dbWaitTimeout = Duration(10, SECONDS))))
+  def appSettingsVersion(): String = {
+    loaded.get.app.settingsVersion
   }
 
-  def appSettings(): App = {
-    App(
-      theme = loaded.get.app.theme,
-      settingsFilePath = loaded.get.app.settingsFilePath,
-      settingsVersion = loaded.get.app.settingsVersion,
-      language = loaded.get.app.language,
-      demoMode = loaded.get.app.demoMode,
-      startPage = loaded.get.app.startPage,
-    )
+  def appTheme(): String = {
+    loaded.get.app.theme.get
   }
 
-  private def repositoryWithDuration(
-      repo: Option[ConfigRepository],
-  ): Option[Repository] = {
-    if (repo.isEmpty) {
-      return None
-    }
+  def appSettingsFilePath(): String = {
+    loaded.get.app.settingsFilePath.get
+  }
 
-    Option(Repository(dbWaitTimeout = Duration(repo.get.dbWaitTimeout)))
+  def appLanguage(): String = {
+    loaded.get.app.language.get
+  }
+
+  def appDemoMode(): Boolean = {
+    loaded.get.app.demoMode.get
+  }
+
+  def appStartPage(): String = {
+    loaded.get.app.startPage.get
+  }
+
+  def repositoriesDefaultDbWaitTimeout(): Duration = {
+    Duration(loaded.get.repositories.default.dbWaitTimeout)
+  }
+
+  def repositoriesDeliveryDbWaitTimeout(): Duration = {
+    Duration(loaded.get.repositories.delivery.get.dbWaitTimeout)
+  }
+
+  def repositoriesProductDbWaitTimeout(): Duration = {
+    Duration(loaded.get.repositories.product.get.dbWaitTimeout)
+  }
+
+  def repositoriesOrderDbWaitTimeout(): Duration = {
+    Duration(loaded.get.repositories.order.get.dbWaitTimeout)
+  }
+
+  def modulesDefaultPerPage(): Int = {
+    loaded.get.modules.default.perPage
+  }
+
+  def modulesProductPerPage(): Int = {
+    loaded.get.modules.product.get.perPage
+  }
+
+  def modulesProductView(): String = {
+    loaded.get.modules.product.get.view
   }
 }
 
-case class App(
+private case class App(
     theme: String,
     settingsFilePath: String,
     settingsVersion: String,
@@ -70,36 +72,25 @@ case class App(
     startPage: String,
 )
 
-case class Repository(dbWaitTimeout: Duration)
+private trait Repository {
+  val dbWaitTimeout: Duration
+}
 
-case class Repositories(
+private case class Repositories(
     defaults: Repository,
-    delivery: Option[Repository] = None,
-    product: Option[Repository] = None,
-    order: Option[Repository] = None,
+    delivery: Repository,
+    product: Repository,
+    order: Repository,
 )
 
-/** Yaml field must match case classes listed below params
-  */
-private[config] case class fromConfig(
-    repository: ConfigRepositories,
-    app: ConfigApp,
-) {}
+private trait Module {
+  val perPage: Int
+}
 
-private[config] case class ConfigRepository(dbWaitTimeout: String)
+private case class DefaultModule(perPage: Int) extends Module
+private case class ModuleProduct(override val perPage: Int, view: String) extends Module
 
-private[config] case class ConfigRepositories(
-    defaults: ConfigRepository,
-    delivery: Option[ConfigRepository] = None,
-    product: Option[ConfigRepository] = None,
-    order: Option[ConfigRepository] = None,
-)
-
-private[config] case class ConfigApp(
-    theme: String,
-    settingsFilePath: String,
-    settingsVersion: String,
-    language: String,
-    demoMode: Boolean,
-    startPage: String,
+private case class Modules(
+    defaults: Module,
+    products: ModuleProduct,
 )

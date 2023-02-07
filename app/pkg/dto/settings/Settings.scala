@@ -8,9 +8,15 @@ object Settings {
     new Settings(
       Version(requiredTag(xml \ "version")),
       App(
-        Theme(optionalTag(xml \ "app" \ "theme")),
-        Language(optionalTag(xml \ "app" \ "language")),
-        StartPage(optionalTag(xml \ "app" \ "startPage")),
+        Theme(optionalTag(xml \ "app" \ "theme", "")),
+        Language(optionalTag(xml \ "app" \ "language", "")),
+        StartPage(optionalTag(xml \ "app" \ "startPage", "")),
+      ),
+      Modules(
+        Products(
+          optionalTag(xml \ "modules" \ "products" \ "view", ""),
+          optionalTag(xml \ "modules" \ "products" \ "perPage", "0"),
+        ),
       ),
       System(
         Migrations(
@@ -30,24 +36,32 @@ object Settings {
    * @return
    */
   def apply(
-      version: String,
-      theme: String,
-      language: String,
-      startPage: String,
-      appliedAt: String,
-      hash: String,
+      appVersion: String,
+      appTheme: String,
+      appLanguage: String,
+      appStartPage: String,
+      systemMigrationsAppliedAt: String,
+      systemMigrationsHash: String,
+      moduleProductsPerPage: Int,
+      moduleProductsView: String,
   ): Settings = {
     new Settings(
-      Version(version),
+      Version(appVersion),
       App(
-        theme = theme,
-        language = language,
-        startPage = startPage,
+        theme = appTheme,
+        language = appLanguage,
+        startPage = appStartPage,
+      ),
+      Modules(
+        Products(
+          perPage = moduleProductsPerPage.toString,
+          view = moduleProductsView,
+        ),
       ),
       System(
         Migrations(
-          appliedAt = appliedAt,
-          hash = hash,
+          appliedAt = systemMigrationsAppliedAt,
+          hash = systemMigrationsHash,
         ),
       ),
     )
@@ -58,25 +72,33 @@ object Settings {
    * @return
    */
   def apply(
-      version: Option[String] = None,
-      theme: Option[String] = None,
-      language: Option[String] = None,
-      startPage: Option[String] = None,
-      appliedAt: Option[String] = None,
-      hash: Option[String] = None,
+      appVersion: Option[String] = None,
+      appTheme: Option[String] = None,
+      appLanguage: Option[String] = None,
+      appStartPage: Option[String] = None,
+      systemMigrationsAppliedAt: Option[String] = None,
+      systemMigrationsHash: Option[String] = None,
+      moduleProductsPerPage: Option[Int] = None,
+      moduleProductsView: Option[String] = None,
       base: Settings,
   ): Settings = {
     new Settings(
-      Version(version = version.getOrElse(base.version())),
+      Version(version = appVersion.getOrElse(base.version())),
       App(
-        theme = theme.getOrElse(base.app().theme()),
-        language = language.getOrElse(base.app().language()),
-        startPage = startPage.getOrElse(base.app().startPage()),
+        theme = appTheme.getOrElse(base.app().theme()),
+        language = appLanguage.getOrElse(base.app().language()),
+        startPage = appStartPage.getOrElse(base.app().startPage()),
+      ),
+      Modules(
+        Products(
+          view = moduleProductsView.getOrElse(base.modules().products().view()),
+          perPage = moduleProductsPerPage.getOrElse(base.modules().products().perPage()).toString,
+        ),
       ),
       System(
         Migrations(
-          appliedAt = appliedAt.getOrElse(base.system().migrations().appliedAt()),
-          hash = hash.getOrElse(base.system().migrations().hash()),
+          appliedAt = systemMigrationsAppliedAt.getOrElse(base.system().migrations().appliedAt()),
+          hash = systemMigrationsHash.getOrElse(base.system().migrations().hash()),
         ),
       ),
     )
@@ -100,6 +122,7 @@ sealed case class Settings(override val values: Serializable*) extends Serializa
   private val mappedVersion: Option[Version] = mapValue("version", Version.apply)
   private val mappedApp: Option[App] = mapGroup("app", App.apply)
   private val mappedSystem: Option[System] = mapGroup("system", System.apply)
+  private val mappedModules: Option[Modules] = mapGroup("modules", Modules.apply)
 
   def XML(): Elem = {
     <settings>
@@ -117,5 +140,9 @@ sealed case class Settings(override val values: Serializable*) extends Serializa
 
   def system(): System = {
     mappedSystem.get
+  }
+
+  def modules(): Modules = {
+    mappedModules.get
   }
 }

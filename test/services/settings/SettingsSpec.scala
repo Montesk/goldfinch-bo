@@ -1,27 +1,32 @@
 package services.settings
 
 import scala.xml.XML
+
 import org.scalatestplus.play.PlaySpec
 import org.xml.sax.SAXParseException
 
+import pkg.dto.config.Constants
+
 class SettingsSpec extends PlaySpec {
-  // values are equal stub file values
-  val version: String = "0.0.4"
-  val theme: String = "green"
-  val appliedAt: String = "2022-11-11 20:32:09.034"
-  val hash: String = "8e48083b5b7638654cb5ec896884a5d28004c6b3"
-  val language: String = "en"
-  val startPage: String = "/products"
+  // values are equal stub file values and defaults from constants
+  val appVersion: String = "0.0.5"
+  val appTheme: String = Constants.App.theme
+  val appLanguage: String = Constants.App.lang
+  val appStartPage: String = Constants.App.startPage
+  val demoMode: Boolean = Constants.App.demoMode
+  val moduleProductsView: String = Constants.Modules.Product.view
+  val moduleProductsPerPage: Int = 5
+  val systemMigrationsAppliedAt: String = "2022-11-11 20:32:09.034"
+  val systemMigrationsHash: String = "8e48083b5b7638654cb5ec896884a5d28004c6b3"
+
   val readFilePath: String = "test/stubs/settings.xml"
   val writeFilePath: String = "test/services/settings/stubs/write/settings.xml"
   val invalidSettingsFilePath: String = "test/services/settings/stubs/read/invalid_settings.xml"
 
   // update stub files values (differs from default)
-  val updateLanguage: String = "nl"
-  val updateStartPage: String = "/warehouse"
-  val updateTheme: String = "goldfinch"
-  val updateAppliedAt: String = "2023-11-11 20:32:09.034"
-  val updateHash: String = "8e48083b5b7638654cb5ec896884a5d28004c6b4"
+  val existingTheme: String = "goldfinch"
+  val existingSystemMigrationsAppliedAt: String = "2023-11-11 20:32:09.034"
+  val existingSystemMigrationsHash: String = "8e48083b5b7638654cb5ec896884a5d28004c6b4"
 
   def readFilePath(version: String): String = {
     s"test/services/settings/stubs/read/settings_v${version}.xml"
@@ -32,13 +37,9 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         noException must be thrownBy Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
-            theme = theme,
-            migrationsAppliedAt = appliedAt,
-            migrationsHash = hash,
-            language = language,
-            startPage = startPage,
+            writeFilePath = writeFilePath,
           ),
         )
       })
@@ -47,30 +48,20 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         a[SAXParseException] must be thrownBy Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = "",
             readFilePath = invalidSettingsFilePath,
             writeFilePath = writeFilePath,
-            theme = theme,
-            migrationsAppliedAt = appliedAt,
-            migrationsHash = hash,
-            language = language,
-            startPage = startPage,
           ),
         )
       })
     }
-    "load throw no exception (all values defaults, file not found)" in {
+    "load throw no exception (file not found)" in {
       runTest(() => {
         noException must be thrownBy Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = "",
             writeFilePath = writeFilePath,
-            theme = theme,
-            migrationsAppliedAt = appliedAt,
-            migrationsHash = hash,
-            language = language,
-            startPage = startPage,
           ),
         )
       })
@@ -79,23 +70,27 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
+            appTheme = appTheme,
+            appLanguage = appLanguage,
+            appStartPage = appStartPage,
+            systemMigrationsAppliedAt = systemMigrationsAppliedAt,
+            systemMigrationsHash = systemMigrationsHash,
+            moduleProductsPerPage = moduleProductsPerPage,
+            moduleProductsView = moduleProductsView,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
-            theme = theme,
-            migrationsAppliedAt = appliedAt,
-            migrationsHash = hash,
-            language = language,
-            startPage = startPage,
           ),
         )
 
-        Settings.version() mustEqual version
-        Settings.theme() mustEqual theme
-        Settings.appliedAt() mustEqual appliedAt
-        Settings.hash() mustEqual hash
-        Settings.language() mustEqual language
-        Settings.startPage() mustEqual startPage
+        Settings.appVersion() mustEqual appVersion
+        Settings.appTheme() mustEqual appTheme
+        Settings.appLanguage() mustEqual appLanguage
+        Settings.appStartPage() mustEqual appStartPage
+        Settings.moduleProductsPerPage() mustEqual moduleProductsPerPage
+        Settings.moduleProductsView() mustEqual moduleProductsView
+        Settings.systemMigrationsAppliedAt() mustEqual systemMigrationsAppliedAt
+        Settings.systemMigrationsHash() mustEqual systemMigrationsHash
       })
     }
     "update theme" in {
@@ -104,14 +99,14 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.updateTheme(expect)
-        Settings.theme() mustEqual expect
+        Settings.updateAppTheme(expect)
+        Settings.appTheme() mustEqual expect
       })
     }
     "update migrationsInfo" in {
@@ -121,15 +116,15 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.updateMigrationsInfo(appliedAt = expectAppliedAt, hash = expectHash)
-        Settings.appliedAt() mustEqual expectAppliedAt
-        Settings.hash() mustEqual expectHash
+        Settings.updateAppMigrationsInfo(appliedAt = expectAppliedAt, hash = expectHash)
+        Settings.systemMigrationsAppliedAt() mustEqual expectAppliedAt
+        Settings.systemMigrationsHash() mustEqual expectHash
       })
     }
     "update language" in {
@@ -138,14 +133,14 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.updateLanguage(expect)
-        Settings.language() mustEqual expect
+        Settings.updateAppLanguage(expect)
+        Settings.appLanguage() mustEqual expect
       })
     }
     "update start page" in {
@@ -154,172 +149,203 @@ class SettingsSpec extends PlaySpec {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.updateStartPage(expect)
-        Settings.startPage() mustEqual expect
+        Settings.updateAppStartPage(expect)
+        Settings.appStartPage() mustEqual expect
+      })
+    }
+    "update products module perPage" in {
+      val expect = 12
+
+      runTest(() => {
+        Settings.load(
+          Options(
+            appSettingsVersion = appVersion,
+            readFilePath = readFilePath,
+            writeFilePath = writeFilePath,
+          ),
+        )
+
+        Settings.updateModuleProductsPerPage(expect)
+        Settings.moduleProductsPerPage() mustEqual expect
+      })
+    }
+    "update products module view" in {
+      val expect = "album"
+
+      runTest(() => {
+        Settings.load(
+          Options(
+            appSettingsVersion = appVersion,
+            readFilePath = readFilePath,
+            writeFilePath = writeFilePath,
+          ),
+        )
+
+        Settings.updateModuleProductsView(expect)
+        Settings.moduleProductsView() mustEqual expect
       })
     }
     "return settings theme" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "0.0.4",
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.theme() mustEqual theme
+        Settings.appTheme() mustEqual appTheme
       })
     }
     "return settings appliedAt" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "0.0.4",
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.appliedAt() mustEqual appliedAt
+        Settings.systemMigrationsAppliedAt() mustEqual systemMigrationsAppliedAt
       })
     }
     "return settings hash" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "0.0.4",
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.hash() mustEqual hash
+        Settings.systemMigrationsHash() mustEqual systemMigrationsHash
       })
     }
     "return settings language" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "0.0.4",
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.language() mustEqual language
+        Settings.appLanguage() mustEqual appLanguage
       })
     }
     "return settings startPage" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "0.0.4",
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.startPage() mustEqual startPage
+        Settings.appStartPage() mustEqual appStartPage
       })
     }
     "return settings version" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.version() mustEqual version
+        Settings.appVersion() mustEqual appVersion
       })
     }
-    "update settings (single update)" in {
+    "return module products perPage" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
-            readFilePath = readFilePath("0.0.3"),
+            appSettingsVersion = appVersion,
+            moduleProductsPerPage = moduleProductsPerPage,
+            readFilePath = readFilePath,
             writeFilePath = writeFilePath,
-            startPage = startPage,
           ),
         )
 
-        Settings.version() mustEqual version
-        Settings.theme() mustEqual updateTheme
-        Settings.appliedAt() mustEqual updateAppliedAt
-        Settings.hash() mustEqual updateHash
-        Settings.language() mustEqual updateLanguage
-        Settings.startPage() mustEqual startPage
+        Settings.moduleProductsPerPage() mustEqual moduleProductsPerPage
+      })
+    }
+    "return module products view" in {
+      runTest(() => {
+        Settings.load(
+          Options(
+            appSettingsVersion = appVersion,
+            moduleProductsPerPage = moduleProductsPerPage,
+            readFilePath = readFilePath,
+            writeFilePath = writeFilePath,
+          ),
+        )
+
+        Settings.moduleProductsPerPage() mustEqual moduleProductsPerPage
       })
     }
     "update settings (sequence of updates)" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
+            appSettingsVersion = appVersion,
+            appLanguage = appLanguage,
+            appStartPage = appStartPage,
+            moduleProductsPerPage = moduleProductsPerPage,
+            moduleProductsView = moduleProductsView,
             readFilePath = readFilePath("0.0.2"),
             writeFilePath = writeFilePath,
-            language = language,
-            startPage = startPage,
           ),
         )
 
-        Settings.version() mustEqual version
-        Settings.theme() mustEqual updateTheme
-        Settings.appliedAt() mustEqual updateAppliedAt
-        Settings.hash() mustEqual updateHash
-        Settings.language() mustEqual language
-        Settings.startPage() mustEqual startPage
+        Settings.appVersion() mustEqual appVersion
+        Settings.appTheme() mustEqual existingTheme
+        Settings.systemMigrationsAppliedAt() mustEqual existingSystemMigrationsAppliedAt
+        Settings.systemMigrationsHash() mustEqual existingSystemMigrationsHash
+        // values below will be created via update
+        Settings.appLanguage() mustEqual appLanguage
+        Settings.appStartPage() mustEqual appStartPage
+        Settings.moduleProductsPerPage() mustEqual moduleProductsPerPage
+        Settings.moduleProductsView() mustEqual moduleProductsView
       })
     }
     "update settings (no update required)" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = version,
-            readFilePath = readFilePath("0.0.4"),
+            appSettingsVersion = appVersion,
+            readFilePath = readFilePath("0.0.5"),
             writeFilePath = writeFilePath,
           ),
         )
 
-        Settings.version() mustEqual version
-        Settings.theme() mustEqual updateTheme
-        Settings.appliedAt() mustEqual updateAppliedAt
-        Settings.hash() mustEqual updateHash
-        Settings.language() mustEqual updateLanguage
-        Settings.startPage() mustEqual updateStartPage
+        Settings.appVersion() mustEqual appVersion
       })
     }
     "update settings (no update found, generate default options)" in {
       runTest(() => {
         Settings.load(
           Options(
-            systemSettingVersion = "2.0.4",
+            appSettingsVersion = "2.0.4",
             readFilePath = readFilePath,
             writeFilePath = writeFilePath,
-            theme = theme,
-            migrationsAppliedAt = appliedAt,
-            migrationsHash = hash,
-            language = language,
-            startPage = startPage,
           ),
         )
 
-        Settings.version() mustEqual "2.0.4"
-        Settings.theme() mustEqual theme
-        Settings.appliedAt() mustEqual appliedAt
-        Settings.hash() mustEqual hash
-        Settings.language() mustEqual language
-        Settings.startPage() mustEqual startPage
+        Settings.appVersion() mustEqual "2.0.4"
       })
     }
   }

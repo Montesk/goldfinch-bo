@@ -11,7 +11,7 @@ import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import play.api.db.slick.DatabaseConfigProvider
 
-import repository.Repository
+import services.config.Config
 
 case class ProductData(
     name: String,
@@ -19,7 +19,7 @@ case class ProductData(
     price: Int,
     files: List[String] = List(),
     titleImage: Option[String] = Option[String](""),
-    deleteFiles: List[String] = List()
+    deleteFiles: List[String] = List(),
 )
 
 class Products(tag: Tag) extends Table[Product](tag, "products") {
@@ -53,13 +53,13 @@ class Products(tag: Tag) extends Table[Product](tag, "products") {
     disabled,
     deleted,
     created_at,
-    updated_at
+    updated_at,
   ) <> ((Product.apply _).tupled, Product.unapply)
 }
 
 @Singleton
-class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) extends Repository {
-  val DefaultDBTimeout: Duration = withDefaultTimeout(config.product)
+class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) {
+  val DefaultDBTimeout: Duration = Config.repositoriesProductDbWaitTimeout()
 
   private val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -113,7 +113,7 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) ex
       for { c <- products if c.id === id } yield (
         c.name,
         c.price,
-        c.description
+        c.description,
       )
     query.update(data.name, data.price, Option[String](data.description))
   }
@@ -128,7 +128,7 @@ class ProductsRepository @Inject() (dbConfigProvider: DatabaseConfigProvider) ex
 
   private def execCreate(data: ProductData): Future[Unit] = db.run {
     DBIO.seq(
-      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description))
+      products.map(p => (p.price, p.name, p.description)) += (data.price, data.name, Option[String](data.description)),
     )
   }
 

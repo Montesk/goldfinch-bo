@@ -1,0 +1,11 @@
+# Required only fields
+app:
+  settingsVersion: "0.2.14"
+
+repositories:
+  default:
+    dbWaitTimeout: "10s"
+
+modules:
+  default:
+    perPage: 20

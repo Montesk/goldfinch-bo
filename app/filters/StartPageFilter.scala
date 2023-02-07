@@ -20,7 +20,7 @@ class StartPageFilter @Inject() (implicit
       val redirected: Boolean = requestHeader.cookies.get("GOLDFINCH_START_PAGE").isDefined
 
       if (!redirected && requestHeader.path == "/") {
-        Redirect(Settings.startPage()).withCookies(Cookie("GOLDFINCH_START_PAGE", "true"))
+        Redirect(Settings.appStartPage()).withCookies(Cookie("GOLDFINCH_START_PAGE", "true"))
       } else {
         result.withCookies(Cookie("GOLDFINCH_START_PAGE", "true"))
       }

@@ -9,6 +9,7 @@ trait Updater extends Logging {
   private val roadmap: Map[String, Update] = Map(
     "0.0.2" -> Update("0.0.3", v0_0_3),
     "0.0.3" -> Update("0.0.4", v0_0_4),
+    "0.0.4" -> Update("0.0.5", v0_0_5),
   )
 
   def update(
@@ -52,10 +53,11 @@ trait Updater extends Logging {
 
     val current = dto.Settings(prev)
     val updated = dto.Settings(
-      version = Option(version),
-      language = Option(defaults.language),
+      appVersion = Option(version),
+      appLanguage = Option(defaults.appLanguage),
       base = current,
     )
+
     (true, updated.XML())
   }
 
@@ -64,8 +66,22 @@ trait Updater extends Logging {
 
     val current = dto.Settings(prev)
     val updated = dto.Settings(
-      version = Option(version),
-      startPage = Option(defaults.startPage),
+      appVersion = Option(version),
+      appStartPage = Option(defaults.appStartPage),
+      base = current,
+    )
+
+    (true, updated.XML())
+  }
+
+  private[settings] def v0_0_5(prev: xml.Elem, defaults: Options): (Boolean, xml.Elem) = {
+    val version = "0.0.5"
+
+    val current = dto.Settings(prev)
+    val updated = dto.Settings(
+      appVersion = Option(version),
+      moduleProductsPerPage = Option(defaults.moduleProductsPerPage),
+      moduleProductsView = Option(defaults.moduleProductsView),
       base = current,
     )
 
