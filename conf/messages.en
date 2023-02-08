@@ -25,3 +25,6 @@ views.settings.appearance.label.theme=Application theme
 views.settings.general.label.startPage=Starting page
 views.settings.tab.moduleProducts=Page: Products
 views.settings.moduleProducts.label.perPage=Default number of records per page
+views.settings.moduleProducts.label.view=Default layout
+views.settings.moduleProducts.value.tableView=Table
+views.settings.moduleProducts.value.albumView=Album

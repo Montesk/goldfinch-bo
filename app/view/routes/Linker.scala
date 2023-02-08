@@ -50,6 +50,16 @@ trait Linker extends Routes {
 
     Uri.from(path = uri(), queryString = query).toString()
   }
+
+  def saveQuery(path: String, current: Request[AnyContent]): String = {
+    val query = if (current.rawQueryString.nonEmpty) {
+      Some(current.rawQueryString)
+    } else {
+      None
+    }
+
+    Uri.from(path = path, queryString = query).toString()
+  }
 }
 
 private[view] trait DynamicLinker extends Linker {
@@ -59,7 +69,9 @@ private[view] trait DynamicLinker extends Linker {
     "unsupported static uri without params",
   )
 
-  def uriTo[A <: B](identifier: A): String
+  def uriCreate(): String = throw new Exception(s"create uri not set for ${super.getClass}")
+
+  def uriEdit[A <: B](identifier: A): String
 
   def saveQueryUriTo[A <: B](
       identifier: A,
@@ -71,6 +83,6 @@ private[view] trait DynamicLinker extends Linker {
       None
     }
 
-    Uri.from(path = uriTo[A](identifier), queryString = query).toString()
+    Uri.from(path = uriEdit[A](identifier), queryString = query).toString()
   }
 }

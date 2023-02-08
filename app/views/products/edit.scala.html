@@ -10,5 +10,5 @@
     modalId = "edit-product",
     static = false,
     showOnLoad = true,
-    redirectUrlOnClose = Option[String](routes.ProductsController.index().url)
+    redirectUrlOnClose = Option[String](Products.saveQuery(current = request))
 )

@@ -12,7 +12,7 @@ final case class Delivery(
     product: Product,
     quantity: Int,
     created_at: String,
-    updated_at: String
+    updated_at: String,
 ) {}
 
 object Delivery extends DynamicLinker {
@@ -20,7 +20,7 @@ object Delivery extends DynamicLinker {
 
   type B = Int
 
-  override def uriTo[A <: B](identifier: A): String = {
+  override def uriEdit[A <: B](identifier: A): String = {
     deliveryPath(identifier.toLong)
   }
 
@@ -30,10 +30,8 @@ object Delivery extends DynamicLinker {
       product_id = delivery.product_id.toInt,
       quantity = delivery.quantity,
       product = Product.fromDB(product),
-      created_at =
-        delivery.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at =
-        delivery.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat))
+      created_at = delivery.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at = delivery.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
     )
   }
 
@@ -50,7 +48,7 @@ object Delivery extends DynamicLinker {
       product = null,
       quantity = 0,
       created_at = "",
-      updated_at = ""
+      updated_at = "",
     )
   }
 }

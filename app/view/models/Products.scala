@@ -21,22 +21,16 @@ object Products extends Linker {
     Uri.from(path = productsPath).toString()
   }
 
+  def uriWithAppSettings(): String = {
+    Uri.from(path = uri(), queryString = Some(s"perPage=${AppSettings.moduleProductsPerPage().toString}&view=${AppSettings.moduleProductsView()}")).toString()
+  }
+
   def isTableView(req: Request[AnyContent]): Boolean = {
     getViewFromRequest(req = req).eq(tableView)
   }
 
   def isAlbumView(req: Request[AnyContent]): Boolean = {
     getViewFromRequest(req = req).eq(albumView)
-  }
-
-  override def saveQuery(current: Request[AnyContent]): String = {
-    val query = if (current.rawQueryString.nonEmpty) {
-      Some(current.rawQueryString)
-    } else {
-      Some(s"perPage=${AppSettings.moduleProductsPerPage().toString}")
-    }
-
-    Uri.from(path = uri(), queryString = query).toString()
   }
 
   private[view] def getViewFromRequest(req: Request[AnyContent]): String = {
@@ -47,7 +41,7 @@ object Products extends Linker {
     req.getQueryString("view").get match {
       case `tableView` => tableView
       case `albumView` => albumView
-      case _           => throw UnsupportedViewException(req.getQueryString("view").get)
+      case _ => throw UnsupportedViewException(req.getQueryString("view").get)
     }
   }
 }

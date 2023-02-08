@@ -32,7 +32,7 @@
         </div>
 
 
-        <div class="@if(Matcher.isProductsPage && Products.isAlbumView(request)) { container } else { container-fluid }">
+        <div class="@if(Matcher.isInProductGroupPage && Products.isAlbumView(request)) { container } else { container-fluid }">
             <div class="row">
             @{
                 if(Matcher.isOrdersPage) {

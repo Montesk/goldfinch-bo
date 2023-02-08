@@ -65,6 +65,17 @@
                     required = true,
                 )
                 </div>
+                <div class="form-group mt-4 w-25">
+                @components.form.components.select(
+                    name = "moduleProductsView",
+                    options = Vector(
+                        SelectOption("album", Messages("views.settings.moduleProducts.value.albumView")),
+                        SelectOption("table", Messages("views.settings.moduleProducts.value.tableView"))
+                    ),
+                    label = Messages("views.settings.moduleProducts.label.view"),
+                    selected = Settings.moduleProductsView()
+                )
+                </div>
             </div>
         </div>
         <div class="form-group mt-4">

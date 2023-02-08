@@ -19,7 +19,7 @@ final case class Product(
     created_at: String,
     updated_at: String,
     files: List[String] = List(),
-    titleImage: String = ""
+    titleImage: String = "",
 ) {}
 
 object Product extends DynamicLinker {
@@ -30,9 +30,9 @@ object Product extends DynamicLinker {
 
   type B = Int
 
-  override def uriTo[A <: B](identifier: A): String = {
-    productEditPath(identifier.toLong)
-  }
+  override def uriCreate(): String = productCreatePath
+
+  override def uriEdit[A <: B](identifier: A): String = productEditPath(identifier.toLong)
 
   def fromDB(product: DBProduct): Product = {
     Product(
@@ -43,10 +43,8 @@ object Product extends DynamicLinker {
       uuid = product.uuid.get.toString,
       description = product.description,
       disabled = product.disabled,
-      created_at =
-        product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at =
-        product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      created_at = product.created_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at = product.updated_at.get.format(DateTimeFormatter.ofPattern(TimeFormat)),
       files = assetsManager
         .getGroupAssets(product.uuid.get.toString, List(MainImageFileName))
         .map(file => buildAssetPath(product.uuid.get, file)),
@@ -54,9 +52,9 @@ object Product extends DynamicLinker {
         product.uuid.get,
         assetsManager.getFileByName(
           product.uuid.get.toString,
-          MainImageFileName
-        )
-      )
+          MainImageFileName,
+        ),
+      ),
     )
   }
 
@@ -74,14 +72,14 @@ object Product extends DynamicLinker {
       description = None,
       disabled = false,
       created_at = "",
-      updated_at = ""
+      updated_at = "",
     )
   }
 
   private def buildAssetPath(group: UUID, fileName: String): String = {
     routes.Assets
       .versioned(
-        s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}"
+        s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}",
       )
       .url
   }

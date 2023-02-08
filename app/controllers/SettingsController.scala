@@ -23,6 +23,7 @@ case class SettingsUpdateDataV2(
     theme: String,
     startPage: String,
     moduleProductsPerPage: String,
+    moduleProductsView: String,
 )
 
 @Singleton
@@ -82,6 +83,10 @@ class SettingsController @Inject() (
           if (updateData.moduleProductsPerPage.toInt != Settings.moduleProductsPerPage()) {
             Settings.updateModuleProductsPerPage(updateData.moduleProductsPerPage.toInt)
           }
+
+          if (updateData.moduleProductsView != Settings.moduleProductsView()) {
+            Settings.updateModuleProductsView(updateData.moduleProductsView)
+          }
         },
       )
 
@@ -114,6 +119,7 @@ class SettingsController @Inject() (
       "theme" -> text,
       "startPage" -> text,
       "moduleProductsPerPage" -> text,
+      "moduleProductsView" -> text,
     )(SettingsUpdateDataV2.apply)(SettingsUpdateDataV2.unapply),
   )
 }

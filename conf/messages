@@ -25,3 +25,6 @@ views.settings.appearance.label.theme=Тема приложения
 views.settings.general.label.startPage=Начальная страница
 views.settings.tab.moduleProducts=Страница: Продукты
 views.settings.moduleProducts.label.perPage=Записи на странице по-умолчанию
+views.settings.moduleProducts.label.view=Вид по-умолчанию
+views.settings.moduleProducts.value.tableView=Таблица
+views.settings.moduleProducts.value.albumView=Альбомная

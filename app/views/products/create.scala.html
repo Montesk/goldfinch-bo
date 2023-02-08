@@ -3,13 +3,13 @@
 
 @(data: Products, product: Product)(implicit request: Request[AnyContent], messages: MessagesProvider)
 
-    @products.content(data)
+@products.content(data)
 
-    @components.modal.modal(
-        bodyContent = products.createform(product),
-        title = "Добавить новый товар",
-        modalId = "create-product",
-        static = false,
-        showOnLoad = true,
-        redirectUrlOnClose = Option[String](Routes.productsPath)
-    )
+@components.modal.modal(
+    bodyContent = products.createform(product),
+    title = "Добавить новый товар",
+    modalId = "create-product",
+    static = false,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](Products.saveQuery(current = request))
+)
