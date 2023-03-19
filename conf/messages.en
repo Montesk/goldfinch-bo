@@ -6,11 +6,13 @@ views.navigation.orders=Orders
 views.navigation.products=Products
 views.navigation.warehouse=Warehouse
 views.navigation.settings=Settings
+
 views.products.controlPanel.tableView=Table view
 views.products.controlPanel.albumView=Album view
 views.products.controlPanel.perPage=Per page
-views.products.table.addproduct=Add new product
-views.products.table.editproduct=Edit
+
+views.products.table.addProduct=Add new product
+views.products.table.editProduct=Edit
 views.products.table.th.image=Image
 views.products.table.th.id=ID
 views.products.table.th.name=Name
@@ -18,6 +20,32 @@ views.products.table.th.price=Price
 views.products.table.th.quantity=Quantity
 views.products.table.th.uuid=UUID
 views.products.table.th.actions=Actions
+
+views.products.album.createProduct=Add new product
+views.products.album.card.description=Description
+views.products.album.card.price=Price
+views.products.album.card.noImage=No Image
+views.products.album.action.edit=Edit
+
+views.products.create.modal.title=Add new product
+views.products.create.createForm.label.name=Name
+views.products.create.createForm.value.name=New product
+views.products.create.createForm.label.description=Description
+views.products.create.createForm.label.price=Price
+views.products.create.createForm.button.cancel=Cancel
+views.products.create.createForm.button.save=Save
+
+views.products.edit.modal.title=Edit product:
+views.products.edit.editForm.titleImage.heading=Main image
+views.products.edit.editForm.label.name=Name
+views.products.edit.editForm.label.description=Description
+views.products.edit.editForm.label.price=Price
+views.products.edit.editForm.subImages.heading=Alternative images
+views.products.edit.editForm.button.close=Close
+views.products.edit.editForm.button.delete=Delete
+views.products.edit.editForm.button.save=Save
+views.products.edit.editForm.confirm.delete=Deleting {0}. Are you sure?
+
 views.settings.tab.general=General
 views.settings.tab.appearance=Design and layout
 views.settings.general.label.language=Language

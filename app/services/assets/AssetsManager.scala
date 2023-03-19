@@ -19,26 +19,29 @@ trait Manager {
       group: String,
       fileName: String = "",
       replace: Boolean = true,
-      moveFile: Boolean = true
+      moveFile: Boolean = true,
   ): Path
 
   def persistTempFile(
       group: String,
       srcFile: String,
       destFile: String,
-      moveFile: Boolean = true
+      moveFile: Boolean = true,
   ): Path
 
   def getGroupAssets(
       group: String,
-      exclude: List[String] = List()
+      exclude: List[String] = List(),
   ): List[String]
 
-  /** Get file by name ignoring extension fileName param must be passed without extension
-    */
+  /**
+   * Get file by name ignoring extension fileName param must be passed without extension
+   */
   def getFileByName(group: String, fileName: String): String
 
   def deleteFile(group: String, fileName: String): Unit
+
+  def fileExists(group: String, fileName: String): Boolean
 }
 
 object DefaultOptions {
@@ -50,7 +53,7 @@ object DefaultOptions {
 case class Options @Inject() (
     projectAssetsDir: String = "",
     tempDirPath: String = "",
-    assetsDirPath: String = ""
+    assetsDirPath: String = "",
 ) {}
 
 class Assets @Inject() (opts: Options = Options()) extends Manager {
@@ -77,7 +80,7 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
       group: String,
       fileName: String,
       replace: Boolean = true,
-      moveFile: Boolean = true
+      moveFile: Boolean = true,
   ): Path = {
     val tmpFilePath = tempFile(group, fileName)
     mkDirAll(tmpFilePath.toString)
@@ -93,7 +96,7 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
       group: String,
       srcFile: String,
       destFile: String,
-      moveFile: Boolean = true
+      moveFile: Boolean = true,
   ): Path = {
     mkDirAll(assetFile(group, destFile).toString)
 
@@ -104,7 +107,7 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
       return ioFiles.move(
         temp.toPath,
         dest.toPath,
-        StandardCopyOption.REPLACE_EXISTING
+        StandardCopyOption.REPLACE_EXISTING,
       )
     }
 
@@ -114,7 +117,7 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
   // @param exclude supports only filenames without extension
   override def getGroupAssets(
       group: String,
-      exclude: List[String] = List()
+      exclude: List[String] = List(),
   ): List[String] = {
     val result = new File(s"""${assetsDirPath}/${group}/""").list()
     if (result ne null) {
@@ -139,8 +142,12 @@ class Assets @Inject() (opts: Options = Options()) extends Manager {
 
   override def deleteFile(group: String, fileName: String): Unit = {
     ioFiles.delete(
-      assetFile(group, s"${helperFiles.getNameWithoutExtension(fileName)}.${helperFiles.getFileExtension(fileName)}")
+      assetFile(group, s"${helperFiles.getNameWithoutExtension(fileName)}.${helperFiles.getFileExtension(fileName)}"),
     )
+  }
+
+  override def fileExists(group: String, fileName: String): Boolean = {
+    ioFiles.exists(assetFile(group, fileName))
   }
 
   private def mkDirAll(path: String): Unit = {

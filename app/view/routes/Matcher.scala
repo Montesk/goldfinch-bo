@@ -20,6 +20,10 @@ object Matcher extends Routes with Pagination {
     req.path == productCreatePath
   }
 
+  def isProductViewPage(implicit req: Request[AnyContent]): Boolean = {
+    req.path.contains(ProductGroupPath)
+  }
+
   def isInProductGroupPage(implicit req: Request[AnyContent]): Boolean = {
     req.path.contains(ProductGroupPath)
   }

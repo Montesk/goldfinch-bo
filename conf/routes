@@ -6,6 +6,7 @@
 GET         /                            controllers.HomeController.index()
 
 GET         /products                    controllers.ProductsController.index()
+GET         /product/$id<[0-9]+>         controllers.ProductsController.view(id:  Long)
 GET         /product/edit/:id            controllers.ProductsController.editView(id:  Long)
 POST        /product/edit/:id            controllers.ProductsController.edit(id:  Long)
 GET         /product/create              controllers.ProductsController.createView()

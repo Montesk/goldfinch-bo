@@ -8,6 +8,7 @@ trait Routes {
   val productsPath: String = Routes.productsPath
   val productEditPath: Long => String = Routes.productEditPath
   val productCreatePath: String = Routes.productCreatePath
+  val productViewPath: Long => String = Routes.productViewPath
   val deliveriesPath: String = Routes.deliveriesPath
   val deliveryPath: Long => String = Routes.deliveryEditPath
   val deliveryCreatePath: String = Routes.deliveryCreatePath
@@ -25,8 +26,9 @@ object Routes {
   val homePath: String = routes.HomeController.index().url
   val ordersPath: String = routes.OrdersController.index().url
   val productsPath: String = routes.ProductsController.index().url
-  val productEditPath: Long => String = (productId) => routes.ProductsController.editView(productId).url
+  val productEditPath: Long => String = productId => routes.ProductsController.editView(productId).url
   val productCreatePath: String = routes.ProductsController.create().url
+  val productViewPath: Long => String = productId => routes.ProductsController.view(productId).url
   val deliveriesPath: String = routes.DeliveriesController.index().url
   val deliveryEditPath: Long => String = (deliveryId: Long) =>
     routes.DeliveriesController.editView(deliveryId: Long).url

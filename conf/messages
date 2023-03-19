@@ -6,11 +6,13 @@ views.navigation.orders=Заказы
 views.navigation.products=Товары
 views.navigation.warehouse=Склад
 views.navigation.settings=Настройки
+
 views.products.controlPanel.tableView=Режим таблицы
 views.products.controlPanel.albumView=Режим альбома
 views.products.controlPanel.perPage=На странице
-views.products.table.addproduct=Добавить новый товар
-views.products.table.editproduct=Редактировать
+
+views.products.table.addProduct=Добавить новый товар
+views.products.table.editProduct=Редактировать
 views.products.table.th.image=Изображение
 views.products.table.th.id=ID
 views.products.table.th.name=Название
@@ -18,6 +20,32 @@ views.products.table.th.price=Цена
 views.products.table.th.quantity=Кол-во
 views.products.table.th.uuid=Идентификатор
 views.products.table.th.actions=Действия
+
+views.products.album.createProduct=Добавить новый товар
+views.products.album.card.description=Описание
+views.products.album.card.price=Цена
+views.products.album.card.noImage=Нет изображения
+views.products.album.action.edit=Редактировать
+
+views.products.create.modal.title=Добавить новый товар
+views.products.create.createForm.label.name=Имя
+views.products.create.createForm.value.name=Новый товар
+views.products.create.createForm.label.description=Описание
+views.products.create.createForm.label.price=Цена
+views.products.create.createForm.button.cancel=Отменить
+views.products.create.createForm.button.save=Сохранить
+
+views.products.edit.modal.title=Редактировать товар: {0}
+views.products.edit.editForm.titleImage.heading=Главная картинка
+views.products.edit.editForm.label.name=Имя
+views.products.edit.editForm.label.description=Описание
+views.products.edit.editForm.label.price=Цена
+views.products.edit.editForm.subImages.heading=Дополнительные изображения
+views.products.edit.editForm.button.close=Закрыть
+views.products.edit.editForm.button.delete=Удалить
+views.products.edit.editForm.button.save=Сохранить
+views.products.edit.editForm.confirm.delete=Вы действительно хотите удалить {0}?
+
 views.settings.tab.general=Основные
 views.settings.tab.appearance=Дизайн и оформление
 views.settings.general.label.language=Язык

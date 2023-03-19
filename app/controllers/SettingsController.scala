@@ -10,7 +10,7 @@ import play.api.routing.Router
 import com.google.inject.Provider
 
 import services.settings.Settings
-import view.models.{Settings => SettingsData}
+import view.models.{SettingsPage => SettingsData}
 
 @deprecated("use v2 SettingsUpdateDataV2 with optional direct settings update")
 case class SettingsUpdateData(

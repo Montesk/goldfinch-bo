@@ -8,7 +8,7 @@
         deliveriesData: Vector[Delivery] = Vector(),
         product: Option[Product],
         delivery: Option[Delivery],
-        settingsData: Settings,
+        settingsData: SettingsPage,
 )(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="container-fluid position-relative flex-grow-1">
@@ -20,39 +20,41 @@
             </div>
         }
 
-    <div class="col-12 bo-content-with-left-settings-panel pt-4">
-        <div class="container-fluid">
-            <div class="row justify-content-between">
+            <div class="col-12 bo-content-with-left-settings-panel pt-4">
+                <div class="container-fluid">
+                    <div class="row justify-content-between">
 
-            @if(Matcher.isInProductGroupPage) {
-                @products.controlpanel()
-            }
+                    @if(Matcher.isInProductGroupPage) {
+                        @products.controlpanel()
+                    }
 
-            </div>
-        </div>
+                    </div>
+                </div>
 
 
-        <div class="@if(Matcher.isInProductGroupPage && Products.isAlbumView(request)) { container } else { container-fluid }">
-            <div class="row">
-            @{
-                if(Matcher.isOrdersPage) {
-                    orders.content(data = ordersData)
-                } else if(Matcher.isProductsPage) {
-                    products.content(data = productsData)
-                } else if(Matcher.isInProductEditGroupPage) {
-                    products.edit(data = productsData, product.get)
-                } else if(Matcher.isProductCreatePage) {
-                    products.create(data = productsData, product.get)
-                } else if(Matcher.isWarehouseCreatePage) {
-                    deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData.list)
-                } else if(Matcher.isDeliveriesPage) {
-                    deliveries.content(data = deliveriesData)
-                } else if(Matcher.isSettingsPage) {
-                    settings.content(data = settingsData)
-                } else {
-                    dashboard.content()
-                }
-            }
+                <div class="@if(Matcher.isInProductGroupPage && Products.isAlbumView(request)) { container } else { container-fluid }">
+                    <div class="row">
+                    @{
+                        if(Matcher.isOrdersPage) {
+                            orders.content(data = ordersData)
+                        } else if(Matcher.isProductsPage) {
+                            products.content(data = productsData)
+                        } else if(Matcher.isProductViewPage) {
+                            products.productView(data = productsData, product = product.get)
+                        } else if(Matcher.isInProductEditGroupPage) {
+                            products.edit(data = productsData, product = product.get)
+                        } else if(Matcher.isProductCreatePage) {
+                            products.create(data = productsData, product = product.get)
+                        } else if(Matcher.isWarehouseCreatePage) {
+                            deliveries.create(deliveriesData = deliveriesData, delivery = delivery.get, productsData = productsData.list)
+                        } else if(Matcher.isDeliveriesPage) {
+                            deliveries.content(data = deliveriesData)
+                        } else if(Matcher.isSettingsPage) {
+                            settings.content(data = settingsData)
+                        } else {
+                            dashboard.content()
+                        }
+                    }
     </div>
     </div>
     </div>

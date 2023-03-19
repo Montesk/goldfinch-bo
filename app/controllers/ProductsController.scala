@@ -17,7 +17,7 @@ import view.pagination.Pagination
 class ProductsController @Inject() (
     val controllerComponents: ControllerComponents,
     val productsRepo: ProductsRepository,
-    val assetsManager: Manager
+    val assetsManager: Manager,
 ) extends BaseController
     with I18n {
 
@@ -25,12 +25,21 @@ class ProductsController @Inject() (
     Ok(views.html.index(products = pageData))
   }
 
+  def view(id: Long): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(
+      views.html.index(
+        products = pageData,
+        product = Option[Product](Product.fromDB(product(id))),
+      ),
+    )
+  }
+
   def createView(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(
       views.html.index(
         products = pageData,
-        product = Option[Product](Product.newProduct())
-      )
+        product = Option[Product](Product.newProduct()),
+      ),
     )
   }
 
@@ -46,7 +55,7 @@ class ProductsController @Inject() (
         productData => {
           productsRepo.create(data = productData)
           flashMsgData = productData
-        }
+        },
       )
 
     Redirect(routes.ProductsController.index())
@@ -57,8 +66,8 @@ class ProductsController @Inject() (
     Ok(
       views.html.index(
         products = pageData,
-        product = Option[Product](Product.fromDB(product(id)))
-      )
+        product = Option[Product](Product.fromDB(product(id))),
+      ),
     )
   }
 
@@ -86,7 +95,7 @@ class ProductsController @Inject() (
             persistImage(
               product = product,
               fileName = (lastImg(Product.fromDB(product).files) + 1).toString,
-              image = image
+              image = image,
             )
           }
 
@@ -94,14 +103,14 @@ class ProductsController @Inject() (
             persistImage(
               product = product,
               isMain = true,
-              image = productData.titleImage.getOrElse("")
+              image = productData.titleImage.getOrElse(""),
             )
           }
-        }
+        },
       )
 
     Redirect(routes.ProductsController.index()).flashing(
-      "success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован"
+      "success" -> s"Товар ${flashMsgData.name} [ID: ${id}] успешно отредактирован",
     )
   }
 
@@ -111,11 +120,12 @@ class ProductsController @Inject() (
       .flashing("warning" -> s"Товар [ID: ${id}] успешно удалён")
   }
 
-  /** Params: { <body> "files": [fileObj] // :WARNING: currently supported single file upload <query> "uuid":
-    * Option[UUID] // if not passed it is assumed it is the new product <query> "csrfTokenName": "csrfTokenValue" }
-    *
-    * @return
-    */
+  /**
+   * Params: { <body> "files": [fileObj] // :WARNING: currently supported single file upload <query> "uuid":
+   * Option[UUID] // if not passed it is assumed it is the new product <query> "csrfTokenName": "csrfTokenValue" }
+   *
+   * @return
+   */
   def upload(): Action[MultipartFormData[Files.TemporaryFile]] =
     Action(parse.multipartFormData) { implicit request =>
       val productUUID = request.getQueryString("uuid").get
@@ -125,7 +135,7 @@ class ProductsController @Inject() (
         assetsManager.saveTemporaryFile(
           file = file.ref,
           productUUID,
-          file.filename
+          file.filename,
         )
         uploaded = file.filename
       }
@@ -148,8 +158,8 @@ class ProductsController @Inject() (
       "price" -> number,
       "files" -> list(text),
       "title-image" -> optional(text),
-      "delete-files" -> list(text)
-    )(ProductData.apply)(ProductData.unapply)
+      "delete-files" -> list(text),
+    )(ProductData.apply)(ProductData.unapply),
   )
 
   private def lastImg(files: List[String]): Int = {
@@ -169,20 +179,20 @@ class ProductsController @Inject() (
       product: DBProduct,
       image: String,
       isMain: Boolean = false,
-      fileName: String = ""
+      fileName: String = "",
   ): Unit = {
     val extension = helperFiles.getFileExtension(image)
     if (isMain) {
       assetsManager.persistTempFile(
         product.uuid.get.toString,
         image,
-        Product.MainImageFileName + "." + extension
+        Product.MainImageFileName + "." + extension,
       )
     } else {
       assetsManager.persistTempFile(
         product.uuid.get.toString,
         image,
-        fileName + "." + extension
+        fileName + "." + extension,
       )
     }
   }

@@ -77,10 +77,18 @@ object Product extends DynamicLinker {
   }
 
   private def buildAssetPath(group: UUID, fileName: String): String = {
+    if (!fileExists(group, fileName)) {
+      return ""
+    }
+
     routes.Assets
       .versioned(
         s"${assetsManager.getAssetsPath}/${group.toString}/${fileName}",
       )
       .url
+  }
+
+  private def fileExists(group: UUID, fileName: String): Boolean = {
+    assetsManager.fileExists(group = group.toString, fileName = fileName)
   }
 }

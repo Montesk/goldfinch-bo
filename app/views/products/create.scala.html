@@ -1,5 +1,4 @@
-@import view.models.{Products, Product}
-@import view.routes.Routes
+@import view.models.{Product, Products}
 
 @(data: Products, product: Product)(implicit request: Request[AnyContent], messages: MessagesProvider)
 
@@ -7,7 +6,7 @@
 
 @components.modal.modal(
     bodyContent = products.createform(product),
-    title = "Добавить новый товар",
+    title = Messages("views.products.create.modal.title"),
     modalId = "create-product",
     static = false,
     showOnLoad = true,
