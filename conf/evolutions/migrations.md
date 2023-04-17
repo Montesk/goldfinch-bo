@@ -5,3 +5,5 @@
 * [3.sql] -> add_columns_uuid_description_to_products_table
 * [4.sql] -> add_column_deleted_to_products_table
 * [5.sql] -> create_table_deliveries
+* [6.sql] -> create_table_warehouses
+* [7.sql] -> create_table_warehouses_product
