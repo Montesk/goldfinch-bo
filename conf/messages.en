@@ -56,3 +56,13 @@ views.settings.moduleProducts.label.perPage=Default number of records per page
 views.settings.moduleProducts.label.view=Default layout
 views.settings.moduleProducts.value.tableView=Table
 views.settings.moduleProducts.value.albumView=Album
+
+views.warehouse.addProduct=Add new product record
+views.warehouse.table.th.id=ID
+views.warehouse.table.th.product=Product
+views.warehouse.table.th.quantity=Quantity
+views.warehouse.table.th.createdAt=Created At
+views.warehouse.table.th.updatedAt=Updated At
+views.warehouse.table.th.actions=Actions
+views.warehouse.actions.delete=Delete warehouse product record
+views.warehouse.actions.delete.confirm=You are about to delete warehouse product record # {0}. Are you sure?

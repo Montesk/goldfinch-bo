@@ -2,12 +2,12 @@
 @import view.models.Delivery
 @import view.routes.Routes
 
-@(data: Vector[Delivery] = Vector())(implicit request: Request[AnyContent])
+@(data: Vector[Delivery] = Vector())(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="col-12">
     <div class="row">
         <div class="col-12 mb-2">
-            <a href="@routes.DeliveriesController.create().url" class="text-decoration-none" title="Добавить новое поступление товара">
+            <a href="@routes.DeliveriesController.create().url" class="text-decoration-none" title="@Messages("views.warehouse.addProduct")">
                 <div class="card bo-success-hover bo-horizontal-new-item">
                     <div class="card-body d-flex justify-content-center align-items-center">
                         <h5 class="text-center card-title mb-3 text-success bo-add-small">
@@ -22,12 +22,12 @@
             <table class="table bo-table">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Product</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Created At</th>
-                        <th scope="col">Updated At</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.id")</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.product")</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.quantity")</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.createdAt")</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.updatedAt")</th>
+                        <th scope="col">@Messages("views.warehouse.table.th.actions")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,26 +39,26 @@
                         <td class="align-middle">@delivery.created_at</td>
                         <td class="align-middle">@delivery.updated_at</td>
                         <td class="align-middle">
-                            <div class="bo-action d-inline-block" role="button" id="delivery-id-@delivery.id" title="Удалить поставку">
-                                <i class="fa-solid fa-trash-can text-danger"  title="Удалить поставку"></i>
+                            <div class="bo-action d-inline-block" role="button" id="delivery-id-@delivery.id" title="@Messages("views.warehouse.actions.delete")">
+                                <i class="fa-solid fa-trash-can text-danger" title="@Messages("views.warehouse.actions.delete")"></i>
 
                                 <script>
                                     document.addEventListener('DOMContentLoaded', function () {
-                                require(["views/form"], function (form) {
-                                    form.deleteRequest(
-                                            {
-                                                triggerElemId: 'delivery-id-@delivery.id',
-                                                confirmMessage: 'Вы действительно хотите удалить поставку # @delivery.id ?',
-                                                deleteUri: '@Routes.deliveryDeletePath(delivery.id)',
-                                                token: {
-                                                    name: '@CSRF.getToken.name',
-                                                    value: '@CSRF.getToken.value'
-                                                },
-                                                onDoneRedirectTo: '@Routes.deliveriesPath',
-                                            },
-                                    );
-                                })
-                            })
+                                        require(["views/form"], function (form) {
+                                            form.deleteRequest(
+                                                    {
+                                                        triggerElemId: 'delivery-id-@delivery.id',
+                                                        confirmMessage: '@Messages("views.warehouse.actions.delete.confirm", delivery.id)',
+                                                        deleteUri: '@Routes.deliveryDeletePath(delivery.id)',
+                                                        token: {
+                                                            name: '@CSRF.getToken.name',
+                                                            value: '@CSRF.getToken.value'
+                                                        },
+                                                        onDoneRedirectTo: '@Routes.deliveriesPath',
+                                                    },
+                                            );
+                                        })
+                                    })
                                 </script>
                             </div>
                         </td>

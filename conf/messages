@@ -56,3 +56,13 @@ views.settings.moduleProducts.label.perPage=Записи на странице �
 views.settings.moduleProducts.label.view=Вид по-умолчанию
 views.settings.moduleProducts.value.tableView=Таблица
 views.settings.moduleProducts.value.albumView=Альбомная
+
+views.warehouse.addProduct=Добавить новую запись
+views.warehouse.table.th.id=ID
+views.warehouse.table.th.product=Товар
+views.warehouse.table.th.quantity=Кол-во
+views.warehouse.table.th.createdAt=Создано
+views.warehouse.table.th.updatedAt=Обновлено
+views.warehouse.table.th.actions=Действия
+views.warehouse.actions.delete=Удалить запись о наличии товара
+views.warehouse.actions.delete.confirm=Вы действительно хотите запись о наличии товара на складе # {0}
