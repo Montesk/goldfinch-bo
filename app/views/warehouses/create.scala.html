@@ -1,0 +1,15 @@
+@import view.models.Warehouse
+@import view.routes.Routes
+
+@(warehousesData: Vector[Warehouse] = Vector())(implicit request: Request[AnyContent], messages: MessagesProvider)
+
+@warehouses.content(warehousesData)
+
+@components.modal.modal(
+    bodyContent = warehouses.createform(),
+    title = "Добавить новый склад",
+    modalId = "create-warehouse",
+    static = false,
+    showOnLoad = true,
+    redirectUrlOnClose = Option[String](Routes.warehousesPath)
+)

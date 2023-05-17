@@ -9,6 +9,7 @@
         product: Option[Product],
         delivery: Option[Delivery],
         settingsData: SettingsPage,
+        warehousesData: Vector[Warehouse] = Vector(),
 )(implicit request: Request[AnyContent], messages: MessagesProvider)
 
 <div class="container-fluid position-relative flex-grow-1">
@@ -51,6 +52,10 @@
                             deliveries.content(data = deliveriesData)
                         } else if(Matcher.isSettingsPage) {
                             settings.content(data = settingsData)
+                        } else if(Matcher.isWarehousesPage) {
+                            warehouses.content(data = warehousesData)
+                        } else if(Matcher.isWarehouseCreatePageV2) {
+                            warehouses.create()
                         } else {
                             dashboard.content()
                         }

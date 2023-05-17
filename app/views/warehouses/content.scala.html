@@ -1,0 +1,46 @@
+@import view.models.Warehouse
+
+@(data: Vector[Warehouse] = Vector())(implicit request: Request[AnyContent], messages: MessagesProvider)
+
+<div class="col-12">
+    <div class="row">
+        <div class="col-12 mb-2">
+            <a href="@routes.WarehousesController.create().url" class="text-decoration-none" title="@Messages("views.warehouses.addWarehouse")">
+                <div class="card bo-success-hover bo-horizontal-new-item">
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <h5 class="text-center card-title mb-3 text-success bo-add-small">
+                            <span>+</span>
+                        </h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12">
+            <table class="table bo-table">
+                <thead>
+                    <tr>
+                        <th scope="col">@Messages("views.warehouses.table.th.id")</th>
+                        <th scope="col">@Messages("views.warehouses.table.th.name")</th>
+                        <th scope="col">@Messages("views.warehouses.table.th.description")</th>
+                        <th scope="col">@Messages("views.warehouses.table.th.disabled")</th>
+                        <th scope="col">@Messages("views.warehouses.table.th.createdAt")</th>
+                        <th scope="col">@Messages("views.warehouses.table.th.updatedAt")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(warehouse <- data) {
+                    <tr>
+                        <td class="align-middle">@warehouse.id</td>
+                        <td class="align-middle">@warehouse.name</td>
+                        <td class="align-middle">@warehouse.description</td>
+                        <td class="align-middle">@warehouse.disabled</td>
+                        <td class="align-middle">@warehouse.created_at</td>
+                        <td class="align-middle">@warehouse.updated_at</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

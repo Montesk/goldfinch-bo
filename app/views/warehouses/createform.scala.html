@@ -1,0 +1,16 @@
+@import helper._
+@import view.routes.Routes
+
+@()(implicit request: Request[AnyContent])
+
+<form method="POST" action="@Routes.warehouseCreatePath">
+    <div class="form-group">
+        @components.form.components.input(name = "name", label = "name", required = true)
+        @components.form.components.input(name = "description", label = "description")
+    </div>
+    <div class="form-group d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+    @CSRF.formField
+</form>

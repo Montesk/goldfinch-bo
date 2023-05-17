@@ -4,7 +4,7 @@ flash.controller.settings=Settings successfully updated
 
 views.navigation.orders=Orders
 views.navigation.products=Products
-views.navigation.warehouse=Warehouse
+views.navigation.warehouses=Warehouses
 views.navigation.settings=Settings
 
 views.products.controlPanel.tableView=Table view
@@ -66,3 +66,11 @@ views.warehouse.table.th.updatedAt=Updated At
 views.warehouse.table.th.actions=Actions
 views.warehouse.actions.delete=Delete warehouse product record
 views.warehouse.actions.delete.confirm=You are about to delete warehouse product record # {0}. Are you sure?
+
+views.warehouses.addWarehouse=Add new warehouse
+views.warehouses.table.th.id=ID
+views.warehouses.table.th.name=Name
+views.warehouses.table.th.description=Description
+views.warehouses.table.th.disabled=Disabled
+views.warehouses.table.th.createdAt=Created At
+views.warehouses.table.th.updatedAt=Updated At

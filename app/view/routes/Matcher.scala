@@ -1,7 +1,6 @@
 package view.routes
 
 import play.api.mvc.{AnyContent, Request}
-import view.pagination.Pagination
 
 object Matcher extends Routes with Pagination {
   def isHomePage(implicit req: Request[AnyContent]): Boolean = {
@@ -32,6 +31,7 @@ object Matcher extends Routes with Pagination {
     req.path.contains(ProductEditGroupPath)
   }
 
+  // deliveries (under construction)
   def isWarehouseCreatePage(implicit req: Request[AnyContent]): Boolean = {
     req.path == deliveryCreatePath
   }
@@ -42,5 +42,13 @@ object Matcher extends Routes with Pagination {
 
   def isSettingsPage(implicit req: Request[AnyContent]): Boolean = {
     req.path == settingsPath
+  }
+
+  def isWarehousesPage(implicit req: Request[AnyContent]): Boolean = {
+    req.path == warehousesPath
+  }
+
+  def isWarehouseCreatePageV2(implicit req: Request[AnyContent]): Boolean = {
+    req.path == warehouseCreatePath
   }
 }

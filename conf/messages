@@ -4,7 +4,7 @@ flash.controller.settings=Настройки успешно обновлены
 
 views.navigation.orders=Заказы
 views.navigation.products=Товары
-views.navigation.warehouse=Склад
+views.navigation.warehouses=Склады
 views.navigation.settings=Настройки
 
 views.products.controlPanel.tableView=Режим таблицы
@@ -66,3 +66,11 @@ views.warehouse.table.th.updatedAt=Обновлено
 views.warehouse.table.th.actions=Действия
 views.warehouse.actions.delete=Удалить запись о наличии товара
 views.warehouse.actions.delete.confirm=Вы действительно хотите запись о наличии товара на складе # {0}
+
+views.warehouses.addWarehouse=Добавить новую запись
+views.warehouses.table.th.id=ID
+views.warehouses.table.th.name=Название
+views.warehouses.table.th.description=Описание
+views.warehouses.table.th.disabled=Отключено
+views.warehouses.table.th.createdAt=Создано
+views.warehouses.table.th.updatedAt=Обновлено

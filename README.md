@@ -42,7 +42,7 @@ Run (sbt console)
 > there is an Advanced -> CPU section
 
 > Solution B
-> Poweshell Administrator access -> `dism.exe /Online /Enable-Feature:Microsoft-Hyper-V /All`
+> PowerShell Administrator access -> `dism.exe /Online /Enable-Feature:Microsoft-Hyper-V /All`
 
 > Solution C
-> Poweshell Administrator access -> bcdedit /set hypervisorlaunchtype auto
+> PowerShell Administrator access -> bcdedit /set hypervisorlaunchtype auto

@@ -1,4 +1,4 @@
-@import view.models.{Order, Product, Products, Delivery, SettingsPage}
+@import view.models.{Order, Product, Products, Delivery, SettingsPage, Warehouse}
 
 @(
         headerName: String = "Goldfinch",
@@ -7,18 +7,20 @@
         product: Option[Product] = None,
         deliveries: Vector[Delivery] = Vector(),
         delivery: Option[Delivery] = None,
+        warehouses: Vector[Warehouse] = Vector(),
         settings: SettingsPage = SettingsPage(pages = Vector())
 )(implicit request: Request[AnyContent], flash: Flash, messages: Messages)
 
-@main("Goldfinch") {
-    @navigation(headerName)
+    @main("Goldfinch") {
+        @navigation(headerName)
 
-    @content(
-        ordersData = orders,
-        productsData = products,
-        deliveriesData = deliveries,
-        product = product,
-        delivery = delivery,
-        settingsData = settings,
-    )
-}
+        @content(
+            ordersData = orders,
+            productsData = products,
+            deliveriesData = deliveries,
+            product = product,
+            delivery = delivery,
+            settingsData = settings,
+            warehousesData = warehouses,
+        )
+    }

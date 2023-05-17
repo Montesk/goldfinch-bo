@@ -12,10 +12,8 @@ object Order {
       id = order.id.toInt,
       status = order.status,
       customer_id = order.customer_id.toInt,
-      created_at =
-        order.created_at.format(DateTimeFormatter.ofPattern(TimeFormat)),
-      updated_at =
-        order.updated_at.format(DateTimeFormatter.ofPattern(TimeFormat))
+      created_at = order.created_at.format(DateTimeFormatter.ofPattern(TimeFormat)),
+      updated_at = order.updated_at.format(DateTimeFormatter.ofPattern(TimeFormat)),
     )
   }
 
@@ -29,5 +27,5 @@ final case class Order(
     status: String,
     customer_id: Int,
     created_at: String,
-    updated_at: String
+    updated_at: String,
 ) {}

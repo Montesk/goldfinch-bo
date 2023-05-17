@@ -14,12 +14,15 @@ trait Routes {
   val deliveryCreatePath: String = Routes.deliveryCreatePath
   val deliveryDeletePath: Long => String = Routes.deliveryDeletePath
   val settingsPath: String = Routes.settingsPath
-  @deprecated("use v2 route with (settingName -> valueStr) mapping")
-  val settingsUpdatePath: String = Routes.settingsUpdatePath
   val settingsUpdatePathV2: String = Routes.settingsUpdatePathV2
+  val warehousesPath: String = Routes.warehousesPath
+  val warehouseCreatePath: String = Routes.warehouseCreatePath
 
   protected val ProductGroupPath: String = Routes.ProductGroupPath
   protected val ProductEditGroupPath: String = Routes.ProductEditGroupPath
+
+  @deprecated("use v2 route with (settingName -> valueStr) mapping")
+  val settingsUpdatePath: String = Routes.settingsUpdatePath
 }
 
 object Routes {
@@ -36,10 +39,13 @@ object Routes {
   val deliveryDeletePath: Long => String = (deliveryId: Long) =>
     routes.DeliveriesController.delete(deliveryId: Long).url
   val settingsPath: String = routes.SettingsController.index().url
-  @deprecated("use v2 route with (settingName -> valueStr) mapping")
-  val settingsUpdatePath: String = routes.SettingsController.edit().url
   val settingsUpdatePathV2: String = routes.SettingsController.editV2().url
+  val warehousesPath: String = routes.WarehousesController.index().url
+  val warehouseCreatePath: String = routes.WarehousesController.create().url
 
   protected val ProductGroupPath: String = "product"
   protected val ProductEditGroupPath: String = "product/edit"
+
+  @deprecated("use v2 route with (settingName -> valueStr) mapping")
+  val settingsUpdatePath: String = routes.SettingsController.edit().url
 }

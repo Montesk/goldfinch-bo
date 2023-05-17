@@ -1,11 +1,15 @@
 package modules
 
+import javax.inject.Inject
 import com.google.inject.AbstractModule
 
-import play.api.Logging
+import scala.concurrent.Future
 
-import services.config.Config
+import play.api.Logging
+import play.api.inject.ApplicationLifecycle
+
 import services.migrations.{Migrations, DefaultConfig => MigrationsConfig}
+import services.config.Config
 import services.settings.{Settings, Options => FromConfig}
 
 /**
@@ -57,10 +61,20 @@ class Main extends AbstractModule with Logging {
       Settings.updateAppMigrationsInfo(appliedAt = lastApplied.appliedAt, hash = lastApplied.hash)
     }
 
+    bind(classOf[Hooks]).to(classOf[AppHooks]).asEagerSingleton()
+
     logger.info("Application started")
   }
 
   protected object AppSettings {
     val ConfigPath: String = "conf/config.yml"
+  }
+}
+
+abstract class Hooks {}
+
+class AppHooks @Inject() (lifecycle: ApplicationLifecycle) extends Hooks with Logging {
+  lifecycle.addStopHook { () =>
+    Future.successful(logger.info("App stop hook called"))
   }
 }
