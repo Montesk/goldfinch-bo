@@ -49,7 +49,7 @@ Run (sbt console)
 
 ### License
 
-Released under the [MIT License](LICENSE). Copyright (c) 2022-2023 Aleksei Spirin.
+Released under the [MIT License](LICENSE). Copyright (c) 2022-2026 Aleksei Spirin.
 
 Third-party components keep their own licenses: the sbt launcher bundled in `sbt-dist/`
 comes from the [sbt project](https://github.com/sbt/launcher) and is licensed under
