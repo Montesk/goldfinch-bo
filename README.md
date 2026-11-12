@@ -46,3 +46,19 @@ Run (sbt console)
 
 > Solution C
 > Poweshell Administrator access -> bcdedit /set hypervisorlaunchtype auto
+
+### License
+
+Released under the [MIT License](LICENSE). Copyright (c) 2022-2023 Aleksei Spirin.
+
+Third-party components keep their own licenses: the sbt launcher bundled in `sbt-dist/`
+comes from the [sbt project](https://github.com/sbt/launcher) and is licensed under
+the Apache License 2.0 (see [`sbt-dist/LICENSE`](sbt-dist/LICENSE) and
+[`sbt-dist/NOTICE`](sbt-dist/NOTICE)).
+
+### History note
+
+This history was rewritten for the public release to remove personal and third-party
+images; the product stub images were replaced with generated placeholders. Each commit
+keeps its original author and date, and an `Original-commit:` trailer records its hash
+in the original repository.
