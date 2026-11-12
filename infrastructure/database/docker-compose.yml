@@ -20,7 +20,7 @@ services:
     container_name: pgadmin_container
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: montesk1991@gmail.com
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: 123qwe
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
